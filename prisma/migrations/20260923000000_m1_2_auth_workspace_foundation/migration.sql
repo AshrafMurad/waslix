@@ -91,7 +91,8 @@ CREATE TABLE "workspace_member" (
     "status" "MembershipStatus" NOT NULL DEFAULT 'ACTIVE',
     "joinedAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "workspace_member_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "workspace_member_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "workspace_member_role_check" CHECK ("role" IN ('ADMIN', 'CS_MANAGER', 'CSM', 'VIEWER'))
 );
 
 -- CreateTable
@@ -105,7 +106,9 @@ CREATE TABLE "invitation" (
     "createdAt" TIMESTAMPTZ(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "inviterId" UUID NOT NULL,
 
-    CONSTRAINT "invitation_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "invitation_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "invitation_role_check" CHECK ("role" IN ('ADMIN', 'CS_MANAGER', 'CSM', 'VIEWER')),
+    CONSTRAINT "invitation_status_check" CHECK ("status" IN ('pending', 'accepted', 'rejected', 'canceled'))
 );
 
 -- CreateIndex
