@@ -42,7 +42,11 @@ export async function changeMembershipRole(
       throw new WorkspaceAccessDeniedError();
     }
 
-    if (target.role === "ADMIN" && target.status === "ACTIVE" && role !== "ADMIN") {
+    if (
+      target.role === "ADMIN" &&
+      target.status === "ACTIVE" &&
+      role !== "ADMIN"
+    ) {
       const activeAdminCount = await transaction.workspaceMember.count({
         where: {
           workspaceId: access.workspaceId,
@@ -81,7 +85,11 @@ export async function changeMembershipStatus(
       throw new WorkspaceAccessDeniedError();
     }
 
-    if (target.role === "ADMIN" && target.status === "ACTIVE" && status === "INACTIVE") {
+    if (
+      target.role === "ADMIN" &&
+      target.status === "ACTIVE" &&
+      status === "INACTIVE"
+    ) {
       const activeAdminCount = await transaction.workspaceMember.count({
         where: {
           workspaceId: access.workspaceId,

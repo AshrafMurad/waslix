@@ -67,11 +67,7 @@ export async function seedTwoWorkspaceFixture(prisma: PrismaClient) {
   }
 
   const memberships = {
-    alphaAdmin: await upsertMembership(
-      workspaceA.id,
-      users.shared.id,
-      "ADMIN",
-    ),
+    alphaAdmin: await upsertMembership(workspaceA.id, users.shared.id, "ADMIN"),
     alphaManager: await upsertMembership(
       workspaceA.id,
       users.manager.id,

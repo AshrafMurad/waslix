@@ -3,16 +3,14 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { organization } from "better-auth/plugins";
 
+import { serverEnvironment } from "@/config/server-env";
 import { prisma } from "@/lib/db/prisma";
-import {
-  organizationAccess,
-  organizationRoles,
-} from "@/lib/permissions/roles";
+import { organizationAccess, organizationRoles } from "@/lib/permissions/roles";
 
 export const auth = betterAuth({
   appName: "Waslix",
-  baseURL: process.env.BETTER_AUTH_URL,
-  secret: process.env.BETTER_AUTH_SECRET,
+  baseURL: serverEnvironment.BETTER_AUTH_URL,
+  secret: serverEnvironment.BETTER_AUTH_SECRET,
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),

@@ -29,10 +29,12 @@ describe("fixed workspace roles", () => {
     expect(hasWorkspaceCapability("ADMIN", "manageWorkspaceMembership")).toBe(
       true,
     );
-    expect(hasWorkspaceCapability("CS_MANAGER", "manageWorkspaceMembership")).toBe(
+    expect(
+      hasWorkspaceCapability("CS_MANAGER", "manageWorkspaceMembership"),
+    ).toBe(false);
+    expect(hasWorkspaceCapability("CSM", "manageWorkspaceMembership")).toBe(
       false,
     );
-    expect(hasWorkspaceCapability("CSM", "manageWorkspaceMembership")).toBe(false);
     expect(hasWorkspaceCapability("VIEWER", "manageWorkspaceMembership")).toBe(
       false,
     );
@@ -41,9 +43,9 @@ describe("fixed workspace roles", () => {
 
 describe("workspace access resolution", () => {
   it("requires authentication and a server-verified active membership", async () => {
-    await expect(resolveWorkspaceAccess(null, async () => null)).rejects.toBeInstanceOf(
-      AuthenticationRequiredError,
-    );
+    await expect(
+      resolveWorkspaceAccess(null, async () => null),
+    ).rejects.toBeInstanceOf(AuthenticationRequiredError);
 
     await expect(
       resolveWorkspaceAccess(

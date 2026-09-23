@@ -17,7 +17,11 @@ export function SignOutButton({ locale }: { locale: Locale }) {
   }
 
   return (
-    <button type="button" onClick={signOut} className="rounded-md border px-4 py-2">
+    <button
+      type="button"
+      onClick={signOut}
+      className="rounded-md border px-4 py-2"
+    >
       {t("signOut")}
     </button>
   );

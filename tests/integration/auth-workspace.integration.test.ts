@@ -8,7 +8,10 @@ import {
   WorkspaceAccessDeniedError,
 } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
-import { getWorkspaceMemberById } from "@/modules/workspace/queries/get-workspace-members";
+import {
+  getWorkspaceMemberById,
+  getWorkspaceMembers,
+} from "@/modules/workspace/queries/get-workspace-members";
 import { changeMembershipRole } from "@/modules/workspace/services/change-membership";
 import { switchActiveWorkspace } from "@/modules/workspace/services/switch-active-workspace";
 import { updatePreferredLocale } from "@/modules/workspace/services/update-preferred-locale";
@@ -74,11 +77,13 @@ describe("Better Auth workspace foundation", () => {
           workspaceId: fixture.workspaceA.id,
           userId: user.id,
           role: "CSM",
+          joinedAt: new Date("2026-01-01T00:00:00.000Z"),
         },
         {
           workspaceId: fixture.workspaceB.id,
           userId: user.id,
           role: "VIEWER",
+          joinedAt: new Date("2026-02-01T00:00:00.000Z"),
         },
       ],
     });
@@ -118,7 +123,11 @@ describe("Better Auth workspace foundation", () => {
 
     const signOutResponse = await authRequest("/sign-out", {}, sessionCookie);
     expect(signOutResponse.status).toBe(200);
-    const sessionResponse = await authRequest("/get-session", undefined, sessionCookie);
+    const sessionResponse = await authRequest(
+      "/get-session",
+      undefined,
+      sessionCookie,
+    );
     expect(await sessionResponse.json()).toBeNull();
   });
 
@@ -129,6 +138,13 @@ describe("Better Auth workspace foundation", () => {
       memberId: fixture.memberships.alphaAdmin.id,
       role: "ADMIN" as const,
     };
+
+    const alphaRoles = (await getWorkspaceMembers(alphaAccess)).map(
+      (member) => member.role,
+    );
+    expect(alphaRoles).toEqual(
+      expect.arrayContaining(["ADMIN", "CS_MANAGER", "CSM", "VIEWER"]),
+    );
 
     await expect(
       getWorkspaceMemberById(alphaAccess, fixture.memberships.betaAdmin.id),

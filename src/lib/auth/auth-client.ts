@@ -7,10 +7,7 @@ import {
 } from "better-auth/client/plugins";
 
 import type { auth } from "./auth";
-import {
-  organizationAccess,
-  organizationRoles,
-} from "../permissions/roles";
+import { organizationAccess, organizationRoles } from "../permissions/roles";
 
 export const authClient = createAuthClient({
   plugins: [
