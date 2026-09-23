@@ -1,0 +1,136 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PreferredLocale {
+  EN
+  AR
+}
+
+enum MembershipStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  email           String            @unique
+  emailVerified   Boolean           @default(false)
+  image           String?
+  preferredLocale PreferredLocale   @default(EN)
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  sessions        Session[]
+  accounts        Account[]
+  memberships     WorkspaceMember[]
+  invitations     Invitation[]      @relation("InvitationInviter")
+
+  @@map("user")
+}
+
+model Session {
+  id                String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  expiresAt         DateTime   @db.Timestamptz(3)
+  token             String     @unique
+  createdAt         DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime   @updatedAt @db.Timestamptz(3)
+  ipAddress         String?
+  userAgent         String?
+  userId            String     @db.Uuid
+  activeWorkspaceId String?    @db.Uuid
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activeWorkspace   Workspace? @relation(fields: [activeWorkspaceId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([activeWorkspaceId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  accountId             String
+  providerId            String
+  userId                String    @db.Uuid
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamptz(3)
+  refreshTokenExpiresAt DateTime? @db.Timestamptz(3)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime  @updatedAt @db.Timestamptz(3)
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  identifier String
+  value      String
+  expiresAt  DateTime  @db.Timestamptz(3)
+  createdAt  DateTime? @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime? @updatedAt @db.Timestamptz(3)
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Workspace {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String            @db.VarChar(200)
+  slug            String            @unique @db.VarChar(200)
+  logo            String?
+  metadata        String?
+  timezone        String            @default("UTC") @db.VarChar(100)
+  defaultCurrency String            @default("USD") @db.Char(3)
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  members         WorkspaceMember[]
+  invitations     Invitation[]
+  sessions        Session[]
+
+  @@map("workspace")
+}
+
+model WorkspaceMember {
+  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId String           @db.Uuid
+  userId      String           @db.Uuid
+  role        String           @db.VarChar(32)
+  status      MembershipStatus @default(ACTIVE)
+  joinedAt    DateTime         @default(now()) @db.Timestamptz(3)
+  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+  @@unique([workspaceId, id])
+  @@index([userId, status])
+  @@map("workspace_member")
+}
+
+model Invitation {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId String    @db.Uuid
+  email       String
+  role        String    @db.VarChar(32)
+  status      String    @db.VarChar(32)
+  expiresAt   DateTime  @db.Timestamptz(3)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  inviterId   String    @db.Uuid
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  inviter     User      @relation("InvitationInviter", fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
+  @@index([email])
+  @@map("invitation")
+}
