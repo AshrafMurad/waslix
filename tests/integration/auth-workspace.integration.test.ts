@@ -45,17 +45,35 @@ async function authRequest(
 
 describe("Better Auth workspace foundation", () => {
   let fixture: Awaited<ReturnType<typeof seedTwoWorkspaceFixture>>;
+  const fixturePassword = "FixturePassword123!";
 
   beforeAll(async () => {
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
     await prisma.workspace.deleteMany();
     await prisma.user.deleteMany();
-    fixture = await seedTwoWorkspaceFixture(prisma);
+    fixture = await seedTwoWorkspaceFixture(prisma, fixturePassword);
   });
 
   afterAll(async () => {
     await prisma.$disconnect();
+  });
+
+  it("signs in a seeded local fixture account", async () => {
+    const response = await authRequest("/sign-in/email", {
+      email: fixture.users.manager.email,
+      password: fixturePassword,
+    });
+    expect(response.status).toBe(200);
+
+    const access = await requireWorkspaceAccess(
+      new Headers({ cookie: cookieHeader(response) }),
+    );
+    expect(access).toMatchObject({
+      workspaceId: fixture.workspaceA.id,
+      memberId: fixture.memberships.alphaManager.id,
+      role: "CS_MANAGER",
+    });
   });
 
   it("signs in, switches only to an active membership, and signs out", async () => {

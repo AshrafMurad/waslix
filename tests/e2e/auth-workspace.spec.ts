@@ -23,6 +23,9 @@ test.describe("authentication and workspace smoke", () => {
     page,
     request,
   }) => {
+    await page.goto("/");
+    await expect(page).toHaveURL(/\/en$/);
+
     await page.goto("/en/overview");
     await expect(page).toHaveURL(/\/en\/sign-in$/);
 

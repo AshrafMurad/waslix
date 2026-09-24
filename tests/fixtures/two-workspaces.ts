@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import { hashPassword } from "better-auth/crypto";
 
 const fixtureUsers = [
   { key: "shared", name: "Shared Admin", locale: "EN" as const },
@@ -9,7 +10,10 @@ const fixtureUsers = [
   { key: "tenantBAdmin", name: "Tenant B Admin", locale: "AR" as const },
 ] as const;
 
-export async function seedTwoWorkspaceFixture(prisma: PrismaClient) {
+export async function seedTwoWorkspaceFixture(
+  prisma: PrismaClient,
+  credentialPassword?: string,
+) {
   const users = Object.fromEntries(
     await Promise.all(
       fixtureUsers.map(async (fixtureUser) => {
@@ -31,6 +35,29 @@ export async function seedTwoWorkspaceFixture(prisma: PrismaClient) {
       }),
     ),
   );
+
+  if (credentialPassword) {
+    await Promise.all(
+      Object.values(users).map(async (user) => {
+        const password = await hashPassword(credentialPassword);
+        await prisma.account.upsert({
+          where: {
+            providerId_accountId: {
+              providerId: "credential",
+              accountId: user.id,
+            },
+          },
+          update: { password, userId: user.id },
+          create: {
+            providerId: "credential",
+            accountId: user.id,
+            userId: user.id,
+            password,
+          },
+        });
+      }),
+    );
+  }
 
   const workspaceA = await prisma.workspace.upsert({
     where: { slug: "fixture-alpha" },

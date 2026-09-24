@@ -17,6 +17,17 @@ npm run dev
 
 Open [http://localhost:3000/en](http://localhost:3000/en) or [http://localhost:3000/ar](http://localhost:3000/ar). Auth endpoints are mounted at `/api/auth/[...all]`; `/en/workspace` and `/ar/workspace` require a session with an ACTIVE membership.
 
+The local seed provisions the fixture users below as Better Auth credential accounts. They use `SEED_FIXTURE_PASSWORD`; when it is omitted outside production, the local-only fallback is `WaslixLocal123!`.
+
+| Role                                           | Email                              |
+| ---------------------------------------------- | ---------------------------------- |
+| Admin in Fixture Alpha, Viewer in Fixture Beta | `shared@fixture.waslix.test`       |
+| CS Manager                                     | `manager@fixture.waslix.test`      |
+| CSM                                            | `csm@fixture.waslix.test`          |
+| Viewer                                         | `viewer@fixture.waslix.test`       |
+| Inactive-member denial fixture                 | `inactive@fixture.waslix.test`     |
+| Fixture Beta Admin                             | `tenantBAdmin@fixture.waslix.test` |
+
 ## Checks
 
 ```bash
@@ -33,7 +44,7 @@ npm run build
 
 ## Environment
 
-Copy `.env.example` and replace its safe placeholders. Required server variables are `DATABASE_URL`, `BETTER_AUTH_URL`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. `TEST_DATABASE_URL` is required only for database integration and browser tests. `NEXT_PUBLIC_APP_URL` documents the browser origin.
+Copy `.env.example` and replace its safe placeholders. Required server variables are `DATABASE_URL`, `BETTER_AUTH_URL`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. `TEST_DATABASE_URL` is required only for database integration and browser tests. `NEXT_PUBLIC_APP_URL` documents the browser origin. `SEED_FIXTURE_PASSWORD` controls local fixture credentials and must be explicitly set when seeding with `NODE_ENV=production`.
 
 The optional `docker-compose.yml` provides PostgreSQL 18 and creates the `waslix` and `waslix_test` databases when its volume is initialized. If the volume predates M1.4, create the test database once with `docker compose exec postgres createdb -U waslix waslix_test`. The pinned foundation includes Better Auth `1.7.5`, Prisma/Prisma Client `6.19.3`, Next.js `16.3.5`, next-intl `4.14.6`, Zod `4.1.11`, Vitest `4.0.4`, and Playwright `1.55.0`.
 
