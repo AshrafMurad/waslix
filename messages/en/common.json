@@ -3,5 +3,11 @@
     "kicker": "Waslix foundation",
     "title": "Customer success starts here",
     "description": "The project foundation is ready with locale-prefixed routing, English and Arabic catalogs, Tailwind, and shadcn configuration."
+  },
+  "datePicker": {
+    "choose": "Choose a date",
+    "chooseDateTime": "Choose a date and time",
+    "time": "Time",
+    "clear": "Clear date"
   }
 }

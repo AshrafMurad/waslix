@@ -5,11 +5,21 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { TaskForm } from "@/modules/tasks/components/task-form";
 import { TaskList } from "@/modules/tasks/components/task-list";
+import { TaskViewTabs } from "@/modules/tasks/components/task-view-tabs";
 import { getTaskOptions } from "@/modules/tasks/queries/get-task-options";
 import { getTasks } from "@/modules/tasks/queries/get-tasks";
 
@@ -51,12 +61,18 @@ export default async function TasksPage({
           <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
         </div>
         {access.role !== "VIEWER" ? (
-          <details className="relative">
-            <summary className="bg-primary text-primary-foreground flex min-h-10 list-none items-center gap-2 rounded-md px-4 font-medium [&::-webkit-details-marker]:hidden">
-              <Plus aria-hidden="true" className="size-4" />
-              {t("actions.add")}
-            </summary>
-            <Card className="absolute end-0 z-20 mt-2 w-[min(36rem,calc(100vw-2rem))] p-5 shadow-lg">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="lg">
+                <Plus aria-hidden="true" />
+                {t("actions.add")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
+              <DialogHeader>
+                <DialogTitle>{t("actions.add")}</DialogTitle>
+                <DialogDescription>{t("description")}</DialogDescription>
+              </DialogHeader>
               <TaskForm
                 locale={locale}
                 operationKey={randomUUID()}
@@ -65,29 +81,21 @@ export default async function TasksPage({
                 defaultOwnerId={access.memberId}
                 canAssignOwner={access.role !== "CSM"}
               />
-            </Card>
-          </details>
+            </DialogContent>
+          </Dialog>
         ) : null}
       </div>
-      <Card>
-        <nav
-          aria-label={t("filters.label")}
-          className="flex gap-1 overflow-x-auto border-b p-2"
-        >
-          {(["my", "team", "overdue", "completed"] as const).map((filter) => (
-            <Link
-              key={filter}
-              href={`/tasks?filter=${filter}`}
-              className={
-                result.filter === filter
-                  ? "bg-raised min-h-10 rounded-md px-3 py-2 text-sm font-medium"
-                  : "text-muted-foreground hover:bg-raised min-h-10 rounded-md px-3 py-2 text-sm"
-              }
-            >
-              {t(`filters.${filter}`)}
-            </Link>
-          ))}
-        </nav>
+      <Card className="gap-0 py-0">
+        <TaskViewTabs
+          activeFilter={result.filter}
+          label={t("filters.label")}
+          labels={{
+            my: t("filters.my"),
+            team: t("filters.team"),
+            overdue: t("filters.overdue"),
+            completed: t("filters.completed"),
+          }}
+        />
         <TaskList
           access={access}
           locale={locale}

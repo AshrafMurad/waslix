@@ -4,6 +4,16 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
@@ -207,9 +217,11 @@ export default async function CustomerSectionPage({
                 key={contact.id}
                 className="flex flex-col gap-3 p-5 sm:flex-row sm:items-center"
               >
-                <span className="bg-brand text-brand-foreground flex size-10 shrink-0 items-center justify-center rounded-full font-semibold">
-                  {contact.name.trim().charAt(0).toLocaleUpperCase(locale)}
-                </span>
+                <Avatar size="lg">
+                  <AvatarFallback className="bg-brand text-brand-foreground">
+                    {contact.name.trim().charAt(0).toLocaleUpperCase(locale)}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="min-w-0 flex-1">
                   <p className="font-medium" dir="auto">
                     {contact.name}
@@ -237,18 +249,24 @@ export default async function CustomerSectionPage({
                   />
                 ) : null}
                 {canEdit ? (
-                  <details className="sm:ms-2">
-                    <summary className="text-brand-accent font-medium">
-                      {t("contacts.edit")}
-                    </summary>
-                    <div className="mt-4 min-w-72 rounded-md border p-4 sm:min-w-96">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost">{t("contacts.edit")}</Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
+                      <DialogHeader>
+                        <DialogTitle>{t("contacts.edit")}</DialogTitle>
+                        <DialogDescription>
+                          {t("contacts.description")}
+                        </DialogDescription>
+                      </DialogHeader>
                       <ContactForm
                         customerId={customerId}
                         locale={locale}
                         contact={contact}
                       />
-                    </div>
-                  </details>
+                    </DialogContent>
+                  </Dialog>
                 ) : null}
               </li>
             ))}

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import "../globals.css";
 
+import { ThemeInitializer } from "@/components/layout/theme-initializer";
 import { getDirection, isLocale, locales } from "@/i18n/config";
 
 const geistSans = Geist({
@@ -17,8 +19,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-const themeScript = `(() => { try { const saved = localStorage.getItem("waslix-theme"); const dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches; document.documentElement.classList.toggle("dark", dark); document.documentElement.style.colorScheme = dark ? "dark" : "light"; } catch {} })();`;
 
 type LocaleLayoutProps = {
   children: React.ReactNode;
@@ -50,18 +50,25 @@ export default async function LocaleLayout({
   }
 
   setRequestLocale(locale);
+  const savedTheme = (await cookies()).get("waslix-theme")?.value;
+  const isDarkTheme = savedTheme === "dark";
+  const className = [
+    geistSans.variable,
+    geistMono.variable,
+    isDarkTheme ? "dark" : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <html
       lang={locale}
       dir={getDirection(locale)}
-      className={`${geistSans.variable} ${geistMono.variable}`}
+      className={className}
       suppressHydrationWarning
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
       <body>
+        <ThemeInitializer />
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
       </body>
     </html>

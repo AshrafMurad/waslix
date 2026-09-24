@@ -46,6 +46,7 @@
     "failed": "تعذر حفظ تغيير المهمة."
   },
   "validation": {
+    "required": "هذا الحقل مطلوب.",
     "invalid": "أدخل قيمة صالحة."
   },
   "pagination": {

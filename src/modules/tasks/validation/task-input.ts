@@ -1,12 +1,13 @@
 import { z } from "zod";
 
-const emptyToNull = (value: unknown) => (value === "" ? null : value);
+const emptyToNull = (value: unknown) =>
+  value === "" || value === "standalone" ? null : value;
 
 export const taskInputSchema = z
   .object({
     taskId: z.preprocess(emptyToNull, z.uuid().nullable()).optional(),
     customerId: z.preprocess(emptyToNull, z.uuid().nullable()),
-    title: z.string().trim().min(1).max(200),
+    title: z.string().trim().min(1, "REQUIRED").max(200),
     description: z.preprocess(
       emptyToNull,
       z.string().trim().max(10000).nullable(),

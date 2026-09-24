@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { LayoutDashboard } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
+import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
 import { isLocale } from "@/i18n/config";
 
 export default async function OverviewPage({
@@ -27,16 +28,16 @@ export default async function OverviewPage({
           {t("description")}
         </p>
       </div>
-      <Card className="flex min-h-64 items-center justify-center p-6">
-        <div className="max-w-md text-center">
+      <Card>
+        <Empty className="min-h-64">
           <span className="bg-raised text-brand-accent mx-auto flex size-12 items-center justify-center rounded-md">
             <LayoutDashboard aria-hidden="true" className="size-5" />
           </span>
-          <h2 className="mt-4 text-lg font-semibold">{t("emptyTitle")}</h2>
-          <p className="text-muted-foreground mt-2 leading-6">
+          <EmptyTitle className="mt-2">{t("emptyTitle")}</EmptyTitle>
+          <EmptyDescription className="leading-6">
             {t("emptyDescription")}
-          </p>
-        </div>
+          </EmptyDescription>
+        </Empty>
       </Card>
     </div>
   );

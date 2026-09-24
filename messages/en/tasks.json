@@ -46,6 +46,7 @@
     "failed": "The task change could not be saved."
   },
   "validation": {
+    "required": "This field is required.",
     "invalid": "Enter a valid value."
   },
   "pagination": {

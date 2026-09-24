@@ -1,11 +1,12 @@
 import { z } from "zod";
 
-const emptyToNull = (value: unknown) => (value === "" ? null : value);
+const emptyToNull = (value: unknown) =>
+  value === "" || value === "none" ? null : value;
 
 export const activityInputSchema = z.object({
   customerId: z.uuid(),
   type: z.enum(["MEETING", "CALL", "EMAIL", "NOTE"]),
-  title: z.string().trim().min(1).max(200),
+  title: z.string().trim().min(1, "REQUIRED").max(200),
   description: z.preprocess(
     emptyToNull,
     z.string().trim().max(10000).nullable(),

@@ -4,6 +4,14 @@ import { Building2, Check, ChevronsUpDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/navigation";
 import { switchWorkspaceAction } from "@/modules/workspace/actions/switch-workspace";
 
@@ -45,35 +53,42 @@ export function WorkspaceSwitcher({
   }
 
   return (
-    <details className="group relative">
-      <summary className="bg-surface hover:bg-raised flex min-h-12 list-none items-center gap-3 rounded-md border px-3 transition-colors [&::-webkit-details-marker]:hidden">
-        <span className="bg-brand text-brand-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
-          <Building2 aria-hidden="true" className="size-4" />
-        </span>
-        <span className="min-w-0 flex-1 text-start">
-          <span className="block truncate text-sm font-medium" dir="auto">
-            {activeWorkspace?.name}
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          className="bg-surface h-12 w-full justify-start gap-3 px-3"
+        >
+          <span className="bg-brand text-brand-foreground flex size-8 shrink-0 items-center justify-center rounded-md">
+            <Building2 aria-hidden="true" className="size-4" />
           </span>
-          <span className="text-muted-foreground block text-xs">
-            {t("label")}
+          <span className="min-w-0 flex-1 text-start">
+            <span className="block truncate text-sm font-medium" dir="auto">
+              {activeWorkspace?.name}
+            </span>
+            <span className="text-muted-foreground block text-xs font-normal">
+              {t("label")}
+            </span>
           </span>
-        </span>
-        <ChevronsUpDown
-          aria-hidden="true"
-          className="text-muted-foreground size-4"
-        />
-      </summary>
-      <div className="bg-popover absolute inset-x-0 z-30 mt-2 rounded-md border p-1 shadow-lg">
-        <p className="text-muted-foreground px-2 py-1.5 text-xs font-medium">
+          <ChevronsUpDown
+            aria-hidden="true"
+            className="text-muted-foreground size-4"
+          />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        align="start"
+        className="w-(--radix-dropdown-menu-trigger-width)"
+      >
+        <DropdownMenuLabel className="text-muted-foreground text-xs">
           {t("choose")}
-        </p>
+        </DropdownMenuLabel>
         {workspaces.map((workspace) => (
-          <button
+          <DropdownMenuItem
             key={workspace.id}
-            type="button"
             disabled={isPending}
-            onClick={() => switchWorkspace(workspace.id)}
-            className="hover:bg-raised flex min-h-10 w-full items-center gap-2 rounded-md px-2 text-start text-sm disabled:opacity-50"
+            onSelect={() => switchWorkspace(workspace.id)}
+            className="min-h-10"
           >
             <span className="min-w-0 flex-1 truncate" dir="auto">
               {workspace.name}
@@ -81,14 +96,14 @@ export function WorkspaceSwitcher({
             {workspace.id === activeWorkspaceId ? (
               <Check aria-hidden="true" className="text-brand-accent size-4" />
             ) : null}
-          </button>
+          </DropdownMenuItem>
         ))}
         {error ? (
           <p role="alert" className="text-risk px-2 py-1.5 text-xs">
             {t("error")}
           </p>
         ) : null}
-      </div>
-    </details>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

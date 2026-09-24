@@ -64,6 +64,10 @@ Never swallow an error or convert failure into success. Domain services return o
 
 Reuse shadcn primitives and shared Waslix components. Domain table columns remain domain-owned. Keep sorting/filter semantics consistent server/client. Display missing values explicitly. Use semantic tokens and labels from 09.
 
+For a standard interaction available in the compatible shadcn registry, install the official component with the shadcn CLI and use its documented API instead of hand-authoring a lookalike. This includes styled selects, dialogs, sheets, dropdown menus, tabs, popovers, calendars, fields and data-table primitives. Use a native browser control only when platform rendering is an intentional product decision, not as a shortcut for a designed shadcn surface.
+
+Keep downloaded primitives in `components/ui` recognizable as registry components. Apply domain composition, translated copy, pending behavior and Waslix-specific layout at the caller or in a genuinely reused `components/shared` composition; do not label custom primitives as shadcn components.
+
 Use local/URL state first; do not replicate server entities in Zustand. Do not add another form, table, chart, date, HTTP or state package when the stack already solves the need.
 
 All user-facing text follows 17. Do not place English or Arabic literals directly in product components, actions or validation schemas. Stable internal codes, enum values, test fixture data and operator logs are not translated.

@@ -40,5 +40,9 @@
   "feedback": {
     "saved": "Activity added.",
     "failed": "The activity could not be saved."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalid": "Enter a valid value."
   }
 }

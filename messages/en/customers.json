@@ -50,6 +50,7 @@
   },
   "filters": {
     "search": "Search customers or contacts",
+    "loading": "Updating customers",
     "lifecycle": "Lifecycle",
     "allLifecycle": "All stages",
     "owner": "Owner",
@@ -59,6 +60,9 @@
     "sort": "Sort",
     "nameAsc": "Name A–Z",
     "nameDesc": "Name Z–A",
+    "filterTitle": "Filter customers",
+    "filterDescription": "Narrow the portfolio by lifecycle, owner, status, or sort order.",
+    "done": "View results",
     "apply": "Apply",
     "clear": "Clear filters"
   },

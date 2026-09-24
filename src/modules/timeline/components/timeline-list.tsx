@@ -1,6 +1,8 @@
 import { Bot, UserRound } from "lucide-react";
 import { getFormatter, getTranslations } from "next-intl/server";
 
+import { Empty, EmptyDescription } from "@/components/ui/empty";
+
 const taskEvents = new Set([
   "TASK_CREATED",
   "TASK_COMPLETED",
@@ -29,7 +31,9 @@ export async function TimelineList({
   ]);
   if (!entries.length) {
     return (
-      <p className="text-muted-foreground p-6 text-center">{t("empty")}</p>
+      <Empty>
+        <EmptyDescription>{t("empty")}</EmptyDescription>
+      </Empty>
     );
   }
   return (

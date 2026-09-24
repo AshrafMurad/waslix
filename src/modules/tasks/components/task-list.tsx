@@ -2,7 +2,16 @@ import { randomUUID } from "node:crypto";
 
 import { getFormatter, getTranslations } from "next-intl/server";
 
-import { Card } from "@/components/ui/card";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 
 import { TaskForm } from "./task-form";
@@ -45,9 +54,9 @@ export async function TaskList({
   ]);
   if (!tasks.length) {
     return (
-      <div className="text-muted-foreground px-6 py-16 text-center">
-        {t("empty")}
-      </div>
+      <Empty>
+        <EmptyDescription>{t("empty")}</EmptyDescription>
+      </Empty>
     );
   }
   return (
@@ -122,11 +131,15 @@ export async function TaskList({
                     targetStatus="CANCELLED"
                   />
                 ) : null}
-                <details className="relative">
-                  <summary className="hover:bg-raised flex min-h-10 list-none items-center rounded-md px-3 text-sm font-medium [&::-webkit-details-marker]:hidden">
-                    {t("actions.edit")}
-                  </summary>
-                  <Card className="absolute end-0 z-20 mt-2 w-[min(36rem,calc(100vw-2rem))] p-5 shadow-lg">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost">{t("actions.edit")}</Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
+                    <DialogHeader>
+                      <DialogTitle>{t("actions.edit")}</DialogTitle>
+                      <DialogDescription>{t("description")}</DialogDescription>
+                    </DialogHeader>
                     <TaskForm
                       locale={locale}
                       operationKey={randomUUID()}
@@ -141,8 +154,8 @@ export async function TaskList({
                       defaultOwnerId={task.ownerId}
                       canAssignOwner={managesAccount}
                     />
-                  </Card>
-                </details>
+                  </DialogContent>
+                </Dialog>
               </div>
             ) : null}
           </li>

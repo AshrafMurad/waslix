@@ -2,6 +2,15 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import {
@@ -54,9 +63,19 @@ export default async function CustomerOverviewPage({
       </Card>
       <div className="space-y-4">
         {canEdit ? (
-          <details className="bg-surface rounded-md border p-5">
-            <summary className="font-semibold">{t("actions.edit")}</summary>
-            <div className="mt-5">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="w-full">
+                {t("actions.edit")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-3xl">
+              <DialogHeader>
+                <DialogTitle>{t("actions.edit")}</DialogTitle>
+                <DialogDescription>
+                  {t("overview.description")}
+                </DialogDescription>
+              </DialogHeader>
               <CustomerForm
                 locale={locale}
                 customerId={customerId}
@@ -77,8 +96,8 @@ export default async function CustomerOverviewPage({
                   tags: customer.tags.map((tag) => tag.name).join(", "),
                 }}
               />
-            </div>
-          </details>
+            </DialogContent>
+          </Dialog>
         ) : null}
         {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
           <Card className="p-5">

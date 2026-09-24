@@ -4,6 +4,9 @@ import { startTransition, useActionState, useOptimistic } from "react";
 import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
+
 import {
   changeTaskStatusAction,
   type TaskActionState,
@@ -51,26 +54,40 @@ export function TaskStatusButton({
       <input type="hidden" name="status" value={target} />
       <input type="hidden" name="operationKey" value={operationKey} />
       {target === "CANCELLED" ? (
-        <button
+        <Button
           type="submit"
           disabled={pending || status === "CANCELLED"}
-          className="text-risk hover:bg-raised min-h-10 rounded-md px-3 text-sm font-medium disabled:opacity-50"
+          aria-busy={pending}
+          variant="ghost"
+          className="text-risk"
         >
+          {pending ? <Spinner aria-label={t("actions.cancel")} /> : null}
           {t("actions.cancel")}
-        </button>
+        </Button>
       ) : (
-        <button
+        <Button
           type="submit"
           disabled={pending || status === "CANCELLED"}
+          aria-busy={pending}
+          variant="outline"
+          size="icon"
           aria-label={
             target === "COMPLETED" ? t("actions.complete") : t("actions.reopen")
           }
-          className="border-brand text-brand-accent flex size-10 items-center justify-center rounded-full border-2 disabled:opacity-50"
+          className="border-brand text-brand-accent rounded-full border-2"
         >
-          {optimisticStatus === "COMPLETED" ? (
+          {pending ? (
+            <Spinner
+              aria-label={
+                target === "COMPLETED"
+                  ? t("actions.complete")
+                  : t("actions.reopen")
+              }
+            />
+          ) : optimisticStatus === "COMPLETED" ? (
             <Check aria-hidden="true" className="size-5" />
           ) : null}
-        </button>
+        </Button>
       )}
       {state.status === "error" ? (
         <span className="text-risk text-xs" role="alert">

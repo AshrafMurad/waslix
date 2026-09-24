@@ -42,6 +42,8 @@ Use this order when deciding where code belongs:
 
 Never create generic dumping grounds such as `utils.ts`, `helpers.ts`, `common.ts`, `shared-types.ts` or `constants.ts` at repository root. A narrowly named local utility such as `format-health-delta.ts` is acceptable in its owning module; locale-sensitive formatting belongs to 17's formatting layer.
 
+Before adding a low-level UI primitive, check the version-compatible shadcn registry and install the official item through the configured CLI. Do not manually recreate an available registry component in `components/ui`. Compose downloaded primitives for application behavior, such as a localized date picker built from Calendar and Popover, under `components/shared` only when the same contract has real cross-domain consumers. Keep one-off domain composition beside its owning feature.
+
 ## Module boundaries
 
 - A module exposes deliberate actions, services or projections. Consumers do not reach into another module's persistence details.

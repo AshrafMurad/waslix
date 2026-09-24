@@ -1,7 +1,6 @@
 import {
   BarChart3,
   CheckSquare2,
-  ChevronDown,
   CircleAlert,
   LayoutDashboard,
   Menu,
@@ -11,10 +10,20 @@ import {
   UsersRound,
 } from "lucide-react";
 
-import { Link } from "@/i18n/navigation";
 import type { Locale } from "@/i18n/config";
-import { SignOutButton } from "@/modules/auth/components/sign-out-button";
+import { Link } from "@/i18n/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
+import { AccountMenu } from "./account-menu";
 import { LocaleSwitcher } from "./locale-switcher";
 import { ThemeToggle } from "./theme-toggle";
 import { WorkspaceSwitcher } from "./workspace-switcher";
@@ -69,13 +78,19 @@ const secondaryNavigation = [
   { key: "settings", icon: Settings },
 ] as const;
 
-function Navigation({ labels }: { labels: ShellLabels }) {
+function Navigation({
+  labels,
+  closeOnNavigate = false,
+}: {
+  labels: ShellLabels;
+  closeOnNavigate?: boolean;
+}) {
   return (
     <nav aria-label={labels.navigation} className="flex flex-col gap-1">
       {primaryNavigation.map((item) => {
         const Icon = item.icon;
         if (item.href) {
-          return (
+          const link = (
             <Link
               key={item.key}
               href={item.href}
@@ -84,6 +99,13 @@ function Navigation({ labels }: { labels: ShellLabels }) {
               <Icon aria-hidden="true" className="size-4" />
               <span>{labels.nav[item.key]}</span>
             </Link>
+          );
+          return closeOnNavigate ? (
+            <SheetClose key={item.key} asChild>
+              {link}
+            </SheetClose>
+          ) : (
+            link
           );
         }
 
@@ -150,23 +172,31 @@ export function ApplicationShell({
 
       <div className="min-w-0">
         <header className="bg-background/95 sticky top-0 z-20 flex h-16 items-center gap-2 border-b px-4 md:px-6">
-          <details className="group md:hidden">
-            <summary
-              aria-label={labels.menu}
-              className="hover:bg-raised flex size-10 list-none items-center justify-center rounded-md [&::-webkit-details-marker]:hidden"
-            >
-              <Menu aria-hidden="true" className="size-5" />
-            </summary>
-            <div className="bg-surface absolute inset-x-0 top-16 border-b p-4 shadow-lg">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-lg"
+                aria-label={labels.menu}
+                className="md:hidden"
+              >
+                <Menu aria-hidden="true" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side={locale === "ar" ? "right" : "left"}>
+              <SheetHeader className="sr-only">
+                <SheetTitle>{labels.menu}</SheetTitle>
+                <SheetDescription>{labels.navigation}</SheetDescription>
+              </SheetHeader>
               <WorkspaceSwitcher
                 activeWorkspaceId={workspace.id}
                 workspaces={workspaces}
               />
               <div className="mt-4">
-                <Navigation labels={labels} />
+                <Navigation labels={labels} closeOnNavigate />
               </div>
-            </div>
-          </details>
+            </SheetContent>
+          </Sheet>
           <Link href="/overview" className="flex items-center gap-2 md:hidden">
             <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-md font-semibold">
               W
@@ -176,43 +206,13 @@ export function ApplicationShell({
           <div className="ms-auto flex items-center gap-1">
             <LocaleSwitcher />
             <ThemeToggle />
-            <details className="group relative">
-              <summary className="hover:bg-raised flex min-h-10 list-none items-center gap-2 rounded-md p-1 pe-2 [&::-webkit-details-marker]:hidden">
-                <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-full text-sm font-semibold">
-                  {userInitial}
-                </span>
-                <span
-                  className="hidden max-w-32 truncate text-sm font-medium lg:block"
-                  dir="auto"
-                >
-                  {user.name}
-                </span>
-                <ChevronDown
-                  aria-hidden="true"
-                  className="text-muted-foreground hidden size-4 lg:block"
-                />
-              </summary>
-              <div className="bg-popover absolute end-0 z-30 mt-2 w-64 rounded-md border p-2 shadow-lg">
-                <p className="text-muted-foreground px-2 pt-1 text-xs font-medium">
-                  {labels.account}
-                </p>
-                <div className="border-b px-2 py-3">
-                  <p className="truncate font-medium" dir="auto">
-                    {user.name}
-                  </p>
-                  <p
-                    className="text-muted-foreground truncate text-xs"
-                    dir="ltr"
-                  >
-                    {user.email}
-                  </p>
-                  <p className="text-muted-foreground mt-2 text-xs">
-                    {labels.role}: {roleLabel}
-                  </p>
-                </div>
-                <SignOutButton />
-              </div>
-            </details>
+            <AccountMenu
+              accountLabel={labels.account}
+              roleLabel={labels.role}
+              roleValue={roleLabel}
+              user={user}
+              userInitial={userInitial}
+            />
           </div>
         </header>
         <main className="mx-auto w-full max-w-screen-2xl p-4 md:p-6 lg:p-8">

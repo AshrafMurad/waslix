@@ -7,6 +7,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Link } from "@/i18n/navigation";
 
 export type CustomerTableRow = {
@@ -53,9 +62,11 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
       header: labels.customer,
       cell: ({ row }) => (
         <div className="flex min-w-48 items-center gap-3">
-          <span className="bg-brand text-brand-foreground flex size-9 shrink-0 items-center justify-center rounded-md font-semibold">
-            {row.original.name.trim().charAt(0).toLocaleUpperCase(locale)}
-          </span>
+          <Avatar>
+            <AvatarFallback className="bg-brand text-brand-foreground">
+              {row.original.name.trim().charAt(0).toLocaleUpperCase(locale)}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0">
             <Link
               href={`/customers/${row.original.id}`}
@@ -115,40 +126,35 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
   });
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-4xl border-collapse text-sm">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-raised border-b text-start">
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="h-12 px-4 text-start text-xs font-medium"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className="hover:bg-raised/60 border-b last:border-b-0"
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="h-14 px-4">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table className="min-w-4xl border-collapse">
+      <TableHeader>
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow
+            key={headerGroup.id}
+            className="bg-raised hover:bg-raised text-start"
+          >
+            {headerGroup.headers.map((header) => (
+              <TableHead key={header.id}>
+                {flexRender(
+                  header.column.columnDef.header,
+                  header.getContext(),
+                )}
+              </TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody>
+        {table.getRowModel().rows.map((row) => (
+          <TableRow key={row.id}>
+            {row.getVisibleCells().map((cell) => (
+              <TableCell key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }

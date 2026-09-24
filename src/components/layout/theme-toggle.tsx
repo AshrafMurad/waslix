@@ -15,6 +15,7 @@ export function ThemeToggle() {
     document.documentElement.classList.toggle("dark", nextTheme === "dark");
     document.documentElement.style.colorScheme = nextTheme;
     localStorage.setItem("waslix-theme", nextTheme);
+    document.cookie = `waslix-theme=${nextTheme}; path=/; max-age=31536000; samesite=lax`;
   }
 
   return (

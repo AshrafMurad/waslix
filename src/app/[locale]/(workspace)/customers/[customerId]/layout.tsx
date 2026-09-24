@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
@@ -61,9 +62,11 @@ export default async function CustomerLayout({
       ) : null}
       <header className="space-y-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <span className="bg-brand text-brand-foreground flex size-14 shrink-0 items-center justify-center rounded-md text-xl font-semibold">
-            {customer.name.trim().charAt(0).toLocaleUpperCase(locale)}
-          </span>
+          <Avatar className="size-14 rounded-md">
+            <AvatarFallback className="bg-brand text-brand-foreground rounded-md text-xl">
+              {customer.name.trim().charAt(0).toLocaleUpperCase(locale)}
+            </AvatarFallback>
+          </Avatar>
           <div className="min-w-0 flex-1">
             <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
               {t("customer360")}

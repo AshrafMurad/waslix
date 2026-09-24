@@ -1,12 +1,23 @@
-import { Plus, Search } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { CustomerForm } from "@/modules/customers/components/customer-form";
+import { CustomerFilters } from "@/modules/customers/components/customer-filters";
 import { CustomerTable } from "@/modules/customers/components/customer-table";
 import { getCustomerOptions } from "@/modules/customers/queries/get-customer-options";
 import { getCustomerPortfolio } from "@/modules/customers/queries/get-customer-portfolio";
@@ -72,13 +83,18 @@ export default async function CustomersPage({
           <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
         </div>
         {canCreateCustomer(access) && initialStage && initialOwner ? (
-          <details className="group relative">
-            <summary className="bg-primary text-primary-foreground flex min-h-10 list-none items-center justify-center gap-2 rounded-md px-4 font-medium [&::-webkit-details-marker]:hidden">
-              <Plus aria-hidden="true" className="size-4" />
-              {t("actions.add")}
-            </summary>
-            <Card className="absolute end-0 z-20 mt-2 w-[min(44rem,calc(100vw-2rem))] p-5 shadow-lg">
-              <h2 className="mb-4 text-lg font-semibold">{t("createTitle")}</h2>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button size="lg">
+                <Plus aria-hidden="true" />
+                {t("actions.add")}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-3xl">
+              <DialogHeader>
+                <DialogTitle>{t("createTitle")}</DialogTitle>
+                <DialogDescription>{t("description")}</DialogDescription>
+              </DialogHeader>
               <CustomerForm
                 locale={locale}
                 lifecycleStages={options.lifecycleStages}
@@ -100,75 +116,42 @@ export default async function CustomersPage({
                   tags: "",
                 }}
               />
-            </Card>
-          </details>
+            </DialogContent>
+          </Dialog>
         ) : null}
       </div>
 
       <Card>
-        <form
-          className="flex flex-col gap-3 border-b p-4 lg:flex-row"
-          action={`/${locale}/customers`}
-        >
-          <label className="relative min-w-64 flex-1">
-            <span className="sr-only">{t("filters.search")}</span>
-            <Search
-              aria-hidden="true"
-              className="text-muted-foreground absolute start-3 top-3 size-4"
-            />
-            <input
-              name="query"
-              defaultValue={portfolio.filters.query}
-              placeholder={t("filters.search")}
-              className="bg-background h-10 w-full rounded-md border ps-10 pe-3"
-              dir="auto"
-            />
-          </label>
-          <FilterSelect
-            name="lifecycle"
-            label={t("filters.lifecycle")}
-            defaultValue={portfolio.filters.lifecycle}
-          >
-            <option value="">{t("filters.allLifecycle")}</option>
-            {options.lifecycleStages.map((stage) => (
-              <option key={stage.id} value={stage.id}>
-                {stage.name}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect
-            name="owner"
-            label={t("filters.owner")}
-            defaultValue={portfolio.filters.owner}
-          >
-            <option value="all">{t("filters.allOwners")}</option>
-            {options.owners.map((owner) => (
-              <option key={owner.id} value={owner.id}>
-                {owner.user.name}
-              </option>
-            ))}
-          </FilterSelect>
-          <FilterSelect
-            name="status"
-            label={t("filters.status")}
-            defaultValue={portfolio.filters.status}
-          >
-            <option value="ACTIVE">{t("status.ACTIVE")}</option>
-            <option value="ARCHIVED">{t("status.ARCHIVED")}</option>
-            <option value="ALL">{t("filters.allStatuses")}</option>
-          </FilterSelect>
-          <FilterSelect
-            name="sort"
-            label={t("filters.sort")}
-            defaultValue={portfolio.filters.sort}
-          >
-            <option value="asc">{t("filters.nameAsc")}</option>
-            <option value="desc">{t("filters.nameDesc")}</option>
-          </FilterSelect>
-          <button className="bg-secondary hover:bg-raised h-10 rounded-md px-4 font-medium">
-            {t("filters.apply")}
-          </button>
-        </form>
+        <CustomerFilters
+          key={JSON.stringify(portfolio.filters)}
+          filters={{
+            query: portfolio.filters.query,
+            lifecycle: portfolio.filters.lifecycle ?? "",
+            owner: portfolio.filters.owner ?? "all",
+            status: portfolio.filters.status,
+            sort: portfolio.filters.sort,
+          }}
+          lifecycleStages={options.lifecycleStages}
+          owners={options.owners}
+          labels={{
+            search: t("filters.search"),
+            loading: t("filters.loading"),
+            lifecycle: t("filters.lifecycle"),
+            allLifecycle: t("filters.allLifecycle"),
+            owner: t("filters.owner"),
+            allOwners: t("filters.allOwners"),
+            status: t("filters.status"),
+            active: t("status.ACTIVE"),
+            archived: t("status.ARCHIVED"),
+            allStatuses: t("filters.allStatuses"),
+            sort: t("filters.sort"),
+            nameAsc: t("filters.nameAsc"),
+            nameDesc: t("filters.nameDesc"),
+            filterTitle: t("filters.filterTitle"),
+            filterDescription: t("filters.filterDescription"),
+            done: t("filters.done"),
+          }}
+        />
         {portfolio.customers.length ? (
           <CustomerTable
             rows={portfolio.customers}
@@ -186,8 +169,8 @@ export default async function CustomersPage({
             }}
           />
         ) : (
-          <div className="px-6 py-16 text-center">
-            <h2 className="text-lg font-semibold">
+          <Empty>
+            <EmptyTitle>
               {t(
                 filters.query ||
                   filters.lifecycle ||
@@ -196,8 +179,8 @@ export default async function CustomersPage({
                   ? "filteredEmptyTitle"
                   : "emptyTitle",
               )}
-            </h2>
-            <p className="text-muted-foreground mt-2">
+            </EmptyTitle>
+            <EmptyDescription>
               {t(
                 filters.query ||
                   filters.lifecycle ||
@@ -206,7 +189,7 @@ export default async function CustomersPage({
                   ? "filteredEmptyDescription"
                   : "emptyDescription",
               )}
-            </p>
+            </EmptyDescription>
             {filters.query ||
             filters.lifecycle ||
             filters.owner ||
@@ -218,7 +201,7 @@ export default async function CustomersPage({
                 {t("filters.clear")}
               </Link>
             ) : null}
-          </div>
+          </Empty>
         )}
       </Card>
       {nextHref ? (
@@ -232,30 +215,5 @@ export default async function CustomersPage({
         </div>
       ) : null}
     </div>
-  );
-}
-
-function FilterSelect({
-  name,
-  label,
-  defaultValue,
-  children,
-}: {
-  name: string;
-  label: string;
-  defaultValue?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <label className="text-muted-foreground grid gap-1 text-xs">
-      {label}
-      <select
-        name={name}
-        defaultValue={defaultValue}
-        className="bg-background text-foreground h-10 min-w-36 rounded-md border px-3 text-sm"
-      >
-        {children}
-      </select>
-    </label>
   );
 }
