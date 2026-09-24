@@ -37,6 +37,27 @@ enum ContactAccountRole {
   OTHER
 }
 
+enum TaskStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ActivityType {
+  MEETING
+  CALL
+  EMAIL
+  NOTE
+}
+
 model User {
   id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name            String
@@ -123,6 +144,10 @@ model Workspace {
   customerTags    CustomerTag[]
   customers       Customer[]
   contacts        Contact[]
+  tasks           Task[]
+  activities      Activity[]
+  systemEvents    SystemEvent[]
+  jobOutbox       JobOutbox[]
 
   @@map("workspace")
 }
@@ -137,6 +162,11 @@ model WorkspaceMember {
   workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   customers   Customer[]
+  ownedTasks  Task[]        @relation("TaskOwner")
+  createdTasks Task[]       @relation("TaskCreator")
+  completedTasks Task[]     @relation("TaskCompleter")
+  activities Activity[]     @relation("ActivityCreator")
+  systemEvents SystemEvent[] @relation("SystemEventActor")
 
   @@unique([workspaceId, userId])
   @@unique([workspaceId, id])
@@ -218,6 +248,10 @@ model Customer {
   owner            WorkspaceMember @relation(fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
   contacts         Contact[]
   tags             CustomerTag[]
+  tasks            Task[]
+  activities       Activity[]
+  systemEvents     SystemEvent[]
+  jobOutbox        JobOutbox[]
 
   @@unique([workspaceId, id])
   @@unique([workspaceId, externalKey])
@@ -243,10 +277,107 @@ model Contact {
   updatedAt         DateTime           @updatedAt @db.Timestamptz(3)
   workspace         Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   customer          Customer           @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  activities        Activity[]
 
   @@unique([workspaceId, customerId, id])
   @@index([workspaceId, customerId, status])
   @@map("contact")
+}
+
+model Task {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId   String           @db.Uuid
+  customerId    String?          @db.Uuid
+  title         String           @db.VarChar(200)
+  description   String?          @db.VarChar(10000)
+  ownerId       String           @db.Uuid
+  createdById   String           @db.Uuid
+  priority      TaskPriority     @default(MEDIUM)
+  status        TaskStatus       @default(OPEN)
+  dueDate       DateTime?        @db.Date
+  dueAt         DateTime?        @db.Timestamptz(3)
+  completedAt   DateTime?        @db.Timestamptz(3)
+  completedById String?          @db.Uuid
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime         @updatedAt @db.Timestamptz(3)
+  workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer      Customer?        @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  owner          WorkspaceMember @relation("TaskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  createdBy      WorkspaceMember @relation("TaskCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  completedBy    WorkspaceMember? @relation("TaskCompleter", fields: [workspaceId, completedById], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, ownerId, status])
+  @@index([workspaceId, status, dueDate])
+  @@index([workspaceId, status, dueAt])
+  @@index([workspaceId, customerId])
+  @@map("task")
+}
+
+model Activity {
+  id           String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId  String           @db.Uuid
+  customerId   String           @db.Uuid
+  type         ActivityType
+  title        String           @db.VarChar(200)
+  description  String?          @db.VarChar(10000)
+  contactId    String?          @db.Uuid
+  createdById  String           @db.Uuid
+  occurredAt   DateTime         @db.Timestamptz(3)
+  isMeaningful Boolean          @default(true)
+  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime         @updatedAt @db.Timestamptz(3)
+  workspace    Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer     Customer         @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  contact      Contact?         @relation(fields: [workspaceId, customerId, contactId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  createdBy    WorkspaceMember  @relation("ActivityCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, customerId, id])
+  @@index([workspaceId, customerId, occurredAt, id])
+  @@map("activity")
+}
+
+model SystemEvent {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId    String           @db.Uuid
+  customerId     String?          @db.Uuid
+  type           String           @db.VarChar(100)
+  title          String           @db.VarChar(200)
+  entityType     String           @db.VarChar(100)
+  entityId       String           @db.Uuid
+  actorId        String?          @db.Uuid
+  occurredAt     DateTime         @default(now()) @db.Timestamptz(3)
+  metadata       Json
+  idempotencyKey String           @db.VarChar(200)
+  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer       Customer?        @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  actor          WorkspaceMember? @relation("SystemEventActor", fields: [workspaceId, actorId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, idempotencyKey])
+  @@index([workspaceId, customerId, occurredAt, id])
+  @@map("system_event")
+}
+
+model JobOutbox {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId   String     @db.Uuid
+  eventKey      String     @db.VarChar(200)
+  jobType       String     @db.VarChar(100)
+  customerId    String?    @db.Uuid
+  payload       Json
+  availableAt   DateTime   @default(now()) @db.Timestamptz(3)
+  dispatchedAt  DateTime?  @db.Timestamptz(3)
+  attempts      Int        @default(0)
+  lastErrorCode String?    @db.VarChar(100)
+  createdAt     DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime   @updatedAt @db.Timestamptz(3)
+  workspace     Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer      Customer?  @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, eventKey])
+  @@index([dispatchedAt, availableAt])
+  @@map("job_outbox")
 }
 
 model CustomerTag {
