@@ -1,0 +1,47 @@
+{
+  "metadata": {
+    "title": "Waslix | Customer success workspace",
+    "description": "A focused workspace for customer success teams."
+  },
+  "navigation": {
+    "label": "Workspace navigation",
+    "overview": "Overview",
+    "customers": "Customers",
+    "tasks": "Tasks",
+    "risks": "Risks",
+    "renewals": "Renewals",
+    "analytics": "Analytics",
+    "team": "Team",
+    "settings": "Settings",
+    "unavailable": "Available in a later milestone"
+  },
+  "controls": {
+    "language": "Switch language",
+    "languageOption": "العربية",
+    "languageError": "The language could not be changed. Try again.",
+    "theme": "Toggle color theme",
+    "menu": "Open navigation"
+  },
+  "workspace": {
+    "label": "Workspace",
+    "choose": "Switch workspace",
+    "error": "This workspace is no longer available."
+  },
+  "account": {
+    "label": "Account",
+    "role": "Role"
+  },
+  "roles": {
+    "ADMIN": "Admin",
+    "CS_MANAGER": "CS Manager",
+    "CSM": "Customer Success Manager",
+    "VIEWER": "Viewer"
+  },
+  "overview": {
+    "eyebrow": "Customer success workspace",
+    "title": "Overview",
+    "description": "Your focused starting point for customer success work.",
+    "emptyTitle": "The workspace foundation is ready",
+    "emptyDescription": "Customer insights and daily work will appear here as their owning milestones are implemented."
+  }
+}

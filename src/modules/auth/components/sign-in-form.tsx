@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 
-import type { Locale } from "@/i18n/config";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/auth-client";
 
-export function SignInForm({ locale }: { locale: Locale }) {
+export function SignInForm() {
   const t = useTranslations("auth");
   const router = useRouter();
   const [error, setError] = useState<string>();
@@ -28,7 +27,7 @@ export function SignInForm({ locale }: { locale: Locale }) {
       return;
     }
 
-    router.replace(`/${locale}/workspace`);
+    router.replace("/overview");
     router.refresh();
   }
 

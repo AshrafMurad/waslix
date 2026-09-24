@@ -4,6 +4,11 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
+import {
+  AuthenticationRequiredError,
+  WorkspaceAccessDeniedError,
+} from "@/lib/auth/access-context";
+
 import { switchActiveWorkspace } from "../services/switch-active-workspace";
 
 const switchWorkspaceSchema = z.object({
@@ -18,8 +23,15 @@ export async function switchWorkspaceAction(input: unknown) {
 
   try {
     await switchActiveWorkspace(result.data.workspaceId, await headers());
-  } catch {
-    return { ok: false as const, code: "NOT_FOUND" as const };
+  } catch (error) {
+    if (
+      error instanceof AuthenticationRequiredError ||
+      error instanceof WorkspaceAccessDeniedError
+    ) {
+      return { ok: false as const, code: "NOT_FOUND" as const };
+    }
+
+    throw error;
   }
 
   revalidatePath("/", "layout");

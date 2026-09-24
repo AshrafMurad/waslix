@@ -1,28 +1,29 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 
-import type { Locale } from "@/i18n/config";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/auth-client";
 
-export function SignOutButton({ locale }: { locale: Locale }) {
+export function SignOutButton() {
   const t = useTranslations("auth");
   const router = useRouter();
 
   async function signOut() {
     await authClient.signOut();
-    router.replace(`/${locale}/sign-in`);
+    router.replace("/sign-in");
     router.refresh();
   }
 
   return (
-    <button
+    <Button
       type="button"
       onClick={signOut}
-      className="rounded-md border px-4 py-2"
+      variant="ghost"
+      className="mt-1 w-full justify-start"
     >
       {t("signOut")}
-    </button>
+    </Button>
   );
 }
