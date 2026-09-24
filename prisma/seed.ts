@@ -6,7 +6,7 @@ async function main() {
   const prisma = new PrismaClient();
   const fixturePassword =
     process.env.SEED_FIXTURE_PASSWORD ??
-    (process.env.NODE_ENV === "production" ? undefined : "WaslixLocal123!");
+    (process.env.NODE_ENV === "production" ? undefined : "admin123");
 
   if (!fixturePassword) {
     throw new Error("SEED_FIXTURE_PASSWORD is required in production");

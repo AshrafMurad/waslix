@@ -2,7 +2,13 @@ import type { PrismaClient } from "@prisma/client";
 import { hashPassword } from "better-auth/crypto";
 
 const fixtureUsers = [
-  { key: "shared", name: "Shared Admin", locale: "EN" as const },
+  {
+    key: "shared",
+    name: "Shared Admin",
+    email: "admin@example.com",
+    legacyEmail: "shared@fixture.waslix.test",
+    locale: "EN" as const,
+  },
   { key: "manager", name: "CS Manager", locale: "EN" as const },
   { key: "csm", name: "Customer Success Manager", locale: "AR" as const },
   { key: "viewer", name: "Viewer", locale: "EN" as const },
@@ -17,19 +23,40 @@ export async function seedTwoWorkspaceFixture(
   const users = Object.fromEntries(
     await Promise.all(
       fixtureUsers.map(async (fixtureUser) => {
-        const user = await prisma.user.upsert({
-          where: { email: `${fixtureUser.key}@fixture.waslix.test` },
-          update: {
-            name: fixtureUser.name,
-            preferredLocale: fixtureUser.locale,
+        const email =
+          "email" in fixtureUser
+            ? fixtureUser.email
+            : `${fixtureUser.key}@fixture.waslix.test`;
+        const existingUser = await prisma.user.findFirst({
+          where: {
+            email: {
+              in: [
+                email,
+                ...("legacyEmail" in fixtureUser
+                  ? [fixtureUser.legacyEmail]
+                  : []),
+              ],
+            },
           },
-          create: {
-            name: fixtureUser.name,
-            email: `${fixtureUser.key}@fixture.waslix.test`,
-            emailVerified: true,
-            preferredLocale: fixtureUser.locale,
-          },
+          select: { id: true },
         });
+        const user = existingUser
+          ? await prisma.user.update({
+              where: { id: existingUser.id },
+              data: {
+                email,
+                name: fixtureUser.name,
+                preferredLocale: fixtureUser.locale,
+              },
+            })
+          : await prisma.user.create({
+              data: {
+                name: fixtureUser.name,
+                email,
+                emailVerified: true,
+                preferredLocale: fixtureUser.locale,
+              },
+            });
 
         return [fixtureUser.key, user] as const;
       }),

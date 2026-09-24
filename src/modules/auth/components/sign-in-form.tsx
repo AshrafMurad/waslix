@@ -6,7 +6,12 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/auth-client";
 
-export function SignInForm() {
+type SignInFormProps = {
+  defaultEmail?: string;
+  defaultPassword?: string;
+};
+
+export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
   const t = useTranslations("auth");
   const router = useRouter();
   const [error, setError] = useState<string>();
@@ -38,6 +43,7 @@ export function SignInForm() {
         <input
           name="email"
           type="email"
+          defaultValue={defaultEmail}
           autoComplete="email"
           required
           className="rounded-md border px-3 py-2"
@@ -48,6 +54,7 @@ export function SignInForm() {
         <input
           name="password"
           type="password"
+          defaultValue={defaultPassword}
           autoComplete="current-password"
           required
           className="rounded-md border px-3 py-2"

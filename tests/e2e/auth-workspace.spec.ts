@@ -28,6 +28,8 @@ test.describe("authentication and workspace smoke", () => {
 
     await page.goto("/en/overview");
     await expect(page).toHaveURL(/\/en\/sign-in$/);
+    await expect(page.getByLabel("Email")).toHaveValue("admin@example.com");
+    await expect(page.getByLabel("Password")).toHaveValue("admin123");
 
     const signUpResponse = await request.post("/api/auth/sign-up/email", {
       data: { name: "E2E Admin", email, password },

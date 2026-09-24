@@ -17,11 +17,11 @@ npm run dev
 
 Open [http://localhost:3000/en](http://localhost:3000/en) or [http://localhost:3000/ar](http://localhost:3000/ar). Auth endpoints are mounted at `/api/auth/[...all]`; `/en/workspace` and `/ar/workspace` require a session with an ACTIVE membership.
 
-The local seed provisions the fixture users below as Better Auth credential accounts. They use `SEED_FIXTURE_PASSWORD`; when it is omitted outside production, the local-only fallback is `WaslixLocal123!`.
+The local seed provisions the fixture users below as Better Auth credential accounts. They use `SEED_FIXTURE_PASSWORD`; when it is omitted outside production, the local-only fallback is `admin123`. The development sign-in form defaults to the admin credentials.
 
 | Role                                           | Email                              |
 | ---------------------------------------------- | ---------------------------------- |
-| Admin in Fixture Alpha, Viewer in Fixture Beta | `shared@fixture.waslix.test`       |
+| Admin in Fixture Alpha, Viewer in Fixture Beta | `admin@example.com`                |
 | CS Manager                                     | `manager@fixture.waslix.test`      |
 | CSM                                            | `csm@fixture.waslix.test`          |
 | Viewer                                         | `viewer@fixture.waslix.test`       |

@@ -55,7 +55,7 @@ describe("tasks, activities, and timeline", () => {
 
   it("completes an assigned task atomically and deduplicates a retry", async () => {
     const createKey = randomUUID();
-    const task = await createTask(managerAccess(), {
+    const input = {
       customerId,
       title: "Prepare customer review",
       description: null,
@@ -64,19 +64,12 @@ describe("tasks, activities, and timeline", () => {
       dueDate: "2026-09-30",
       dueAt: null,
       operationKey: createKey,
-    });
-    await expect(
-      createTask(managerAccess(), {
-        customerId,
-        title: "Prepare customer review",
-        description: null,
-        ownerId: fixture.memberships.alphaCsm.id,
-        priority: "HIGH",
-        dueDate: "2026-09-30",
-        dueAt: null,
-        operationKey: createKey,
-      }),
-    ).resolves.toEqual(task);
+    } as const;
+    const [task, replayedTask] = await Promise.all([
+      createTask(managerAccess(), input),
+      createTask(managerAccess(), input),
+    ]);
+    expect(replayedTask).toEqual(task);
 
     const completionKey = randomUUID();
     const completedAt = new Date("2026-09-24T12:00:00.000Z");
@@ -208,12 +201,13 @@ describe("tasks, activities, and timeline", () => {
         durableEffects.add(delivery.eventKey);
       }
     };
-    await dispatchOutboxBatch(send);
+    const dispatchTime = new Date(Date.now() + 1000);
+    await dispatchOutboxBatch(send, { now: dispatchTime });
     await prisma.jobOutbox.updateMany({
       where: { workspaceId: fixture.workspaceA.id, eventKey },
       data: { dispatchedAt: null },
     });
-    await dispatchOutboxBatch(send);
+    await dispatchOutboxBatch(send, { now: dispatchTime });
 
     expect(task.id).toBeTruthy();
     expect(targetDeliveries).toBe(2);
