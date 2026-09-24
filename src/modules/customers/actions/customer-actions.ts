@@ -156,7 +156,9 @@ export async function updateContactAction(
   _previousState: CustomerActionState,
   formData: FormData,
 ): Promise<CustomerActionState> {
-  const parsed = updateContactInputSchema.safeParse(Object.fromEntries(formData));
+  const parsed = updateContactInputSchema.safeParse(
+    Object.fromEntries(formData),
+  );
   if (!parsed.success) return validationState(parsed.error);
   const access = await requireWorkspaceAccess();
   try {

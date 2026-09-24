@@ -47,10 +47,8 @@ describe("Better Auth workspace foundation", () => {
   let fixture: Awaited<ReturnType<typeof seedTwoWorkspaceFixture>>;
 
   beforeAll(async () => {
-    await prisma.invitation.deleteMany();
     await prisma.session.deleteMany();
     await prisma.account.deleteMany();
-    await prisma.workspaceMember.deleteMany();
     await prisma.workspace.deleteMany();
     await prisma.user.deleteMany();
     fixture = await seedTwoWorkspaceFixture(prisma);

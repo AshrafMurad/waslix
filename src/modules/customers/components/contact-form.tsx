@@ -121,7 +121,7 @@ export function ContactForm({ customerId, locale, contact }: ContactFormProps) {
         ) : null}
         {state.status === "success" ? (
           <span className="text-healthy text-sm" role="status">
-            {t("added")}
+            {t(contact ? "saved" : "added")}
           </span>
         ) : null}
       </div>
