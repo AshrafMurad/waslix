@@ -153,20 +153,20 @@ model Workspace {
 }
 
 model WorkspaceMember {
-  id          String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId String           @db.Uuid
-  userId      String           @db.Uuid
-  role        String           @db.VarChar(32)
-  status      MembershipStatus @default(ACTIVE)
-  joinedAt    DateTime         @default(now()) @db.Timestamptz(3)
-  workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  customers   Customer[]
-  ownedTasks  Task[]        @relation("TaskOwner")
-  createdTasks Task[]       @relation("TaskCreator")
-  completedTasks Task[]     @relation("TaskCompleter")
-  activities Activity[]     @relation("ActivityCreator")
-  systemEvents SystemEvent[] @relation("SystemEventActor")
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId    String           @db.Uuid
+  userId         String           @db.Uuid
+  role           String           @db.VarChar(32)
+  status         MembershipStatus @default(ACTIVE)
+  joinedAt       DateTime         @default(now()) @db.Timestamptz(3)
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customers      Customer[]
+  ownedTasks     Task[]           @relation("TaskOwner")
+  createdTasks   Task[]           @relation("TaskCreator")
+  completedTasks Task[]           @relation("TaskCompleter")
+  activities     Activity[]       @relation("ActivityCreator")
+  systemEvents   SystemEvent[]    @relation("SystemEventActor")
 
   @@unique([workspaceId, userId])
   @@unique([workspaceId, id])
@@ -302,9 +302,9 @@ model Task {
   updatedAt     DateTime         @updatedAt @db.Timestamptz(3)
   workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   customer      Customer?        @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
-  owner          WorkspaceMember @relation("TaskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
-  createdBy      WorkspaceMember @relation("TaskCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
-  completedBy    WorkspaceMember? @relation("TaskCompleter", fields: [workspaceId, completedById], references: [workspaceId, id], onDelete: Restrict)
+  owner         WorkspaceMember  @relation("TaskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  createdBy     WorkspaceMember  @relation("TaskCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  completedBy   WorkspaceMember? @relation("TaskCompleter", fields: [workspaceId, completedById], references: [workspaceId, id], onDelete: Restrict)
 
   @@unique([workspaceId, id])
   @@index([workspaceId, ownerId, status])
@@ -315,22 +315,22 @@ model Task {
 }
 
 model Activity {
-  id           String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId  String           @db.Uuid
-  customerId   String           @db.Uuid
+  id           String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId  String          @db.Uuid
+  customerId   String          @db.Uuid
   type         ActivityType
-  title        String           @db.VarChar(200)
-  description  String?          @db.VarChar(10000)
-  contactId    String?          @db.Uuid
-  createdById  String           @db.Uuid
-  occurredAt   DateTime         @db.Timestamptz(3)
-  isMeaningful Boolean          @default(true)
-  createdAt    DateTime         @default(now()) @db.Timestamptz(3)
-  updatedAt    DateTime         @updatedAt @db.Timestamptz(3)
-  workspace    Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  customer     Customer         @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
-  contact      Contact?         @relation(fields: [workspaceId, customerId, contactId], references: [workspaceId, customerId, id], onDelete: Restrict)
-  createdBy    WorkspaceMember  @relation("ActivityCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  title        String          @db.VarChar(200)
+  description  String?         @db.VarChar(10000)
+  contactId    String?         @db.Uuid
+  createdById  String          @db.Uuid
+  occurredAt   DateTime        @db.Timestamptz(3)
+  isMeaningful Boolean         @default(true)
+  createdAt    DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt    DateTime        @updatedAt @db.Timestamptz(3)
+  workspace    Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer     Customer        @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  contact      Contact?        @relation(fields: [workspaceId, customerId, contactId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  createdBy    WorkspaceMember @relation("ActivityCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
 
   @@unique([workspaceId, customerId, id])
   @@index([workspaceId, customerId, occurredAt, id])
@@ -360,20 +360,20 @@ model SystemEvent {
 }
 
 model JobOutbox {
-  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId   String     @db.Uuid
-  eventKey      String     @db.VarChar(200)
-  jobType       String     @db.VarChar(100)
-  customerId    String?    @db.Uuid
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId   String    @db.Uuid
+  eventKey      String    @db.VarChar(200)
+  jobType       String    @db.VarChar(100)
+  customerId    String?   @db.Uuid
   payload       Json
-  availableAt   DateTime   @default(now()) @db.Timestamptz(3)
-  dispatchedAt  DateTime?  @db.Timestamptz(3)
-  attempts      Int        @default(0)
-  lastErrorCode String?    @db.VarChar(100)
-  createdAt     DateTime   @default(now()) @db.Timestamptz(3)
-  updatedAt     DateTime   @updatedAt @db.Timestamptz(3)
-  workspace     Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  customer      Customer?  @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  availableAt   DateTime  @default(now()) @db.Timestamptz(3)
+  dispatchedAt  DateTime? @db.Timestamptz(3)
+  attempts      Int       @default(0)
+  lastErrorCode String?   @db.VarChar(100)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer      Customer? @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
 
   @@unique([workspaceId, eventKey])
   @@index([dispatchedAt, availableAt])

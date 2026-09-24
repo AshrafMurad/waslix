@@ -28,7 +28,9 @@ export async function TimelineList({
     getFormatter({ locale }),
   ]);
   if (!entries.length) {
-    return <p className="text-muted-foreground p-6 text-center">{t("empty")}</p>;
+    return (
+      <p className="text-muted-foreground p-6 text-center">{t("empty")}</p>
+    );
   }
   return (
     <ol className="divide-y">
@@ -42,18 +44,38 @@ export async function TimelineList({
               : t("system");
         return (
           <li key={`${entry.kind}-${entry.id}`} className="flex gap-4 p-5">
-            <span className={entry.kind === "activity" ? "bg-brand text-brand-foreground flex size-10 shrink-0 items-center justify-center rounded-full" : "bg-raised text-information flex size-10 shrink-0 items-center justify-center rounded-md"}>
+            <span
+              className={
+                entry.kind === "activity"
+                  ? "bg-brand text-brand-foreground flex size-10 shrink-0 items-center justify-center rounded-full"
+                  : "bg-raised text-information flex size-10 shrink-0 items-center justify-center rounded-md"
+              }
+            >
               <Icon aria-hidden="true" className="size-5" />
             </span>
             <div className="min-w-0 flex-1">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                <p className="font-medium" dir="auto">{title}</p>
-                <time className="text-muted-foreground text-xs" dateTime={entry.occurredAt.toISOString()}>
-                  {format.dateTime(entry.occurredAt, { dateStyle: "medium", timeStyle: "short" })}
+                <p className="font-medium" dir="auto">
+                  {title}
+                </p>
+                <time
+                  className="text-muted-foreground text-xs"
+                  dateTime={entry.occurredAt.toISOString()}
+                >
+                  {format.dateTime(entry.occurredAt, {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  })}
                 </time>
               </div>
-              <p className="text-muted-foreground mt-1 text-sm" dir="auto">{entry.actor ?? t("system")}</p>
-              {entry.description ? <p className="mt-2 text-sm" dir="auto">{entry.description}</p> : null}
+              <p className="text-muted-foreground mt-1 text-sm" dir="auto">
+                {entry.actor ?? t("system")}
+              </p>
+              {entry.description ? (
+                <p className="mt-2 text-sm" dir="auto">
+                  {entry.description}
+                </p>
+              ) : null}
             </div>
           </li>
         );

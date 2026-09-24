@@ -42,7 +42,10 @@ function compareEntries(left: TimelineEntry, right: TimelineEntry) {
   return right.id.localeCompare(left.id);
 }
 
-function isAfterCursor(entry: TimelineEntry, cursor: NonNullable<ReturnType<typeof decodeCursor>>) {
+function isAfterCursor(
+  entry: TimelineEntry,
+  cursor: NonNullable<ReturnType<typeof decodeCursor>>,
+) {
   return (
     compareEntries(entry, {
       ...entry,

@@ -21,7 +21,9 @@ async function main() {
         retryBackoff: true,
       });
     });
-    console.log(`Dispatched ${result.dispatched} of ${result.selected} outbox jobs.`);
+    console.log(
+      `Dispatched ${result.dispatched} of ${result.selected} outbox jobs.`,
+    );
   } finally {
     await boss.stop();
   }

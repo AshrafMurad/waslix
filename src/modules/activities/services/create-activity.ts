@@ -49,10 +49,7 @@ export async function createActivity(
       if (customer.status === "ARCHIVED") {
         throw new ActivityDomainError("ACTIVITY_CUSTOMER_ARCHIVED");
       }
-      if (
-        access.role === "CSM" &&
-        customer.ownerId !== access.memberId
-      ) {
+      if (access.role === "CSM" && customer.ownerId !== access.memberId) {
         throw new ActivityDomainError("ACTIVITY_NOT_FOUND");
       }
       if (input.contactId) {

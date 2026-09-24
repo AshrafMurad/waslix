@@ -29,6 +29,7 @@ export async function TaskList({
   owners,
   customers,
   lockedCustomerId,
+  timezone,
 }: {
   access: WorkspaceAccessContext;
   locale: string;
@@ -36,13 +37,18 @@ export async function TaskList({
   owners: Array<{ id: string; user: { name: string } }>;
   customers: Array<{ id: string; name: string }>;
   lockedCustomerId?: string;
+  timezone: string;
 }) {
   const [t, format] = await Promise.all([
     getTranslations({ locale, namespace: "tasks" }),
     getFormatter({ locale }),
   ]);
   if (!tasks.length) {
-    return <div className="px-6 py-16 text-center text-muted-foreground">{t("empty")}</div>;
+    return (
+      <div className="text-muted-foreground px-6 py-16 text-center">
+        {t("empty")}
+      </div>
+    );
   }
   return (
     <ul className="divide-y">
@@ -53,7 +59,10 @@ export async function TaskList({
           task.customer?.ownerId === access.memberId;
         const canEdit = managesAccount || task.ownerId === access.memberId;
         return (
-          <li key={task.id} className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center">
+          <li
+            key={task.id}
+            className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center"
+          >
             <TaskStatusButton
               taskId={task.id}
               customerId={task.customerId}
@@ -63,23 +72,39 @@ export async function TaskList({
             />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
-                <p className="font-medium" dir="auto">{task.title}</p>
-                <span className={task.priority === "URGENT" ? "text-risk text-xs font-medium" : task.priority === "HIGH" ? "text-attention text-xs font-medium" : "text-muted-foreground text-xs font-medium"}>
+                <p className="font-medium" dir="auto">
+                  {task.title}
+                </p>
+                <span
+                  className={
+                    task.priority === "URGENT"
+                      ? "text-risk text-xs font-medium"
+                      : task.priority === "HIGH"
+                        ? "text-attention text-xs font-medium"
+                        : "text-muted-foreground text-xs font-medium"
+                  }
+                >
                   {t(`priority.${task.priority}`)}
                 </span>
-                <span className="text-muted-foreground text-xs">{t(`status.${task.status}`)}</span>
+                <span className="text-muted-foreground text-xs">
+                  {t(`status.${task.status}`)}
+                </span>
               </div>
               <p className="text-muted-foreground mt-1 text-sm" dir="auto">
-                {task.customer?.name ?? t("standalone")} · {task.owner.user.name}
+                {task.customer?.name ?? t("standalone")} ·{" "}
+                {task.owner.user.name}
               </p>
               {task.dueDate || task.dueAt ? (
                 <p className="text-muted-foreground mt-1 text-xs">
                   {t("due", {
                     date: format.dateTime(task.dueAt ?? task.dueDate!, {
+                      timeZone: task.dueAt ? timezone : "UTC",
                       year: "numeric",
                       month: "short",
                       day: "numeric",
-                      ...(task.dueAt ? { hour: "numeric", minute: "2-digit" } : {}),
+                      ...(task.dueAt
+                        ? { hour: "numeric", minute: "2-digit" }
+                        : {}),
                     }),
                   })}
                 </p>
@@ -107,7 +132,8 @@ export async function TaskList({
                       operationKey={randomUUID()}
                       task={{
                         ...task,
-                        dueDate: task.dueDate?.toISOString().slice(0, 10) ?? null,
+                        dueDate:
+                          task.dueDate?.toISOString().slice(0, 10) ?? null,
                       }}
                       lockedCustomerId={lockedCustomerId}
                       owners={owners}

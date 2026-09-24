@@ -76,13 +76,38 @@ export default async function CustomerSectionPage({
             <h2 className="text-lg font-semibold">{taskT("title")}</h2>
             <p className="text-muted-foreground mt-1">{taskT("description")}</p>
           </div>
-          <TaskList access={access} locale={locale} tasks={result.tasks} owners={options.owners} customers={options.customers} lockedCustomerId={customerId} />
-          {result.nextCursor ? <div className="flex justify-end border-t p-4"><Link href={`/customers/${customerId}/tasks?filter=${result.filter}&cursor=${result.nextCursor}`} className="hover:bg-raised rounded-md border px-4 py-2 font-medium">{taskT("pagination.next")}</Link></div> : null}
+          <TaskList
+            access={access}
+            locale={locale}
+            tasks={result.tasks}
+            owners={options.owners}
+            customers={options.customers}
+            lockedCustomerId={customerId}
+            timezone={result.timezone}
+          />
+          {result.nextCursor ? (
+            <div className="flex justify-end border-t p-4">
+              <Link
+                href={`/customers/${customerId}/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
+                className="hover:bg-raised rounded-md border px-4 py-2 font-medium"
+              >
+                {taskT("pagination.next")}
+              </Link>
+            </div>
+          ) : null}
         </Card>
         {access.role !== "VIEWER" && visibleOwners.length ? (
           <Card className="p-5">
             <h2 className="mb-4 font-semibold">{taskT("actions.add")}</h2>
-            <TaskForm locale={locale} operationKey={randomUUID()} lockedCustomerId={customerId} owners={visibleOwners} customers={options.customers} defaultOwnerId={access.memberId} canAssignOwner={canManageAccount} />
+            <TaskForm
+              locale={locale}
+              operationKey={randomUUID()}
+              lockedCustomerId={customerId}
+              owners={visibleOwners}
+              customers={options.customers}
+              defaultOwnerId={access.memberId}
+              canAssignOwner={canManageAccount}
+            />
           </Card>
         ) : null}
       </div>
@@ -97,24 +122,58 @@ export default async function CustomerSectionPage({
     ]);
     if (!timeline) notFound();
     const canAddActivity =
-      customer.status === "ACTIVE" && canEditCustomer(access, customer.owner.id);
+      customer.status === "ACTIVE" &&
+      canEditCustomer(access, customer.owner.id);
     return (
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
         <Card>
           <div className="border-b p-5">
             <h2 className="text-lg font-semibold">{timelineT("title")}</h2>
-            <p className="text-muted-foreground mt-1">{timelineT("description")}</p>
+            <p className="text-muted-foreground mt-1">
+              {timelineT("description")}
+            </p>
           </div>
-          <nav aria-label={timelineT("filters.label")} className="flex gap-1 overflow-x-auto border-b p-2">
-            {(["all", "human", "system", "tasks"] as const).map((item) => <Link key={item} href={`/customers/${customerId}/timeline?filter=${item}`} className={timeline.filter === item ? "bg-raised min-h-10 rounded-md px-3 py-2 text-sm font-medium" : "text-muted-foreground hover:bg-raised min-h-10 rounded-md px-3 py-2 text-sm"}>{timelineT(`filters.${item}`)}</Link>)}
+          <nav
+            aria-label={timelineT("filters.label")}
+            className="flex gap-1 overflow-x-auto border-b p-2"
+          >
+            {(["all", "human", "system", "tasks"] as const).map((item) => (
+              <Link
+                key={item}
+                href={`/customers/${customerId}/timeline?filter=${item}`}
+                className={
+                  timeline.filter === item
+                    ? "bg-raised min-h-10 rounded-md px-3 py-2 text-sm font-medium"
+                    : "text-muted-foreground hover:bg-raised min-h-10 rounded-md px-3 py-2 text-sm"
+                }
+              >
+                {timelineT(`filters.${item}`)}
+              </Link>
+            ))}
           </nav>
           <TimelineList locale={locale} entries={timeline.entries} />
-          {timeline.nextCursor ? <div className="flex justify-end border-t p-4"><Link href={`/customers/${customerId}/timeline?filter=${timeline.filter}&cursor=${timeline.nextCursor}`} className="hover:bg-raised rounded-md border px-4 py-2 font-medium">{timelineT("actions.next")}</Link></div> : null}
+          {timeline.nextCursor ? (
+            <div className="flex justify-end border-t p-4">
+              <Link
+                href={`/customers/${customerId}/timeline?filter=${timeline.filter}&cursor=${timeline.nextCursor}`}
+                className="hover:bg-raised rounded-md border px-4 py-2 font-medium"
+              >
+                {timelineT("actions.next")}
+              </Link>
+            </div>
+          ) : null}
         </Card>
         {canAddActivity ? (
           <Card className="p-5">
-            <h2 className="mb-4 font-semibold">{timelineT("activity.addTitle")}</h2>
-            <ActivityForm customerId={customerId} locale={locale} operationKey={randomUUID()} contacts={contacts} />
+            <h2 className="mb-4 font-semibold">
+              {timelineT("activity.addTitle")}
+            </h2>
+            <ActivityForm
+              customerId={customerId}
+              locale={locale}
+              operationKey={randomUUID()}
+              contacts={contacts}
+            />
           </Card>
         ) : null}
       </div>

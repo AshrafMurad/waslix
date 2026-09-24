@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
 import { isLocale } from "@/i18n/config";
 import { requireWorkspaceAccess } from "@/lib/auth/access-context";
@@ -26,7 +25,10 @@ export async function createActivityAction(
       status: "error",
       code: "VALIDATION_ERROR",
       fieldErrors: Object.fromEntries(
-        parsed.error.issues.map((issue) => [String(issue.path[0] ?? "form"), issue.message]),
+        parsed.error.issues.map((issue) => [
+          String(issue.path[0] ?? "form"),
+          issue.message,
+        ]),
       ),
     };
   }

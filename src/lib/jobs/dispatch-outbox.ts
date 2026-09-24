@@ -1,5 +1,3 @@
-import "server-only";
-
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db/prisma";
@@ -18,7 +16,11 @@ export async function dispatchOutboxBatch(
 ) {
   const now = options.now ?? new Date();
   const jobs = await prisma.jobOutbox.findMany({
-    where: { dispatchedAt: null, availableAt: { lte: now }, attempts: { lt: 5 } },
+    where: {
+      dispatchedAt: null,
+      availableAt: { lte: now },
+      attempts: { lt: 5 },
+    },
     orderBy: [{ availableAt: "asc" }, { id: "asc" }],
     take: options.limit ?? 100,
     select: {

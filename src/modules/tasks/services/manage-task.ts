@@ -71,7 +71,8 @@ export async function createTask(
 ) {
   if (access.role === "VIEWER") throw new TaskDomainError("TASK_FORBIDDEN");
 
-  return prisma.$transaction(async (transaction) => {
+  try {
+    return await prisma.$transaction(async (transaction) => {
     const replay = await transaction.systemEvent.findUnique({
       where: {
         workspaceId_idempotencyKey: {
@@ -117,11 +118,33 @@ export async function createTask(
       entityId: task.id,
       actorId: access.memberId,
       idempotencyKey: input.operationKey,
-      metadata: { version: 1, priority: input.priority, ownerId: input.ownerId },
+      metadata: {
+        version: 1,
+        priority: input.priority,
+        ownerId: input.ownerId,
+      },
       jobType: "TASK_CHANGED",
     });
-    return task;
-  });
+      return task;
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      const replay = await prisma.systemEvent.findUnique({
+        where: {
+          workspaceId_idempotencyKey: {
+            workspaceId: access.workspaceId,
+            idempotencyKey: input.operationKey,
+          },
+        },
+        select: { entityId: true, type: true },
+      });
+      if (replay?.type === "TASK_CREATED") return { id: replay.entityId };
+    }
+    throw error;
+  }
 }
 
 export async function updateTask(
@@ -129,10 +152,17 @@ export async function updateTask(
   input: TaskInput & { taskId: string },
 ) {
   if (access.role === "VIEWER") throw new TaskDomainError("TASK_NOT_FOUND");
-  return prisma.$transaction(async (transaction) => {
+  try {
+    return await prisma.$transaction(async (transaction) => {
     const task = await transaction.task.findFirst({
       where: { id: input.taskId, workspaceId: access.workspaceId },
-      select: { title: true, priority: true, ownerId: true, customerId: true, customer: { select: { ownerId: true, status: true } } },
+      select: {
+        title: true,
+        priority: true,
+        ownerId: true,
+        customerId: true,
+        customer: { select: { ownerId: true, status: true } },
+      },
     });
     if (!task) throw new TaskDomainError("TASK_NOT_FOUND");
     if (task.customer?.status === "ARCHIVED") {
@@ -143,14 +173,15 @@ export async function updateTask(
       throw new TaskDomainError("TASK_NOT_FOUND");
     }
     if (
-      (input.ownerId !== task.ownerId || input.customerId !== task.customerId) &&
+      (input.ownerId !== task.ownerId ||
+        input.customerId !== task.customerId) &&
       !managesAccount
     ) {
       throw new TaskDomainError("TASK_FORBIDDEN");
     }
     await getCustomerForTask(transaction, access.workspaceId, input.customerId);
     await requireTaskOwner(transaction, access.workspaceId, input.ownerId);
-    await transaction.task.updateMany({
+    const updated = await transaction.task.updateMany({
       where: { id: input.taskId, workspaceId: access.workspaceId },
       data: {
         customerId: input.customerId,
@@ -162,6 +193,9 @@ export async function updateTask(
         dueAt: input.dueAt ? new Date(input.dueAt) : null,
       },
     });
+    if (updated.count !== 1) {
+      throw new TaskDomainError("TASK_TRANSITION_INVALID");
+    }
     return { id: input.taskId };
   });
 }
@@ -205,12 +239,19 @@ export async function changeTaskStatus(
       throw new TaskDomainError("TASK_NOT_FOUND");
     }
     if (task.status === input.status) return { id: task.id };
-    if (task.status === "CANCELLED" || (task.status === "COMPLETED" && input.status === "IN_PROGRESS")) {
+    if (
+      task.status === "CANCELLED" ||
+      (task.status === "COMPLETED" && input.status === "IN_PROGRESS")
+    ) {
       throw new TaskDomainError("TASK_TRANSITION_INVALID");
     }
     const eventType = eventTypeForStatus(task.status, input.status);
     await transaction.task.updateMany({
-      where: { id: task.id, workspaceId: access.workspaceId, status: task.status },
+      where: {
+        id: task.id,
+        workspaceId: access.workspaceId,
+        status: task.status,
+      },
       data: {
         status: input.status,
         completedAt: input.status === "COMPLETED" ? now : null,
@@ -230,6 +271,24 @@ export async function changeTaskStatus(
         jobType: "TASK_CHANGED",
       });
     }
-    return { id: task.id };
-  });
+      return { id: task.id };
+    });
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      const replay = await prisma.systemEvent.findUnique({
+        where: {
+          workspaceId_idempotencyKey: {
+            workspaceId: access.workspaceId,
+            idempotencyKey: input.operationKey,
+          },
+        },
+        select: { entityId: true },
+      });
+      if (replay?.entityId === input.taskId) return { id: input.taskId };
+    }
+    throw error;
+  }
 }

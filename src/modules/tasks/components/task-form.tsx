@@ -164,7 +164,9 @@ function Field({
     <label className="grid gap-1 text-sm font-medium">
       {label}
       {children}
-      {error ? <span className="text-risk text-xs">{t("validation.invalid")}</span> : null}
+      {error ? (
+        <span className="text-risk text-xs">{t("validation.invalid")}</span>
+      ) : null}
     </label>
   );
 }

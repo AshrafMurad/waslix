@@ -42,30 +42,71 @@ export default async function TasksPage({
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-1">
-          <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">{t("eyebrow")}</p>
-          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
+            {t("eyebrow")}
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {t("title")}
+          </h1>
           <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
         </div>
         {access.role !== "VIEWER" ? (
           <details className="relative">
             <summary className="bg-primary text-primary-foreground flex min-h-10 list-none items-center gap-2 rounded-md px-4 font-medium [&::-webkit-details-marker]:hidden">
-              <Plus aria-hidden="true" className="size-4" />{t("actions.add")}
+              <Plus aria-hidden="true" className="size-4" />
+              {t("actions.add")}
             </summary>
             <Card className="absolute end-0 z-20 mt-2 w-[min(36rem,calc(100vw-2rem))] p-5 shadow-lg">
-              <TaskForm locale={locale} operationKey={randomUUID()} owners={visibleOwners} customers={options.customers} defaultOwnerId={access.memberId} canAssignOwner={access.role !== "CSM"} />
+              <TaskForm
+                locale={locale}
+                operationKey={randomUUID()}
+                owners={visibleOwners}
+                customers={options.customers}
+                defaultOwnerId={access.memberId}
+                canAssignOwner={access.role !== "CSM"}
+              />
             </Card>
           </details>
         ) : null}
       </div>
       <Card>
-        <nav aria-label={t("filters.label")} className="flex gap-1 overflow-x-auto border-b p-2">
+        <nav
+          aria-label={t("filters.label")}
+          className="flex gap-1 overflow-x-auto border-b p-2"
+        >
           {(["my", "team", "overdue", "completed"] as const).map((filter) => (
-            <Link key={filter} href={`/tasks?filter=${filter}`} className={result.filter === filter ? "bg-raised min-h-10 rounded-md px-3 py-2 text-sm font-medium" : "text-muted-foreground hover:bg-raised min-h-10 rounded-md px-3 py-2 text-sm"}>{t(`filters.${filter}`)}</Link>
+            <Link
+              key={filter}
+              href={`/tasks?filter=${filter}`}
+              className={
+                result.filter === filter
+                  ? "bg-raised min-h-10 rounded-md px-3 py-2 text-sm font-medium"
+                  : "text-muted-foreground hover:bg-raised min-h-10 rounded-md px-3 py-2 text-sm"
+              }
+            >
+              {t(`filters.${filter}`)}
+            </Link>
           ))}
         </nav>
-        <TaskList access={access} locale={locale} tasks={result.tasks} owners={options.owners} customers={options.customers} />
+        <TaskList
+          access={access}
+          locale={locale}
+          tasks={result.tasks}
+          owners={options.owners}
+          customers={options.customers}
+          timezone={result.timezone}
+        />
       </Card>
-      {result.nextCursor ? <div className="flex justify-end"><Link href={`/tasks?filter=${result.filter}&cursor=${result.nextCursor}`} className="hover:bg-raised rounded-md border px-4 py-2 font-medium">{t("pagination.next")}</Link></div> : null}
+      {result.nextCursor ? (
+        <div className="flex justify-end">
+          <Link
+            href={`/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
+            className="hover:bg-raised rounded-md border px-4 py-2 font-medium"
+          >
+            {t("pagination.next")}
+          </Link>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -33,8 +33,7 @@ export function TaskStatusButton({
   );
   const [optimisticStatus, setOptimisticStatus] = useOptimistic(status);
   const target =
-    targetStatus ??
-    (optimisticStatus === "COMPLETED" ? "OPEN" : "COMPLETED");
+    targetStatus ?? (optimisticStatus === "COMPLETED" ? "OPEN" : "COMPLETED");
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -64,9 +63,7 @@ export function TaskStatusButton({
           type="submit"
           disabled={pending || status === "CANCELLED"}
           aria-label={
-            target === "COMPLETED"
-              ? t("actions.complete")
-              : t("actions.reopen")
+            target === "COMPLETED" ? t("actions.complete") : t("actions.reopen")
           }
           className="border-brand text-brand-accent flex size-10 items-center justify-center rounded-full border-2 disabled:opacity-50"
         >

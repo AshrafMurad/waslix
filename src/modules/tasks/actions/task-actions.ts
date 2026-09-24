@@ -6,9 +6,16 @@ import { z } from "zod";
 import { isLocale } from "@/i18n/config";
 import { requireWorkspaceAccess } from "@/lib/auth/access-context";
 
-import { changeTaskStatus, createTask, updateTask } from "../services/manage-task";
+import {
+  changeTaskStatus,
+  createTask,
+  updateTask,
+} from "../services/manage-task";
 import { TaskDomainError } from "../services/task-errors";
-import { taskInputSchema, taskStatusInputSchema } from "../validation/task-input";
+import {
+  taskInputSchema,
+  taskStatusInputSchema,
+} from "../validation/task-input";
 
 export type TaskActionState = {
   status: "idle" | "success" | "error";
@@ -21,7 +28,10 @@ function validationState(error: z.ZodError): TaskActionState {
     status: "error",
     code: "VALIDATION_ERROR",
     fieldErrors: Object.fromEntries(
-      error.issues.map((issue) => [String(issue.path[0] ?? "form"), issue.message]),
+      error.issues.map((issue) => [
+        String(issue.path[0] ?? "form"),
+        issue.message,
+      ]),
     ),
   };
 }

@@ -13,10 +13,7 @@ export const taskInputSchema = z
     ),
     ownerId: z.uuid(),
     priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]),
-    dueDate: z.preprocess(
-      emptyToNull,
-      z.iso.date().nullable(),
-    ),
+    dueDate: z.preprocess(emptyToNull, z.iso.date().nullable()),
     dueAt: z.preprocess(
       emptyToNull,
       z.iso.datetime({ offset: true }).nullable(),

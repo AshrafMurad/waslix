@@ -21,12 +21,18 @@ export async function getTasks(
     where: { id: access.workspaceId },
     select: { timezone: true },
   });
-  const today = new Intl.DateTimeFormat("en-CA", {
+  const todayParts = new Intl.DateTimeFormat("en-US", {
     timeZone: workspace.timezone,
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).format(new Date());
+  })
+    .formatToParts(new Date())
+    .reduce<Record<string, string>>((parts, part) => {
+      parts[part.type] = part.value;
+      return parts;
+    }, {});
+  const today = `${todayParts.year}-${todayParts.month}-${todayParts.day}`;
   const now = new Date();
   const where: Prisma.TaskWhereInput = {
     workspaceId: access.workspaceId,
@@ -69,5 +75,6 @@ export async function getTasks(
     tasks: rows.slice(0, 25),
     nextCursor: rows.length > 25 ? rows[24].id : null,
     filter,
+    timezone: workspace.timezone,
   };
 }
