@@ -1,13 +1,15 @@
 # Waslix
 
-Waslix is a Next.js App Router project. M1.2 adds the PostgreSQL, Prisma, Better Auth, workspace-membership, fixed-role authorization, and tenant-isolation foundation.
+Waslix is a localized Next.js App Router application with PostgreSQL, Prisma, Better Auth, fixed workspace roles, and tenant isolation.
 
 ## Getting Started
 
-Install dependencies, start PostgreSQL, apply the migration, and run the development server:
+Use Node.js 22.13 or newer on the Node 22 LTS line. Install dependencies, copy the environment template, start PostgreSQL, apply migrations, seed the two-workspace fixture, and run the development server:
 
 ```bash
 npm install
+copy .env.example .env
+docker compose up -d
 npm run db:migrate
 npm run db:seed
 npm run dev
@@ -27,13 +29,13 @@ npm run test:integration
 npm run build
 ```
 
-`npm run check` runs the non-environment-specific checks in order. `npm run test:integration` requires `TEST_DATABASE_URL`, applies committed migrations to that database, then runs real Better Auth and two-tenant PostgreSQL tests. Browser e2e remains a later foundation task.
+`npm run check` runs the non-environment-specific checks in order. `npm run test:integration` and `npm run test:e2e` require `TEST_DATABASE_URL` and use a real isolated PostgreSQL database. Both apply committed migrations before testing. The E2E command starts the application on port 3100 and requires the Chromium browser installed by `npx playwright install chromium`.
 
 ## Environment
 
-Copy `.env.example` and replace its safe placeholders. Required variables are `DATABASE_URL`, `BETTER_AUTH_URL`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. `TEST_DATABASE_URL` is required only for integration tests. `NEXT_PUBLIC_APP_URL` documents the browser origin.
+Copy `.env.example` and replace its safe placeholders. Required server variables are `DATABASE_URL`, `BETTER_AUTH_URL`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. `TEST_DATABASE_URL` is required only for database integration and browser tests. `NEXT_PUBLIC_APP_URL` documents the browser origin.
 
-The optional `docker-compose.yml` provides PostgreSQL 18 for local development. The pinned M1.2 boundary is Better Auth `1.7.5`, Prisma/Prisma Client `6.19.3`, Next.js `16.3.5`, next-intl `4.14.6`, Zod `4.1.11`, and Vitest `4.0.4`. Prisma 6 is intentional because the current repository runtime is Node `23.11.1`, which is outside Prisma 7's supported engine range.
+The optional `docker-compose.yml` provides PostgreSQL 18 and creates the `waslix` and `waslix_test` databases when its volume is initialized. If the volume predates M1.4, create the test database once with `docker compose exec postgres createdb -U waslix waslix_test`. The pinned foundation includes Better Auth `1.7.5`, Prisma/Prisma Client `6.19.3`, Next.js `16.3.5`, next-intl `4.14.6`, Zod `4.1.11`, Vitest `4.0.4`, and Playwright `1.55.0`.
 
 ## Structure
 
@@ -47,4 +49,4 @@ The optional `docker-compose.yml` provides PostgreSQL 18 for local development. 
 - `src/modules/workspace` owns tenant-scoped membership queries and mutations.
 - `prisma` owns the reviewed schema, migration, and two-workspace fixture seed.
 
-Customers, contacts, tasks, health, risks, and all other product-domain models remain intentionally out of scope for M1.2.
+Customers, contacts, tasks, health, risks, and all other product-domain models remain intentionally out of scope for M1.
