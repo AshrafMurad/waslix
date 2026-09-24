@@ -1,0 +1,44 @@
+{
+  "title": "Timeline",
+  "description": "Human activity and system history in one chronological view.",
+  "empty": "No timeline entries match this view.",
+  "system": "System",
+  "filters": {
+    "label": "Timeline filters",
+    "all": "All",
+    "human": "Human activity",
+    "system": "System events",
+    "tasks": "Task events"
+  },
+  "activity": {
+    "addTitle": "Add activity",
+    "type": "Activity type",
+    "title": "Title",
+    "description": "Details",
+    "contact": "Contact",
+    "noContact": "No contact",
+    "occurredAt": "Occurred at",
+    "meaningful": "Counts as meaningful engagement"
+  },
+  "types": {
+    "MEETING": "Meeting",
+    "CALL": "Call",
+    "EMAIL": "Email record",
+    "NOTE": "Note"
+  },
+  "events": {
+    "TASK_CREATED": "Task created",
+    "TASK_COMPLETED": "Task completed",
+    "TASK_REOPENED": "Task reopened",
+    "TASK_CANCELLED": "Task cancelled"
+  },
+  "actions": {
+    "addActivity": "Add activity",
+    "saving": "Saving...",
+    "next": "Older entries"
+  },
+  "feedback": {
+    "saved": "Activity added.",
+    "failed": "The activity could not be saved."
+  }
+}

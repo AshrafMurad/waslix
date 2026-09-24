@@ -1,0 +1,54 @@
+{
+  "eyebrow": "Daily work",
+  "title": "Tasks",
+  "description": "Keep customer commitments visible and finish the next important action quickly.",
+  "empty": "No tasks match this view.",
+  "standalone": "No customer",
+  "due": "Due {date}",
+  "actions": {
+    "add": "Add task",
+    "edit": "Edit",
+    "save": "Save task",
+    "saving": "Saving...",
+    "complete": "Complete task",
+    "reopen": "Reopen task",
+    "cancel": "Cancel task"
+  },
+  "fields": {
+    "customer": "Customer",
+    "title": "Title",
+    "description": "Description",
+    "owner": "Owner",
+    "priority": "Priority",
+    "dueDate": "Due date"
+  },
+  "priority": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "URGENT": "Urgent"
+  },
+  "status": {
+    "OPEN": "Open",
+    "IN_PROGRESS": "In progress",
+    "COMPLETED": "Completed",
+    "CANCELLED": "Cancelled"
+  },
+  "filters": {
+    "label": "Task views",
+    "my": "My tasks",
+    "team": "Team",
+    "overdue": "Overdue",
+    "completed": "Completed"
+  },
+  "feedback": {
+    "saved": "Task saved.",
+    "failed": "The task change could not be saved."
+  },
+  "validation": {
+    "invalid": "Enter a valid value."
+  },
+  "pagination": {
+    "next": "Next page"
+  }
+}
