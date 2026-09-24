@@ -132,7 +132,7 @@ export async function updateTask(
   return prisma.$transaction(async (transaction) => {
     const task = await transaction.task.findFirst({
       where: { id: input.taskId, workspaceId: access.workspaceId },
-      select: { ownerId: true, customerId: true, customer: { select: { ownerId: true, status: true } } },
+      select: { title: true, priority: true, ownerId: true, customerId: true, customer: { select: { ownerId: true, status: true } } },
     });
     if (!task) throw new TaskDomainError("TASK_NOT_FOUND");
     if (task.customer?.status === "ARCHIVED") {
@@ -154,10 +154,10 @@ export async function updateTask(
       where: { id: input.taskId, workspaceId: access.workspaceId },
       data: {
         customerId: input.customerId,
-        title: input.title,
+        title: managesAccount ? input.title : task.title,
         description: input.description,
         ownerId: input.ownerId,
-        priority: input.priority,
+        priority: managesAccount ? input.priority : task.priority,
         dueDate: calendarDate(input.dueDate),
         dueAt: input.dueAt ? new Date(input.dueAt) : null,
       },

@@ -1,15 +1,26 @@
+import { randomUUID } from "node:crypto";
+
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
 import { isLocale } from "@/i18n/config";
+import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
+import { ActivityForm } from "@/modules/activities/components/activity-form";
+import { getActivityOptions } from "@/modules/activities/queries/get-activity-options";
 import {
   ContactForm,
   SetPrimaryContactButton,
 } from "@/modules/customers/components/contact-form";
 import { getCustomerOverview } from "@/modules/customers/queries/get-customer-overview";
 import { canEditCustomer } from "@/modules/customers/services/customer-permissions";
+import { TaskForm } from "@/modules/tasks/components/task-form";
+import { TaskList } from "@/modules/tasks/components/task-list";
+import { getTaskOptions } from "@/modules/tasks/queries/get-task-options";
+import { getTasks } from "@/modules/tasks/queries/get-tasks";
+import { TimelineList } from "@/modules/timeline/components/timeline-list";
+import { getCustomerTimeline } from "@/modules/timeline/queries/get-customer-timeline";
 
 const sections = [
   "health",
@@ -23,8 +34,10 @@ const sections = [
 
 export default async function CustomerSectionPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string; customerId: string; section: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale, customerId, section } = await params;
   if (
@@ -39,6 +52,74 @@ export default async function CustomerSectionPage({
     getTranslations({ locale, namespace: "customers" }),
   ]);
   if (!customer) notFound();
+
+  const rawSearch = await searchParams;
+  const filterValue = rawSearch.filter;
+  const cursorValue = rawSearch.cursor;
+  const filter = Array.isArray(filterValue) ? filterValue[0] : filterValue;
+  const cursor = Array.isArray(cursorValue) ? cursorValue[0] : cursorValue;
+
+  if (section === "tasks") {
+    const [result, options, taskT] = await Promise.all([
+      getTasks(access, { filter, cursor, customerId }),
+      getTaskOptions(access),
+      getTranslations({ locale, namespace: "tasks" }),
+    ]);
+    const canManageAccount = canEditCustomer(access, customer.owner.id);
+    const visibleOwners = canManageAccount
+      ? options.owners
+      : options.owners.filter((owner) => owner.id === access.memberId);
+    return (
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+        <Card>
+          <div className="border-b p-5">
+            <h2 className="text-lg font-semibold">{taskT("title")}</h2>
+            <p className="text-muted-foreground mt-1">{taskT("description")}</p>
+          </div>
+          <TaskList access={access} locale={locale} tasks={result.tasks} owners={options.owners} customers={options.customers} lockedCustomerId={customerId} />
+          {result.nextCursor ? <div className="flex justify-end border-t p-4"><Link href={`/customers/${customerId}/tasks?filter=${result.filter}&cursor=${result.nextCursor}`} className="hover:bg-raised rounded-md border px-4 py-2 font-medium">{taskT("pagination.next")}</Link></div> : null}
+        </Card>
+        {access.role !== "VIEWER" && visibleOwners.length ? (
+          <Card className="p-5">
+            <h2 className="mb-4 font-semibold">{taskT("actions.add")}</h2>
+            <TaskForm locale={locale} operationKey={randomUUID()} lockedCustomerId={customerId} owners={visibleOwners} customers={options.customers} defaultOwnerId={access.memberId} canAssignOwner={canManageAccount} />
+          </Card>
+        ) : null}
+      </div>
+    );
+  }
+
+  if (section === "timeline") {
+    const [timeline, contacts, timelineT] = await Promise.all([
+      getCustomerTimeline(access, customerId, { filter, cursor }),
+      getActivityOptions(access, customerId),
+      getTranslations({ locale, namespace: "timeline" }),
+    ]);
+    if (!timeline) notFound();
+    const canAddActivity =
+      customer.status === "ACTIVE" && canEditCustomer(access, customer.owner.id);
+    return (
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+        <Card>
+          <div className="border-b p-5">
+            <h2 className="text-lg font-semibold">{timelineT("title")}</h2>
+            <p className="text-muted-foreground mt-1">{timelineT("description")}</p>
+          </div>
+          <nav aria-label={timelineT("filters.label")} className="flex gap-1 overflow-x-auto border-b p-2">
+            {(["all", "human", "system", "tasks"] as const).map((item) => <Link key={item} href={`/customers/${customerId}/timeline?filter=${item}`} className={timeline.filter === item ? "bg-raised min-h-10 rounded-md px-3 py-2 text-sm font-medium" : "text-muted-foreground hover:bg-raised min-h-10 rounded-md px-3 py-2 text-sm"}>{timelineT(`filters.${item}`)}</Link>)}
+          </nav>
+          <TimelineList locale={locale} entries={timeline.entries} />
+          {timeline.nextCursor ? <div className="flex justify-end border-t p-4"><Link href={`/customers/${customerId}/timeline?filter=${timeline.filter}&cursor=${timeline.nextCursor}`} className="hover:bg-raised rounded-md border px-4 py-2 font-medium">{timelineT("actions.next")}</Link></div> : null}
+        </Card>
+        {canAddActivity ? (
+          <Card className="p-5">
+            <h2 className="mb-4 font-semibold">{timelineT("activity.addTitle")}</h2>
+            <ActivityForm customerId={customerId} locale={locale} operationKey={randomUUID()} contacts={contacts} />
+          </Card>
+        ) : null}
+      </div>
+    );
+  }
 
   if (section !== "contacts") {
     return (

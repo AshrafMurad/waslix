@@ -11,11 +11,12 @@ export async function getTasks(
   access: WorkspaceAccessContext,
   filters: { filter?: string; cursor?: string; customerId?: string } = {},
 ) {
-  const filter: TaskFilter = ["team", "overdue", "completed"].includes(
+  const defaultFilter = filters.customerId ? "team" : "my";
+  const filter: TaskFilter = ["team", "overdue", "completed", "my"].includes(
     filters.filter ?? "",
   )
     ? (filters.filter as TaskFilter)
-    : "my";
+    : defaultFilter;
   const workspace = await prisma.workspace.findUniqueOrThrow({
     where: { id: access.workspaceId },
     select: { timezone: true },
