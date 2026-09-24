@@ -1,0 +1,36 @@
+{
+  "title": "Success goals",
+  "description": "Track the outcomes this customer is working toward. Active goal progress contributes to health.",
+  "empty": "No success goals have been added. Health treats the goals dimension as missing, not zero.",
+  "noTarget": "No target date",
+  "meta": "{owner} · {target}",
+  "actions": {
+    "add": "Add goal",
+    "edit": "Edit goal",
+    "save": "Save goal",
+    "saving": "Saving..."
+  },
+  "fields": {
+    "title": "Goal title",
+    "description": "Description",
+    "owner": "Owner",
+    "status": "Status",
+    "progress": "Progress",
+    "targetDate": "Target date"
+  },
+  "status": {
+    "NOT_STARTED": "Not started",
+    "IN_PROGRESS": "In progress",
+    "AT_RISK": "At risk",
+    "ACHIEVED": "Achieved",
+    "CANCELLED": "Cancelled"
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalid": "Enter a valid value."
+  },
+  "feedback": {
+    "saved": "Goal saved. Health recalculation is queued.",
+    "failed": "The goal could not be saved. Review the values and try again."
+  }
+}

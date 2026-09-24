@@ -28,7 +28,11 @@ export type CustomerTableRow = {
   status: "ACTIVE" | "ARCHIVED";
   lifecycleStage: { name: string };
   owner: { user: { name: string } };
-  customerHealth: null;
+  customerHealth: {
+    overallScore: number | null;
+    status: "HEALTHY" | "NEEDS_ATTENTION" | "AT_RISK" | null;
+    calculatedAt: Date;
+  } | null;
 };
 
 type CustomerTableProps = {
@@ -88,9 +92,25 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
     columnHelper.display({
       id: "health",
       header: labels.health,
-      cell: () => (
-        <span className="text-muted-foreground">{labels.unknown}</span>
-      ),
+      cell: ({ row }) => {
+        const health = row.original.customerHealth;
+        if (!health || health.overallScore === null || !health.status) {
+          return (
+            <span className="text-muted-foreground">{labels.unknown}</span>
+          );
+        }
+        const tone =
+          health.status === "HEALTHY"
+            ? "text-healthy"
+            : health.status === "AT_RISK"
+              ? "text-risk"
+              : "text-attention";
+        return (
+          <span className={`${tone} font-medium tabular-nums`}>
+            {new Intl.NumberFormat(locale).format(health.overallScore)}
+          </span>
+        );
+      },
     }),
     columnHelper.accessor("lifecycleStage.name", {
       header: labels.lifecycle,

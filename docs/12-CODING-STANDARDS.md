@@ -68,6 +68,8 @@ For a standard interaction available in the compatible shadcn registry, install 
 
 Keep downloaded primitives in `components/ui` recognizable as registry components. Apply domain composition, translated copy, pending behavior and Waslix-specific layout at the caller or in a genuinely reused `components/shared` composition; do not label custom primitives as shadcn components.
 
+Dialog forms must use the shared shadcn form primitives consistently: `Dialog`, `Field`, `FieldLabel`, `Input`, `Textarea`, `Select`, `Checkbox`, and shared Calendar/Popover date compositions. Labels, entered text, placeholders and descriptions use logical `text-start`; controls use shared heights and focus/invalid states; dialog close/action placement uses logical start/end so Arabic RTL and English LTR render as mirrored equivalents.
+
 Use local/URL state first; do not replicate server entities in Zustand. Do not add another form, table, chart, date, HTTP or state package when the stack already solves the need.
 
 All user-facing text follows 17. Do not place English or Arabic literals directly in product components, actions or validation schemas. Stable internal codes, enum values, test fixture data and operator logs are not translated.

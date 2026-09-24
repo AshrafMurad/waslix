@@ -116,6 +116,9 @@ export async function getCustomerPortfolio(
       status: true,
       lifecycleStage: { select: { id: true, name: true, key: true } },
       owner: { select: { id: true, user: { select: { name: true } } } },
+      currentHealth: {
+        select: { overallScore: true, status: true, calculatedAt: true },
+      },
     },
   });
   const hasNextPage = customers.length > 25;
@@ -127,7 +130,7 @@ export async function getCustomerPortfolio(
     customers: page.map((customer) => ({
       ...customer,
       contractValue: customer.contractValue?.toString() ?? null,
-      customerHealth: null,
+      customerHealth: customer.currentHealth,
     })),
     nextCursor:
       hasNextPage && lastCustomer

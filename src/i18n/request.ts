@@ -16,6 +16,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       common: (await import(`../../messages/${locale}/common.json`)).default,
       customers: (await import(`../../messages/${locale}/customers.json`))
         .default,
+      goals: (await import(`../../messages/${locale}/goals.json`)).default,
+      health: (await import(`../../messages/${locale}/health.json`)).default,
       tasks: (await import(`../../messages/${locale}/tasks.json`)).default,
       timeline: (await import(`../../messages/${locale}/timeline.json`))
         .default,

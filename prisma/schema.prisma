@@ -58,6 +58,39 @@ enum ActivityType {
   NOTE
 }
 
+enum GoalStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  AT_RISK
+  ACHIEVED
+  CANCELLED
+}
+
+enum HealthDimension {
+  USAGE
+  ENGAGEMENT
+  SUPPORT
+  GOALS
+}
+
+enum HealthStatus {
+  HEALTHY
+  NEEDS_ATTENTION
+  AT_RISK
+}
+
+enum HealthSourceType {
+  MANUAL
+  SYSTEM
+  INTEGRATION
+}
+
+enum HealthConfidence {
+  HIGH
+  MEDIUM
+  LOW
+}
+
 model User {
   id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name            String
@@ -127,15 +160,15 @@ model Verification {
 }
 
 model Workspace {
-  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String            @db.VarChar(200)
-  slug            String            @unique @db.VarChar(200)
+  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String                @db.VarChar(200)
+  slug            String                @unique @db.VarChar(200)
   logo            String?
   metadata        String?
-  timezone        String            @default("UTC") @db.VarChar(100)
-  defaultCurrency String            @default("USD") @db.Char(3)
-  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  timezone        String                @default("UTC") @db.VarChar(100)
+  defaultCurrency String                @default("USD") @db.Char(3)
+  createdAt       DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime              @updatedAt @db.Timestamptz(3)
   members         WorkspaceMember[]
   invitations     Invitation[]
   sessions        Session[]
@@ -148,25 +181,32 @@ model Workspace {
   activities      Activity[]
   systemEvents    SystemEvent[]
   jobOutbox       JobOutbox[]
+  successGoals    SuccessGoal[]
+  healthInputs    HealthInput[]
+  healthRevisions HealthInputRevision[]
+  customerHealth  CustomerHealth[]
+  healthSnapshots HealthSnapshot[]
 
   @@map("workspace")
 }
 
 model WorkspaceMember {
-  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId    String           @db.Uuid
-  userId         String           @db.Uuid
-  role           String           @db.VarChar(32)
-  status         MembershipStatus @default(ACTIVE)
-  joinedAt       DateTime         @default(now()) @db.Timestamptz(3)
-  workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  customers      Customer[]
-  ownedTasks     Task[]           @relation("TaskOwner")
-  createdTasks   Task[]           @relation("TaskCreator")
-  completedTasks Task[]           @relation("TaskCompleter")
-  activities     Activity[]       @relation("ActivityCreator")
-  systemEvents   SystemEvent[]    @relation("SystemEventActor")
+  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId     String                @db.Uuid
+  userId          String                @db.Uuid
+  role            String                @db.VarChar(32)
+  status          MembershipStatus      @default(ACTIVE)
+  joinedAt        DateTime              @default(now()) @db.Timestamptz(3)
+  workspace       Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customers       Customer[]
+  ownedTasks      Task[]                @relation("TaskOwner")
+  createdTasks    Task[]                @relation("TaskCreator")
+  completedTasks  Task[]                @relation("TaskCompleter")
+  activities      Activity[]            @relation("ActivityCreator")
+  systemEvents    SystemEvent[]         @relation("SystemEventActor")
+  ownedGoals      SuccessGoal[]         @relation("GoalOwner")
+  healthRevisions HealthInputRevision[] @relation("HealthRevisionCreator")
 
   @@unique([workspaceId, userId])
   @@unique([workspaceId, id])
@@ -225,33 +265,38 @@ model Tag {
 }
 
 model Customer {
-  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId      String          @db.Uuid
-  name             String          @db.VarChar(200)
-  website          String?         @db.VarChar(500)
-  logoKey          String?         @db.VarChar(500)
-  industry         String?         @db.VarChar(200)
-  companySize      Int?
-  contractValue    Decimal?        @db.Decimal(18, 2)
-  currency         String          @db.Char(3)
-  customerSince    DateTime?       @db.Date
-  renewalDate      DateTime?       @db.Date
-  lifecycleStageId String          @db.Uuid
-  ownerId          String          @db.Uuid
-  status           CustomerStatus  @default(ACTIVE)
-  archivedAt       DateTime?       @db.Timestamptz(3)
-  externalKey      String?         @db.VarChar(200)
-  createdAt        DateTime        @default(now()) @db.Timestamptz(3)
-  updatedAt        DateTime        @updatedAt @db.Timestamptz(3)
-  workspace        Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  lifecycleStage   LifecycleStage  @relation(fields: [workspaceId, lifecycleStageId], references: [workspaceId, id], onDelete: Restrict)
-  owner            WorkspaceMember @relation(fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
-  contacts         Contact[]
-  tags             CustomerTag[]
-  tasks            Task[]
-  activities       Activity[]
-  systemEvents     SystemEvent[]
-  jobOutbox        JobOutbox[]
+  id                   String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId          String                @db.Uuid
+  name                 String                @db.VarChar(200)
+  website              String?               @db.VarChar(500)
+  logoKey              String?               @db.VarChar(500)
+  industry             String?               @db.VarChar(200)
+  companySize          Int?
+  contractValue        Decimal?              @db.Decimal(18, 2)
+  currency             String                @db.Char(3)
+  customerSince        DateTime?             @db.Date
+  renewalDate          DateTime?             @db.Date
+  lifecycleStageId     String                @db.Uuid
+  ownerId              String                @db.Uuid
+  status               CustomerStatus        @default(ACTIVE)
+  archivedAt           DateTime?             @db.Timestamptz(3)
+  externalKey          String?               @db.VarChar(200)
+  createdAt            DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime              @updatedAt @db.Timestamptz(3)
+  workspace            Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  lifecycleStage       LifecycleStage        @relation(fields: [workspaceId, lifecycleStageId], references: [workspaceId, id], onDelete: Restrict)
+  owner                WorkspaceMember       @relation(fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  contacts             Contact[]
+  tags                 CustomerTag[]
+  tasks                Task[]
+  activities           Activity[]
+  systemEvents         SystemEvent[]
+  jobOutbox            JobOutbox[]
+  successGoals         SuccessGoal[]
+  healthInputs         HealthInput[]
+  currentHealth        CustomerHealth?
+  healthSnapshots      HealthSnapshot[]
+  healthInputRevisions HealthInputRevision[]
 
   @@unique([workspaceId, id])
   @@unique([workspaceId, externalKey])
@@ -335,6 +380,121 @@ model Activity {
   @@unique([workspaceId, customerId, id])
   @@index([workspaceId, customerId, occurredAt, id])
   @@map("activity")
+}
+
+model SuccessGoal {
+  id                 String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId        String          @db.Uuid
+  customerId         String          @db.Uuid
+  title              String          @db.VarChar(200)
+  description        String?         @db.VarChar(10000)
+  ownerId            String          @db.Uuid
+  progress           Int             @default(0)
+  status             GoalStatus      @default(NOT_STARTED)
+  targetDate         DateTime?       @db.Date
+  progressObservedAt DateTime        @default(now()) @db.Timestamptz(3)
+  completedAt        DateTime?       @db.Timestamptz(3)
+  createdAt          DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime        @updatedAt @db.Timestamptz(3)
+  workspace          Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer           Customer        @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  owner              WorkspaceMember @relation("GoalOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, customerId, status])
+  @@index([workspaceId, ownerId, status])
+  @@map("success_goal")
+}
+
+model HealthInput {
+  id               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId      String                @db.Uuid
+  customerId       String                @db.Uuid
+  dimension        HealthDimension
+  isManualOverride Boolean               @default(false)
+  createdAt        DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime              @updatedAt @db.Timestamptz(3)
+  workspace        Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer         Customer              @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  revisions        HealthInputRevision[]
+
+  @@unique([workspaceId, customerId, dimension])
+  @@unique([workspaceId, customerId, id])
+  @@map("health_input")
+}
+
+model HealthInputRevision {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId   String           @db.Uuid
+  customerId    String           @db.Uuid
+  healthInputId String           @db.Uuid
+  version       Int
+  value         Int
+  sourceType    HealthSourceType
+  sourceRef     String?          @db.VarChar(500)
+  isSimulated   Boolean          @default(false)
+  observedAt    DateTime         @db.Timestamptz(3)
+  createdById   String?          @db.Uuid
+  evidence      Json?
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+  workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer      Customer         @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  healthInput   HealthInput      @relation(fields: [workspaceId, customerId, healthInputId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  createdBy     WorkspaceMember? @relation("HealthRevisionCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, healthInputId, version])
+  @@index([workspaceId, customerId, healthInputId, version])
+  @@map("health_input_revision")
+}
+
+model CustomerHealth {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId     String           @db.Uuid
+  customerId      String           @db.Uuid
+  rawScore        Decimal?         @db.Decimal(8, 4)
+  overallScore    Int?
+  status          HealthStatus?
+  usageScore      Int?
+  engagementScore Int?
+  supportScore    Int?
+  goalScore       Int?
+  confidence      HealthConfidence @default(LOW)
+  confidenceValue Decimal          @default(0) @db.Decimal(5, 4)
+  calculatedAt    DateTime         @db.Timestamptz(3)
+  pendingSince    DateTime?        @db.Timestamptz(3)
+  calculationKey  String           @db.VarChar(500)
+  ruleVersion     String           @db.VarChar(50)
+  evidence        Json
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer         @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, customerId])
+  @@map("customer_health")
+}
+
+model HealthSnapshot {
+  id              String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId     String           @db.Uuid
+  customerId      String           @db.Uuid
+  rawScore        Decimal?         @db.Decimal(8, 4)
+  overallScore    Int?
+  status          HealthStatus?
+  usageScore      Int?
+  engagementScore Int?
+  supportScore    Int?
+  goalScore       Int?
+  confidence      HealthConfidence
+  confidenceValue Decimal          @db.Decimal(5, 4)
+  snapshotAt      DateTime         @db.Timestamptz(3)
+  calculationKey  String           @db.VarChar(500)
+  ruleVersion     String           @db.VarChar(50)
+  evidence        Json
+  workspace       Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer         @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, customerId, calculationKey])
+  @@index([workspaceId, customerId, snapshotAt])
+  @@map("health_snapshot")
 }
 
 model SystemEvent {

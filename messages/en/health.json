@@ -1,0 +1,79 @@
+{
+  "overall": "Overall health",
+  "unknown": "Not enough data",
+  "missing": "Missing",
+  "pending": "Recalculation pending",
+  "neverCalculated": "No calculation has completed yet",
+  "calculatedAt": "Calculated {value}",
+  "confidence": "{level} confidence · {coverage} fresh coverage",
+  "status": {
+    "HEALTHY": "Healthy",
+    "NEEDS_ATTENTION": "Needs attention",
+    "AT_RISK": "At risk"
+  },
+  "confidenceLevel": {
+    "HIGH": "High",
+    "MEDIUM": "Medium",
+    "LOW": "Low"
+  },
+  "dimensions": {
+    "USAGE": "Usage and adoption",
+    "ENGAGEMENT": "Engagement",
+    "SUPPORT": "Support and issues",
+    "GOALS": "Goals and progress"
+  },
+  "freshness": {
+    "FRESH": "Fresh",
+    "AGING": "Aging",
+    "STALE": "Stale"
+  },
+  "source": {
+    "MANUAL": "Manual",
+    "SYSTEM": "Waslix system",
+    "INTEGRATION": "Integration"
+  },
+  "comparison": {
+    "label": "Health comparison window",
+    "days": "{count} days",
+    "UP": "Up {delta} points · {days} days",
+    "DOWN": "Down {delta} points · {days} days",
+    "STABLE": "Stable · {days} days",
+    "unavailable": "Comparison unavailable · {days} days"
+  },
+  "explanation": {
+    "title": "What drives this score",
+    "empty": "Add a normalized input, meaningful activity, or success goal to calculate health."
+  },
+  "breakdown": {
+    "title": "Dimension breakdown",
+    "description": "Available dimensions are normalized across their configured weights. Missing inputs are excluded, never scored as zero.",
+    "detail": "{weight} weight · {source} · {freshness}",
+    "noInput": "No selected input"
+  },
+  "history": {
+    "title": "Health history",
+    "description": "Reproducible assessments from the latest 90 days.",
+    "chartLabel": "Customer health score over time from zero to one hundred",
+    "summary": "{count, plural, one {# assessment} other {# assessments}} shown, from {first} to {latest} points.",
+    "empty": "History will appear after the first completed calculation."
+  },
+  "inputs": {
+    "title": "Health inputs",
+    "description": "Record normalized evidence from 0 to 100. Usage and support are manual or explicitly simulated in V1; engagement and goals can return to Waslix system values.",
+    "value": "Normalized value",
+    "observedAt": "Observed on",
+    "simulated": "Simulated source"
+  },
+  "actions": {
+    "saveInput": "Save input",
+    "saving": "Saving...",
+    "useSystem": "Use system value"
+  },
+  "feedback": {
+    "queued": "Input saved. Recalculation is queued.",
+    "failed": "The input could not be saved. Review the values and try again."
+  },
+  "validation": {
+    "invalid": "Enter a value from 0 to 100 and a valid observation date."
+  }
+}

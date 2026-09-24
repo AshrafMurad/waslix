@@ -29,9 +29,10 @@ export default async function CustomerLayout({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
   const access = await requireProtectedPage(locale);
-  const [customer, t] = await Promise.all([
+  const [customer, t, healthT] = await Promise.all([
     getCustomerOverview(access, customerId),
     getTranslations({ locale, namespace: "customers" }),
+    getTranslations({ locale, namespace: "health" }),
   ]);
   if (!customer) notFound();
   const primaryContact = customer.contacts.find(
@@ -85,7 +86,23 @@ export default async function CustomerLayout({
             <p className="text-muted-foreground text-xs">
               {t("summary.health")}
             </p>
-            <p className="mt-1 font-medium">{t("healthUnknown")}</p>
+            <p
+              className={
+                customer.health?.status === "HEALTHY"
+                  ? "text-healthy mt-1 font-medium"
+                  : customer.health?.status === "AT_RISK"
+                    ? "text-risk mt-1 font-medium"
+                    : customer.health?.status === "NEEDS_ATTENTION"
+                      ? "text-attention mt-1 font-medium"
+                      : "mt-1 font-medium"
+              }
+            >
+              {customer.health?.overallScore !== null &&
+              customer.health?.overallScore !== undefined &&
+              customer.health.status
+                ? `${new Intl.NumberFormat(locale).format(customer.health.overallScore)} · ${healthT(`status.${customer.health.status}`)}`
+                : t("healthUnknown")}
+            </p>
           </div>
         </div>
         <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">

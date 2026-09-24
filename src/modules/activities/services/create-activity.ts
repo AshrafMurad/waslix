@@ -101,12 +101,21 @@ export async function createActivity(
           data: { lastInteractionAt: latest?.occurredAt ?? null },
         });
       }
+      if (isMeaningful) {
+        await transaction.customerHealth.updateMany({
+          where: {
+            workspaceId: access.workspaceId,
+            customerId: input.customerId,
+          },
+          data: { pendingSince: new Date() },
+        });
+      }
       await transaction.jobOutbox.create({
         data: {
           workspaceId: access.workspaceId,
           customerId: input.customerId,
           eventKey: input.operationKey,
-          jobType: "ACTIVITY_CHANGED",
+          jobType: isMeaningful ? "HEALTH_RECALCULATE" : "ACTIVITY_CHANGED",
           payload: {
             workspaceId: access.workspaceId,
             customerId: input.customerId,

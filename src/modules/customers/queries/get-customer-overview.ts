@@ -23,6 +23,29 @@ export async function getCustomerOverview(
       archivedAt: true,
       lifecycleStage: { select: { id: true, name: true, key: true } },
       owner: { select: { id: true, user: { select: { name: true } } } },
+      currentHealth: {
+        select: {
+          overallScore: true,
+          status: true,
+          confidence: true,
+          calculatedAt: true,
+          pendingSince: true,
+        },
+      },
+      successGoals: {
+        orderBy: [{ status: "asc" }, { targetDate: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          progress: true,
+          status: true,
+          targetDate: true,
+          progressObservedAt: true,
+          completedAt: true,
+          owner: { select: { id: true, user: { select: { name: true } } } },
+        },
+      },
       tags: { select: { tag: { select: { id: true, name: true } } } },
       contacts: {
         orderBy: [{ isPrimary: "desc" }, { name: "asc" }, { id: "asc" }],
@@ -44,6 +67,6 @@ export async function getCustomerOverview(
     ...customer,
     contractValue: customer.contractValue?.toString() ?? null,
     tags: customer.tags.map(({ tag }) => tag),
-    health: null,
+    health: customer.currentHealth,
   };
 }

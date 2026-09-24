@@ -160,6 +160,17 @@ export async function updateCustomer(
     if (updated.count !== 1) {
       throw new CustomerDomainError("CUSTOMER_ARCHIVED");
     }
+    if (input.ownerId !== existing.ownerId) {
+      await transaction.successGoal.updateMany({
+        where: {
+          workspaceId: access.workspaceId,
+          customerId,
+          ownerId: existing.ownerId,
+          status: { in: ["NOT_STARTED", "IN_PROGRESS", "AT_RISK"] },
+        },
+        data: { ownerId: input.ownerId },
+      });
+    }
     await syncTags(transaction, access.workspaceId, customerId, input.tags);
     return { id: customerId };
   });

@@ -13,6 +13,7 @@ import {
   canAssignCustomerOwner,
   canEditCustomer,
 } from "@/modules/customers/services/customer-permissions";
+import { GoalSection } from "@/modules/goals/components/goal-section";
 
 function dateInput(date: Date | null) {
   return date?.toISOString().slice(0, 10) ?? "";
@@ -37,56 +38,74 @@ export default async function CustomerOverviewPage({
     customer.status === "ACTIVE" && canEditCustomer(access, customer.owner.id);
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-      <Card className="p-5">
-        <h2 className="text-lg font-semibold">{t("overview.title")}</h2>
-        <p className="text-muted-foreground mt-2">
-          {t("overview.description")}
-        </p>
-        <div className="bg-raised mt-5 rounded-md p-4">
-          <h3 className="font-medium">{t("overview.healthTitle")}</h3>
-          <p className="text-muted-foreground mt-1">
-            {t("overview.healthUnknown")}
+    <div className="space-y-6">
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+        <Card className="p-5">
+          <h2 className="text-lg font-semibold">{t("overview.title")}</h2>
+          <p className="text-muted-foreground mt-2">
+            {t("overview.description")}
           </p>
-        </div>
-      </Card>
-      <div className="space-y-4">
-        {canEdit ? (
-          <CustomerFormDialog
-            mode="edit"
-            title={t("actions.edit")}
-            description={t("overview.description")}
-            triggerLabel={t("actions.edit")}
-            locale={locale}
-            customerId={customerId}
-            lifecycleStages={options.lifecycleStages}
-            owners={options.owners}
-            canAssignOwner={canAssignCustomerOwner(access)}
-            defaultValues={{
-              name: customer.name,
-              website: customer.website ?? "",
-              industry: customer.industry ?? "",
-              companySize: customer.companySize?.toString() ?? "",
-              contractValue: customer.contractValue ?? "",
-              currency: customer.currency,
-              customerSince: dateInput(customer.customerSince),
-              renewalDate: dateInput(customer.renewalDate),
-              lifecycleStageId: customer.lifecycleStage.id,
-              ownerId: customer.owner.id,
-              tags: customer.tags.map((tag) => tag.name).join(", "),
-            }}
-          />
-        ) : null}
-        {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
-          <Card className="p-5">
-            <h2 className="font-semibold">{t("archive.title")}</h2>
-            <p className="text-muted-foreground my-2">
-              {t("archive.description")}
+          <div className="bg-raised mt-5 rounded-md p-4">
+            <h3 className="font-medium">{t("overview.healthTitle")}</h3>
+            <p className="text-muted-foreground mt-1">
+              {customer.health?.overallScore !== null &&
+              customer.health?.overallScore !== undefined
+                ? new Intl.NumberFormat(locale).format(
+                    customer.health.overallScore,
+                  )
+                : t("overview.healthUnknown")}
             </p>
-            <ArchiveCustomerButton customerId={customerId} locale={locale} />
-          </Card>
-        ) : null}
+          </div>
+        </Card>
+        <div className="space-y-4">
+          {canEdit ? (
+            <CustomerFormDialog
+              mode="edit"
+              title={t("actions.edit")}
+              description={t("overview.description")}
+              triggerLabel={t("actions.edit")}
+              locale={locale}
+              customerId={customerId}
+              lifecycleStages={options.lifecycleStages}
+              owners={options.owners}
+              canAssignOwner={canAssignCustomerOwner(access)}
+              defaultValues={{
+                name: customer.name,
+                website: customer.website ?? "",
+                industry: customer.industry ?? "",
+                companySize: customer.companySize?.toString() ?? "",
+                contractValue: customer.contractValue ?? "",
+                currency: customer.currency,
+                customerSince: dateInput(customer.customerSince),
+                renewalDate: dateInput(customer.renewalDate),
+                lifecycleStageId: customer.lifecycleStage.id,
+                ownerId: customer.owner.id,
+                tags: customer.tags.map((tag) => tag.name).join(", "),
+              }}
+            />
+          ) : null}
+          {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
+            <Card className="p-5">
+              <h2 className="font-semibold">{t("archive.title")}</h2>
+              <p className="text-muted-foreground my-2">
+                {t("archive.description")}
+              </p>
+              <ArchiveCustomerButton customerId={customerId} locale={locale} />
+            </Card>
+          ) : null}
+        </div>
       </div>
+      <GoalSection
+        locale={locale}
+        customerId={customerId}
+        canEdit={canEdit}
+        owners={options.owners.map((owner) => ({
+          id: owner.id,
+          name: owner.user.name,
+        }))}
+        defaultOwnerId={customer.owner.id}
+        goals={customer.successGoals}
+      />
     </div>
   );
 }

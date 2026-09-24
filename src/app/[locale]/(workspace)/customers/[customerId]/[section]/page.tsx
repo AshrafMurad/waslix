@@ -25,6 +25,8 @@ import {
 } from "@/modules/customers/components/contact-form";
 import { getCustomerOverview } from "@/modules/customers/queries/get-customer-overview";
 import { canEditCustomer } from "@/modules/customers/services/customer-permissions";
+import { HealthOverview } from "@/modules/health/components/health-overview";
+import { getHealthOverview } from "@/modules/health/queries/get-health-overview";
 import { TaskForm } from "@/modules/tasks/components/task-form";
 import { TaskList } from "@/modules/tasks/components/task-list";
 import { getTaskOptions } from "@/modules/tasks/queries/get-task-options";
@@ -68,6 +70,30 @@ export default async function CustomerSectionPage({
   const cursorValue = rawSearch.cursor;
   const filter = Array.isArray(filterValue) ? filterValue[0] : filterValue;
   const cursor = Array.isArray(cursorValue) ? cursorValue[0] : cursorValue;
+
+  if (section === "health") {
+    const windowValue = Array.isArray(rawSearch.window)
+      ? rawSearch.window[0]
+      : rawSearch.window;
+    const activeWindow =
+      windowValue === "7" || windowValue === "30" || windowValue === "90"
+        ? (Number(windowValue) as 7 | 30 | 90)
+        : 90;
+    const health = await getHealthOverview(access, customerId);
+    if (!health) notFound();
+    return (
+      <HealthOverview
+        customerId={customerId}
+        locale={locale}
+        data={health}
+        activeWindow={activeWindow}
+        canEdit={
+          customer.status === "ACTIVE" &&
+          canEditCustomer(access, customer.owner.id)
+        }
+      />
+    );
+  }
 
   if (section === "tasks") {
     const [result, options, taskT] = await Promise.all([
