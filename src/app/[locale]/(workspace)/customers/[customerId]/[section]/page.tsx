@@ -96,6 +96,20 @@ export default async function CustomerSectionPage({
                     locale={locale}
                   />
                 ) : null}
+                {canEdit ? (
+                  <details className="sm:ms-2">
+                    <summary className="text-brand-accent font-medium">
+                      {t("contacts.edit")}
+                    </summary>
+                    <div className="mt-4 min-w-72 rounded-md border p-4 sm:min-w-96">
+                      <ContactForm
+                        customerId={customerId}
+                        locale={locale}
+                        contact={contact}
+                      />
+                    </div>
+                  </details>
+                ) : null}
               </li>
             ))}
           </ul>

@@ -8,6 +8,7 @@ import {
   archiveCustomer,
   createContact,
   createCustomer,
+  updateContact,
   updateCustomer,
 } from "@/modules/customers/services/manage-customer";
 import { seedTwoWorkspaceFixture } from "../fixtures/two-workspaces";
@@ -168,5 +169,22 @@ describe("customer domain", () => {
         },
       }),
     ).resolves.toBe(1);
+    const primary = await prisma.contact.findFirstOrThrow({
+      where: { customerId: customer.id, isPrimary: true },
+    });
+    await updateContact(access, {
+      customerId: customer.id,
+      contactId: primary.id,
+      name: primary.name,
+      email: primary.email,
+      phone: primary.phone,
+      jobTitle: primary.jobTitle,
+      accountRole: primary.accountRole,
+      isPrimary: true,
+      status: "INACTIVE",
+    });
+    await expect(
+      prisma.contact.findUniqueOrThrow({ where: { id: primary.id } }),
+    ).resolves.toMatchObject({ status: "INACTIVE", isPrimary: false });
   });
 });

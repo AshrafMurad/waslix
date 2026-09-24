@@ -119,9 +119,16 @@
     "primary": "Primary contact",
     "makePrimary": "Make primary",
     "add": "Add contact",
+    "edit": "Edit",
+    "save": "Save contact",
+    "status": "Status",
     "saving": "Saving...",
     "added": "Contact added.",
     "failed": "The contact could not be saved.",
+    "statuses": {
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive"
+    },
     "roles": {
       "CHAMPION": "Champion",
       "DECISION_MAKER": "Decision maker",
