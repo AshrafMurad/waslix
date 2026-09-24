@@ -1,23 +1,13 @@
 import { randomUUID } from "node:crypto";
 
-import { Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
-import { TaskForm } from "@/modules/tasks/components/task-form";
+import { TaskFormDialog } from "@/modules/tasks/components/task-form-dialog";
 import { TaskList } from "@/modules/tasks/components/task-list";
 import { TaskViewTabs } from "@/modules/tasks/components/task-view-tabs";
 import { getTaskOptions } from "@/modules/tasks/queries/get-task-options";
@@ -61,28 +51,18 @@ export default async function TasksPage({
           <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
         </div>
         {access.role !== "VIEWER" ? (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size="lg">
-                <Plus aria-hidden="true" />
-                {t("actions.add")}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
-              <DialogHeader>
-                <DialogTitle>{t("actions.add")}</DialogTitle>
-                <DialogDescription>{t("description")}</DialogDescription>
-              </DialogHeader>
-              <TaskForm
-                locale={locale}
-                operationKey={randomUUID()}
-                owners={visibleOwners}
-                customers={options.customers}
-                defaultOwnerId={access.memberId}
-                canAssignOwner={access.role !== "CSM"}
-              />
-            </DialogContent>
-          </Dialog>
+          <TaskFormDialog
+            mode="create"
+            title={t("actions.add")}
+            description={t("description")}
+            triggerLabel={t("actions.add")}
+            locale={locale}
+            operationKey={randomUUID()}
+            owners={visibleOwners}
+            customers={options.customers}
+            defaultOwnerId={access.memberId}
+            canAssignOwner={access.role !== "CSM"}
+          />
         ) : null}
       </div>
       <Card className="gap-0 py-0">

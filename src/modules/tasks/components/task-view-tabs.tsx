@@ -38,13 +38,13 @@ export function TaskViewTabs({
     >
       <TabsList
         aria-label={label}
-        className="m-4 mb-2 h-auto max-w-[calc(100%-2rem)] flex-wrap justify-start gap-1 p-1"
+        className="m-4 mb-2 h-auto max-w-[calc(100%-2rem)] flex-wrap justify-start gap-1"
       >
         {taskFilters.map((filter) => (
           <TabsTrigger
             key={filter}
             value={filter}
-            className="h-9 px-4"
+            className="px-4"
             aria-busy={pending && selectedFilter === filter}
           >
             {labels[filter]}

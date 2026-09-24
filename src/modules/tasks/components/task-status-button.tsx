@@ -1,7 +1,7 @@
 "use client";
 
-import { startTransition, useActionState, useOptimistic } from "react";
-import { Check } from "lucide-react";
+import { startTransition, useActionState } from "react";
+import { Check, RotateCcw, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -34,14 +34,12 @@ export function TaskStatusButton({
     changeTaskStatusAction,
     initialState,
   );
-  const [optimisticStatus, setOptimisticStatus] = useOptimistic(status);
   const target =
-    targetStatus ?? (optimisticStatus === "COMPLETED" ? "OPEN" : "COMPLETED");
+    targetStatus ?? (status === "COMPLETED" ? "OPEN" : "COMPLETED");
   const submit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     startTransition(async () => {
-      setOptimisticStatus(target);
       action(formData);
     });
   };
@@ -62,6 +60,7 @@ export function TaskStatusButton({
           className="text-risk"
         >
           {pending ? <Spinner aria-label={t("actions.cancel")} /> : null}
+          {!pending ? <X aria-hidden="true" /> : null}
           {t("actions.cancel")}
         </Button>
       ) : (
@@ -69,12 +68,7 @@ export function TaskStatusButton({
           type="submit"
           disabled={pending || status === "CANCELLED"}
           aria-busy={pending}
-          variant="outline"
-          size="icon"
-          aria-label={
-            target === "COMPLETED" ? t("actions.complete") : t("actions.reopen")
-          }
-          className="border-brand text-brand-accent rounded-full border-2"
+          variant={target === "COMPLETED" ? "default" : "outline"}
         >
           {pending ? (
             <Spinner
@@ -84,9 +78,12 @@ export function TaskStatusButton({
                   : t("actions.reopen")
               }
             />
-          ) : optimisticStatus === "COMPLETED" ? (
-            <Check aria-hidden="true" className="size-5" />
-          ) : null}
+          ) : target === "COMPLETED" ? (
+            <Check aria-hidden="true" />
+          ) : (
+            <RotateCcw aria-hidden="true" />
+          )}
+          {target === "COMPLETED" ? t("actions.complete") : t("actions.reopen")}
         </Button>
       )}
       {state.status === "error" ? (

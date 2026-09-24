@@ -1,9 +1,10 @@
 "use client";
 
-import { useActionState, startTransition } from "react";
+import { useActionState, startTransition, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 
+import { DatePicker } from "@/components/shared/date-picker";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -44,6 +45,7 @@ type CustomerFormProps = {
   lifecycleStages: Array<{ id: string; name: string }>;
   owners: Array<{ id: string; user: { name: string } }>;
   canAssignOwner: boolean;
+  onSuccess?: () => void;
 };
 
 const initialState: CustomerActionState = { status: "idle" };
@@ -55,10 +57,14 @@ export function CustomerForm({
   lifecycleStages,
   owners,
   canAssignOwner,
+  onSuccess,
 }: CustomerFormProps) {
   const t = useTranslations("customers");
   const action = customerId ? updateCustomerAction : createCustomerAction;
   const [state, submitAction, isPending] = useActionState(action, initialState);
+  useEffect(() => {
+    if (state.status === "success") onSuccess?.();
+  }, [state.status, onSuccess]);
   const {
     register,
     control,
@@ -408,4 +414,3 @@ function FormStatus({ state }: { state: CustomerActionState }) {
   }
   return null;
 }
-import { DatePicker } from "@/components/shared/date-picker";

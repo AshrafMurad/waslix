@@ -13,22 +13,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-import { TaskForm } from "./task-form";
+import { CustomerForm } from "./customer-form";
 
-type TaskFormDialogProps = React.ComponentProps<typeof TaskForm> & {
+type CustomerFormDialogProps = React.ComponentProps<typeof CustomerForm> & {
   title: string;
   description: string;
   triggerLabel: string;
   mode: "create" | "edit";
 };
 
-export function TaskFormDialog({
+export function CustomerFormDialog({
   title,
   description,
   triggerLabel,
   mode,
   ...formProps
-}: TaskFormDialogProps) {
+}: CustomerFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -36,19 +36,20 @@ export function TaskFormDialog({
       <DialogTrigger asChild>
         <Button
           type="button"
-          variant={mode === "edit" ? "ghost" : "default"}
+          variant={mode === "edit" ? "outline" : "default"}
           size={mode === "edit" ? "default" : "lg"}
+          className={mode === "edit" ? "w-full" : undefined}
         >
           {mode === "create" ? <Plus aria-hidden="true" /> : null}
           {triggerLabel}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <TaskForm {...formProps} onSuccess={() => setOpen(false)} />
+        <CustomerForm {...formProps} onSuccess={() => setOpen(false)} />
       </DialogContent>
     </Dialog>
   );

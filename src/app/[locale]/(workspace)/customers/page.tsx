@@ -1,23 +1,13 @@
-import { Plus } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
-import { CustomerForm } from "@/modules/customers/components/customer-form";
 import { CustomerFilters } from "@/modules/customers/components/customer-filters";
+import { CustomerFormDialog } from "@/modules/customers/components/customer-form-dialog";
 import { CustomerTable } from "@/modules/customers/components/customer-table";
 import { getCustomerOptions } from "@/modules/customers/queries/get-customer-options";
 import { getCustomerPortfolio } from "@/modules/customers/queries/get-customer-portfolio";
@@ -83,41 +73,31 @@ export default async function CustomersPage({
           <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
         </div>
         {canCreateCustomer(access) && initialStage && initialOwner ? (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size="lg">
-                <Plus aria-hidden="true" />
-                {t("actions.add")}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-3xl">
-              <DialogHeader>
-                <DialogTitle>{t("createTitle")}</DialogTitle>
-                <DialogDescription>{t("description")}</DialogDescription>
-              </DialogHeader>
-              <CustomerForm
-                locale={locale}
-                lifecycleStages={options.lifecycleStages}
-                owners={options.owners}
-                canAssignOwner={
-                  access.role === "ADMIN" || access.role === "CS_MANAGER"
-                }
-                defaultValues={{
-                  name: "",
-                  website: "",
-                  industry: "",
-                  companySize: "",
-                  contractValue: "",
-                  currency: options.defaultCurrency,
-                  customerSince: "",
-                  renewalDate: "",
-                  lifecycleStageId: initialStage.id,
-                  ownerId: initialOwner.id,
-                  tags: "",
-                }}
-              />
-            </DialogContent>
-          </Dialog>
+          <CustomerFormDialog
+            mode="create"
+            title={t("createTitle")}
+            description={t("description")}
+            triggerLabel={t("actions.add")}
+            locale={locale}
+            lifecycleStages={options.lifecycleStages}
+            owners={options.owners}
+            canAssignOwner={
+              access.role === "ADMIN" || access.role === "CS_MANAGER"
+            }
+            defaultValues={{
+              name: "",
+              website: "",
+              industry: "",
+              companySize: "",
+              contractValue: "",
+              currency: options.defaultCurrency,
+              customerSince: "",
+              renewalDate: "",
+              lifecycleStageId: initialStage.id,
+              ownerId: initialOwner.id,
+              tags: "",
+            }}
+          />
         ) : null}
       </div>
 

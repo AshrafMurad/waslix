@@ -2,21 +2,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
-import {
-  ArchiveCustomerButton,
-  CustomerForm,
-} from "@/modules/customers/components/customer-form";
+import { ArchiveCustomerButton } from "@/modules/customers/components/customer-form";
+import { CustomerFormDialog } from "@/modules/customers/components/customer-form-dialog";
 import { getCustomerOptions } from "@/modules/customers/queries/get-customer-options";
 import { getCustomerOverview } from "@/modules/customers/queries/get-customer-overview";
 import {
@@ -63,41 +52,30 @@ export default async function CustomerOverviewPage({
       </Card>
       <div className="space-y-4">
         {canEdit ? (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" className="w-full">
-                {t("actions.edit")}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-3xl">
-              <DialogHeader>
-                <DialogTitle>{t("actions.edit")}</DialogTitle>
-                <DialogDescription>
-                  {t("overview.description")}
-                </DialogDescription>
-              </DialogHeader>
-              <CustomerForm
-                locale={locale}
-                customerId={customerId}
-                lifecycleStages={options.lifecycleStages}
-                owners={options.owners}
-                canAssignOwner={canAssignCustomerOwner(access)}
-                defaultValues={{
-                  name: customer.name,
-                  website: customer.website ?? "",
-                  industry: customer.industry ?? "",
-                  companySize: customer.companySize?.toString() ?? "",
-                  contractValue: customer.contractValue ?? "",
-                  currency: customer.currency,
-                  customerSince: dateInput(customer.customerSince),
-                  renewalDate: dateInput(customer.renewalDate),
-                  lifecycleStageId: customer.lifecycleStage.id,
-                  ownerId: customer.owner.id,
-                  tags: customer.tags.map((tag) => tag.name).join(", "),
-                }}
-              />
-            </DialogContent>
-          </Dialog>
+          <CustomerFormDialog
+            mode="edit"
+            title={t("actions.edit")}
+            description={t("overview.description")}
+            triggerLabel={t("actions.edit")}
+            locale={locale}
+            customerId={customerId}
+            lifecycleStages={options.lifecycleStages}
+            owners={options.owners}
+            canAssignOwner={canAssignCustomerOwner(access)}
+            defaultValues={{
+              name: customer.name,
+              website: customer.website ?? "",
+              industry: customer.industry ?? "",
+              companySize: customer.companySize?.toString() ?? "",
+              contractValue: customer.contractValue ?? "",
+              currency: customer.currency,
+              customerSince: dateInput(customer.customerSince),
+              renewalDate: dateInput(customer.renewalDate),
+              lifecycleStageId: customer.lifecycleStage.id,
+              ownerId: customer.owner.id,
+              tags: customer.tags.map((tag) => tag.name).join(", "),
+            }}
+          />
         ) : null}
         {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
           <Card className="p-5">

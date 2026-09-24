@@ -3,18 +3,9 @@ import { randomUUID } from "node:crypto";
 import { getFormatter, getTranslations } from "next-intl/server";
 
 import { Empty, EmptyDescription } from "@/components/ui/empty";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 
-import { TaskForm } from "./task-form";
+import { TaskFormDialog } from "./task-form-dialog";
 import { TaskStatusButton } from "./task-status-button";
 
 type TaskRow = {
@@ -72,13 +63,6 @@ export async function TaskList({
             key={task.id}
             className="flex flex-col gap-4 p-4 lg:flex-row lg:items-center"
           >
-            <TaskStatusButton
-              taskId={task.id}
-              customerId={task.customerId}
-              locale={locale}
-              status={task.status}
-              operationKey={randomUUID()}
-            />
             <div className="min-w-0 flex-1">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="font-medium" dir="auto">
@@ -120,7 +104,16 @@ export async function TaskList({
               ) : null}
             </div>
             {canEdit ? (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center justify-end gap-2">
+                {task.status !== "CANCELLED" ? (
+                  <TaskStatusButton
+                    taskId={task.id}
+                    customerId={task.customerId}
+                    locale={locale}
+                    status={task.status}
+                    operationKey={randomUUID()}
+                  />
+                ) : null}
                 {task.status !== "COMPLETED" && task.status !== "CANCELLED" ? (
                   <TaskStatusButton
                     taskId={task.id}
@@ -131,31 +124,23 @@ export async function TaskList({
                     targetStatus="CANCELLED"
                   />
                 ) : null}
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="ghost">{t("actions.edit")}</Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
-                    <DialogHeader>
-                      <DialogTitle>{t("actions.edit")}</DialogTitle>
-                      <DialogDescription>{t("description")}</DialogDescription>
-                    </DialogHeader>
-                    <TaskForm
-                      locale={locale}
-                      operationKey={randomUUID()}
-                      task={{
-                        ...task,
-                        dueDate:
-                          task.dueDate?.toISOString().slice(0, 10) ?? null,
-                      }}
-                      lockedCustomerId={lockedCustomerId}
-                      owners={owners}
-                      customers={customers}
-                      defaultOwnerId={task.ownerId}
-                      canAssignOwner={managesAccount}
-                    />
-                  </DialogContent>
-                </Dialog>
+                <TaskFormDialog
+                  mode="edit"
+                  title={t("actions.edit")}
+                  description={t("description")}
+                  triggerLabel={t("actions.edit")}
+                  locale={locale}
+                  operationKey={randomUUID()}
+                  task={{
+                    ...task,
+                    dueDate: task.dueDate?.toISOString().slice(0, 10) ?? null,
+                  }}
+                  lockedCustomerId={lockedCustomerId}
+                  owners={owners}
+                  customers={customers}
+                  defaultOwnerId={task.ownerId}
+                  canAssignOwner={managesAccount}
+                />
               </div>
             ) : null}
           </li>

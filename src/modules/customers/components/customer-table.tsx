@@ -61,7 +61,7 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
     columnHelper.accessor("name", {
       header: labels.customer,
       cell: ({ row }) => (
-        <div className="flex min-w-48 items-center gap-3">
+        <div className="flex min-w-48 items-center gap-3 text-start">
           <Avatar>
             <AvatarFallback className="bg-brand text-brand-foreground">
               {row.original.name.trim().charAt(0).toLocaleUpperCase(locale)}
@@ -126,7 +126,10 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
   });
 
   return (
-    <Table className="min-w-4xl border-collapse">
+    <Table
+      className="min-w-4xl border-collapse"
+      dir={locale === "ar" ? "rtl" : "ltr"}
+    >
       <TableHeader>
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow
@@ -134,7 +137,7 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
             className="bg-raised hover:bg-raised text-start"
           >
             {headerGroup.headers.map((header) => (
-              <TableHead key={header.id}>
+              <TableHead key={header.id} className="px-4 text-start">
                 {flexRender(
                   header.column.columnDef.header,
                   header.getContext(),
@@ -148,7 +151,7 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
         {table.getRowModel().rows.map((row) => (
           <TableRow key={row.id}>
             {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id}>
+              <TableCell key={cell.id} className="px-4 text-start">
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             ))}
