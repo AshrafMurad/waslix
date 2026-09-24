@@ -1,0 +1,135 @@
+{
+  "eyebrow": "Customer portfolio",
+  "title": "Customers",
+  "description": "Find accounts, understand their context, and keep ownership and contacts current.",
+  "createTitle": "Add customer",
+  "customer360": "Customer 360",
+  "healthUnknown": "Not enough data",
+  "missing": "Not provided",
+  "archivedBanner": "This customer is archived and is available as read-only history.",
+  "emptyTitle": "No customers yet",
+  "emptyDescription": "Add the first customer to start building your portfolio.",
+  "filteredEmptyTitle": "No customers match these filters",
+  "filteredEmptyDescription": "Change or clear the filters to see more accounts.",
+  "futurePlaceholder": "This customer area will become available in its owning milestone. Customer context remains visible above.",
+  "error": {
+    "title": "Customers could not be loaded",
+    "description": "Your filters are preserved. Try loading this view again.",
+    "retry": "Try again"
+  },
+  "actions": {
+    "add": "Add customer",
+    "edit": "Edit customer",
+    "save": "Save customer",
+    "saving": "Saving...",
+    "archive": "Archive customer",
+    "archiving": "Archiving..."
+  },
+  "fields": {
+    "name": "Customer name",
+    "website": "Website",
+    "industry": "Industry",
+    "companySize": "Company size",
+    "contractValue": "Contract value",
+    "currency": "Currency",
+    "lifecycle": "Lifecycle stage",
+    "owner": "Owner",
+    "tags": "Tags",
+    "tagsHint": "Separate tags with commas",
+    "customerSince": "Customer since",
+    "renewalDate": "Renewal date"
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalid": "Enter a valid value."
+  },
+  "feedback": {
+    "saved": "Customer saved.",
+    "failed": "The change could not be saved. Review the values and try again.",
+    "archived": "Archived customers cannot be changed."
+  },
+  "filters": {
+    "search": "Search customers or contacts",
+    "lifecycle": "Lifecycle",
+    "allLifecycle": "All stages",
+    "owner": "Owner",
+    "allOwners": "All owners",
+    "status": "Status",
+    "allStatuses": "All statuses",
+    "sort": "Sort",
+    "nameAsc": "Name A–Z",
+    "nameDesc": "Name Z–A",
+    "apply": "Apply",
+    "clear": "Clear filters"
+  },
+  "status": {
+    "ACTIVE": "Active",
+    "ARCHIVED": "Archived"
+  },
+  "table": {
+    "customer": "Customer",
+    "health": "Health",
+    "lifecycle": "Lifecycle",
+    "owner": "Owner",
+    "value": "Contract value",
+    "renewal": "Renewal"
+  },
+  "pagination": {
+    "next": "Next page"
+  },
+  "summary": {
+    "health": "Health",
+    "owner": "Owner",
+    "lifecycle": "Lifecycle",
+    "contract": "Contract value",
+    "renewal": "Renewal date",
+    "primaryContact": "Primary contact"
+  },
+  "tabs": {
+    "label": "Customer sections",
+    "overview": "Overview",
+    "health": "Health",
+    "timeline": "Timeline",
+    "onboarding": "Onboarding",
+    "risks": "Risks",
+    "tasks": "Tasks",
+    "renewal": "Renewal",
+    "contacts": "Contacts"
+  },
+  "overview": {
+    "title": "Current situation",
+    "description": "Account details and ownership are current. Operational insights will appear as their domains are implemented.",
+    "healthTitle": "Customer health",
+    "healthUnknown": "There is no health assessment yet. Missing data is not treated as a zero score."
+  },
+  "archive": {
+    "title": "Archive customer",
+    "description": "Remove this account from the active portfolio while preserving its contacts and history."
+  },
+  "contacts": {
+    "title": "Contacts",
+    "description": "People connected to this customer and the current primary relationship.",
+    "empty": "No contacts have been added.",
+    "addTitle": "Add contact",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "jobTitle": "Job title",
+    "role": "Account role",
+    "primary": "Primary contact",
+    "makePrimary": "Make primary",
+    "add": "Add contact",
+    "saving": "Saving...",
+    "added": "Contact added.",
+    "failed": "The contact could not be saved.",
+    "roles": {
+      "CHAMPION": "Champion",
+      "DECISION_MAKER": "Decision maker",
+      "EXECUTIVE_SPONSOR": "Executive sponsor",
+      "ADMIN": "Administrator",
+      "BILLING": "Billing",
+      "USER": "User",
+      "OTHER": "Other"
+    }
+  }
+}

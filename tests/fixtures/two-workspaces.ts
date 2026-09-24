@@ -97,5 +97,36 @@ export async function seedTwoWorkspaceFixture(prisma: PrismaClient) {
     ),
   };
 
-  return { users, workspaceA, workspaceB, memberships };
+  const stageDefinitions = [
+    ["new", "New"],
+    ["onboarding", "Onboarding"],
+    ["adoption", "Adoption"],
+    ["active", "Active"],
+    ["renewal", "Renewal"],
+    ["churned", "Churned"],
+  ] as const;
+  async function seedStages(workspaceId: string) {
+    return Promise.all(
+      stageDefinitions.map(([key, name], position) =>
+        prisma.lifecycleStage.upsert({
+          where: { workspaceId_key: { workspaceId, key } },
+          update: { name, position, isActive: true },
+          create: { workspaceId, key, name, position },
+        }),
+      ),
+    );
+  }
+  const [alphaStages, betaStages] = await Promise.all([
+    seedStages(workspaceA.id),
+    seedStages(workspaceB.id),
+  ]);
+
+  return {
+    users,
+    workspaceA,
+    workspaceB,
+    memberships,
+    alphaStages,
+    betaStages,
+  };
 }

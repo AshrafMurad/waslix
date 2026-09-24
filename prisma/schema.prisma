@@ -17,6 +17,26 @@ enum MembershipStatus {
   INACTIVE
 }
 
+enum CustomerStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum ContactStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum ContactAccountRole {
+  CHAMPION
+  DECISION_MAKER
+  EXECUTIVE_SPONSOR
+  ADMIN
+  BILLING
+  USER
+  OTHER
+}
+
 model User {
   id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name            String
@@ -98,6 +118,11 @@ model Workspace {
   members         WorkspaceMember[]
   invitations     Invitation[]
   sessions        Session[]
+  lifecycleStages LifecycleStage[]
+  tags            Tag[]
+  customerTags    CustomerTag[]
+  customers       Customer[]
+  contacts        Contact[]
 
   @@map("workspace")
 }
@@ -111,6 +136,7 @@ model WorkspaceMember {
   joinedAt    DateTime         @default(now()) @db.Timestamptz(3)
   workspace   Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customers   Customer[]
 
   @@unique([workspaceId, userId])
   @@unique([workspaceId, id])
@@ -133,4 +159,106 @@ model Invitation {
   @@index([workspaceId])
   @@index([email])
   @@map("invitation")
+}
+
+model LifecycleStage {
+  id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId String     @db.Uuid
+  name        String     @db.VarChar(200)
+  key         String     @db.VarChar(50)
+  position    Int
+  isActive    Boolean    @default(true)
+  createdAt   DateTime   @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime   @updatedAt @db.Timestamptz(3)
+  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customers   Customer[]
+
+  @@unique([workspaceId, key])
+  @@unique([workspaceId, id])
+  @@index([workspaceId, isActive, position])
+  @@map("lifecycle_stage")
+}
+
+model Tag {
+  id             String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId    String        @db.Uuid
+  name           String        @db.VarChar(200)
+  normalizedName String        @db.VarChar(200)
+  createdAt      DateTime      @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime      @updatedAt @db.Timestamptz(3)
+  workspace      Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customers      CustomerTag[]
+
+  @@unique([workspaceId, normalizedName])
+  @@unique([workspaceId, id])
+  @@map("tag")
+}
+
+model Customer {
+  id               String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId      String          @db.Uuid
+  name             String          @db.VarChar(200)
+  website          String?         @db.VarChar(500)
+  logoKey          String?         @db.VarChar(500)
+  industry         String?         @db.VarChar(200)
+  companySize      Int?
+  contractValue    Decimal?        @db.Decimal(18, 2)
+  currency         String          @db.Char(3)
+  customerSince    DateTime?       @db.Date
+  renewalDate      DateTime?       @db.Date
+  lifecycleStageId String          @db.Uuid
+  ownerId          String          @db.Uuid
+  status           CustomerStatus  @default(ACTIVE)
+  archivedAt       DateTime?       @db.Timestamptz(3)
+  externalKey      String?         @db.VarChar(200)
+  createdAt        DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime        @updatedAt @db.Timestamptz(3)
+  workspace        Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  lifecycleStage   LifecycleStage  @relation(fields: [workspaceId, lifecycleStageId], references: [workspaceId, id], onDelete: Restrict)
+  owner            WorkspaceMember @relation(fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  contacts         Contact[]
+  tags             CustomerTag[]
+
+  @@unique([workspaceId, id])
+  @@unique([workspaceId, externalKey])
+  @@index([workspaceId, status, name, id])
+  @@index([workspaceId, ownerId, status])
+  @@index([workspaceId, lifecycleStageId, status])
+  @@map("customer")
+}
+
+model Contact {
+  id                String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId       String             @db.Uuid
+  customerId        String             @db.Uuid
+  name              String             @db.VarChar(200)
+  email             String?            @db.VarChar(320)
+  phone             String?            @db.VarChar(50)
+  jobTitle          String?            @db.VarChar(200)
+  accountRole       ContactAccountRole @default(OTHER)
+  isPrimary         Boolean            @default(false)
+  status            ContactStatus      @default(ACTIVE)
+  lastInteractionAt DateTime?          @db.Timestamptz(3)
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt         DateTime           @updatedAt @db.Timestamptz(3)
+  workspace         Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer          Customer           @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, customerId, id])
+  @@index([workspaceId, customerId, status])
+  @@map("contact")
+}
+
+model CustomerTag {
+  workspaceId String    @db.Uuid
+  customerId  String    @db.Uuid
+  tagId       String    @db.Uuid
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer    Customer  @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  tag         Tag       @relation(fields: [workspaceId, tagId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@id([workspaceId, customerId, tagId])
+  @@index([workspaceId, tagId])
+  @@map("customer_tag")
 }

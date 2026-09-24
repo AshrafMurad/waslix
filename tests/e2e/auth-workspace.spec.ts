@@ -12,10 +12,10 @@ const betaName = `E2E Beta ${runId}`;
 
 test.describe("authentication and workspace smoke", () => {
   test.afterAll(async () => {
-    await prisma.user.deleteMany({ where: { email } });
     await prisma.workspace.deleteMany({
       where: { slug: { in: [`e2e-alpha-${runId}`, `e2e-beta-${runId}`] } },
     });
+    await prisma.user.deleteMany({ where: { email } });
     await prisma.$disconnect();
   });
 
@@ -66,6 +66,26 @@ test.describe("authentication and workspace smoke", () => {
         },
       ],
     });
+    const alphaMember = await prisma.workspaceMember.findUniqueOrThrow({
+      where: { workspaceId_userId: { workspaceId: alpha.id, userId: user.id } },
+    });
+    const lifecycle = await prisma.lifecycleStage.create({
+      data: {
+        workspaceId: alpha.id,
+        name: "New",
+        key: "new",
+        position: 0,
+      },
+    });
+    const customer = await prisma.customer.create({
+      data: {
+        workspaceId: alpha.id,
+        name: "E2E Customer",
+        currency: "SAR",
+        lifecycleStageId: lifecycle.id,
+        ownerId: alphaMember.id,
+      },
+    });
 
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill(password);
@@ -76,6 +96,22 @@ test.describe("authentication and workspace smoke", () => {
     const workspaceMenu = page.locator("aside details").first();
     await expect(workspaceMenu.locator("summary")).toContainText(alphaName);
 
+    await page.goto("/en/customers");
+    await expect(
+      page.getByRole("heading", { name: "Customers" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "E2E Customer" }),
+    ).toBeVisible();
+    await page.getByRole("link", { name: "E2E Customer" }).click();
+    await expect(page).toHaveURL(new RegExp(`/en/customers/${customer.id}$`));
+    await expect(page.getByText("Not enough data").first()).toBeVisible();
+
+    await page.goto("/ar/customers");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.getByRole("heading", { name: "العملاء" })).toBeVisible();
+
+    await page.goto("/en/overview");
     await workspaceMenu.locator("summary").click();
     await workspaceMenu.getByRole("button", { name: betaName }).click();
     await expect(workspaceMenu.locator("summary")).toContainText(betaName);

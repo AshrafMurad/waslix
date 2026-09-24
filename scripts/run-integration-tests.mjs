@@ -18,7 +18,7 @@ const environment = {
 
 for (const [command, args] of [
   ["npx", ["prisma", "migrate", "deploy"]],
-  ["npx", ["vitest", "run", "tests/integration"]],
+  ["npx", ["vitest", "run", "tests/integration", "--maxWorkers=1"]],
 ]) {
   const result = spawnSync(command, args, {
     env: environment,

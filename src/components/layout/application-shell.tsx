@@ -50,14 +50,14 @@ type ApplicationShellProps = {
 const primaryNavigation: Array<{
   key: keyof ShellLabels["nav"];
   icon: typeof LayoutDashboard;
-  href?: "/overview";
+  href?: "/overview" | "/customers";
 }> = [
   {
     key: "overview",
     href: "/overview",
     icon: LayoutDashboard,
   },
-  { key: "customers", icon: UsersRound },
+  { key: "customers", href: "/customers", icon: UsersRound },
   { key: "tasks", icon: CheckSquare2 },
   { key: "risks", icon: CircleAlert },
   { key: "renewals", icon: RefreshCw },
@@ -79,8 +79,7 @@ function Navigation({ labels }: { labels: ShellLabels }) {
             <Link
               key={item.key}
               href={item.href}
-              aria-current="page"
-              className="bg-accent text-accent-foreground flex min-h-10 items-center gap-3 rounded-md px-3 font-medium"
+              className="hover:bg-raised flex min-h-10 items-center gap-3 rounded-md px-3 font-medium"
             >
               <Icon aria-hidden="true" className="size-4" />
               <span>{labels.nav[item.key]}</span>
