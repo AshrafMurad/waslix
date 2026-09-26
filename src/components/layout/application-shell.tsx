@@ -59,7 +59,7 @@ type ApplicationShellProps = {
 const primaryNavigation: Array<{
   key: keyof ShellLabels["nav"];
   icon: typeof LayoutDashboard;
-  href?: "/overview" | "/customers" | "/tasks";
+  href?: "/overview" | "/customers" | "/tasks" | "/risks";
 }> = [
   {
     key: "overview",
@@ -68,7 +68,7 @@ const primaryNavigation: Array<{
   },
   { key: "customers", href: "/customers", icon: UsersRound },
   { key: "tasks", href: "/tasks", icon: CheckSquare2 },
-  { key: "risks", icon: CircleAlert },
+  { key: "risks", href: "/risks", icon: CircleAlert },
   { key: "renewals", icon: RefreshCw },
   { key: "analytics", icon: BarChart3 },
 ] as const;

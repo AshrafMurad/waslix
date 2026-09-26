@@ -91,6 +91,59 @@ enum HealthConfidence {
   LOW
 }
 
+enum SignalRuleKey {
+  HEALTH_LOW
+  HEALTH_DECLINE
+  LOW_ENGAGEMENT
+  RENEWAL_PREPARATION
+  RENEWAL_DUE
+  RENEWAL_RISK
+  ONBOARDING_DELAY
+  UNMANAGED_RISK
+  RISK_UNRESOLVED
+  TASK_OVERDUE
+  SUPPORT_ESCALATION
+  USAGE_DECLINE
+  GOAL_STALLED
+}
+
+enum SignalStatus {
+  ACTIVE
+  RESOLVED
+  EXPIRED
+}
+
+enum Severity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AttentionStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+  DISMISSED
+}
+
+enum RiskType {
+  USAGE
+  ENGAGEMENT
+  SUPPORT
+  STAKEHOLDER
+  ONBOARDING
+  RENEWAL
+  COMMERCIAL
+  OTHER
+}
+
+enum RiskStatus {
+  OPEN
+  MONITORING
+  RESOLVED
+}
+
 model User {
   id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name            String
@@ -160,53 +213,60 @@ model Verification {
 }
 
 model Workspace {
-  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name            String                @db.VarChar(200)
-  slug            String                @unique @db.VarChar(200)
-  logo            String?
-  metadata        String?
-  timezone        String                @default("UTC") @db.VarChar(100)
-  defaultCurrency String                @default("USD") @db.Char(3)
-  createdAt       DateTime              @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime              @updatedAt @db.Timestamptz(3)
-  members         WorkspaceMember[]
-  invitations     Invitation[]
-  sessions        Session[]
-  lifecycleStages LifecycleStage[]
-  tags            Tag[]
-  customerTags    CustomerTag[]
-  customers       Customer[]
-  contacts        Contact[]
-  tasks           Task[]
-  activities      Activity[]
-  systemEvents    SystemEvent[]
-  jobOutbox       JobOutbox[]
-  successGoals    SuccessGoal[]
-  healthInputs    HealthInput[]
-  healthRevisions HealthInputRevision[]
-  customerHealth  CustomerHealth[]
-  healthSnapshots HealthSnapshot[]
+  id               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String                @db.VarChar(200)
+  slug             String                @unique @db.VarChar(200)
+  logo             String?
+  metadata         String?
+  timezone         String                @default("UTC") @db.VarChar(100)
+  defaultCurrency  String                @default("USD") @db.Char(3)
+  createdAt        DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt        DateTime              @updatedAt @db.Timestamptz(3)
+  members          WorkspaceMember[]
+  invitations      Invitation[]
+  sessions         Session[]
+  lifecycleStages  LifecycleStage[]
+  tags             Tag[]
+  customerTags     CustomerTag[]
+  customers        Customer[]
+  contacts         Contact[]
+  tasks            Task[]
+  activities       Activity[]
+  systemEvents     SystemEvent[]
+  jobOutbox        JobOutbox[]
+  successGoals     SuccessGoal[]
+  healthInputs     HealthInput[]
+  healthRevisions  HealthInputRevision[]
+  customerHealth   CustomerHealth[]
+  healthSnapshots  HealthSnapshot[]
+  signals          Signal[]
+  attentionItems   AttentionItem[]
+  attentionSignals AttentionSignal[]
+  risks            Risk[]
+  riskSignals      RiskSignal[]
 
   @@map("workspace")
 }
 
 model WorkspaceMember {
-  id              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId     String                @db.Uuid
-  userId          String                @db.Uuid
-  role            String                @db.VarChar(32)
-  status          MembershipStatus      @default(ACTIVE)
-  joinedAt        DateTime              @default(now()) @db.Timestamptz(3)
-  workspace       Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  customers       Customer[]
-  ownedTasks      Task[]                @relation("TaskOwner")
-  createdTasks    Task[]                @relation("TaskCreator")
-  completedTasks  Task[]                @relation("TaskCompleter")
-  activities      Activity[]            @relation("ActivityCreator")
-  systemEvents    SystemEvent[]         @relation("SystemEventActor")
-  ownedGoals      SuccessGoal[]         @relation("GoalOwner")
-  healthRevisions HealthInputRevision[] @relation("HealthRevisionCreator")
+  id               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId      String                @db.Uuid
+  userId           String                @db.Uuid
+  role             String                @db.VarChar(32)
+  status           MembershipStatus      @default(ACTIVE)
+  joinedAt         DateTime              @default(now()) @db.Timestamptz(3)
+  workspace        Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customers        Customer[]
+  ownedTasks       Task[]                @relation("TaskOwner")
+  createdTasks     Task[]                @relation("TaskCreator")
+  completedTasks   Task[]                @relation("TaskCompleter")
+  activities       Activity[]            @relation("ActivityCreator")
+  systemEvents     SystemEvent[]         @relation("SystemEventActor")
+  ownedGoals       SuccessGoal[]         @relation("GoalOwner")
+  healthRevisions  HealthInputRevision[] @relation("HealthRevisionCreator")
+  ownedRisks       Risk[]                @relation("RiskOwner")
+  attentionActions AttentionItem[]       @relation("AttentionActor")
 
   @@unique([workspaceId, userId])
   @@unique([workspaceId, id])
@@ -297,6 +357,11 @@ model Customer {
   currentHealth        CustomerHealth?
   healthSnapshots      HealthSnapshot[]
   healthInputRevisions HealthInputRevision[]
+  signals              Signal[]
+  attentionItems       AttentionItem[]
+  attentionSignals     AttentionSignal[]
+  risks                Risk[]
+  riskSignals          RiskSignal[]
 
   @@unique([workspaceId, id])
   @@unique([workspaceId, externalKey])
@@ -343,6 +408,7 @@ model Task {
   dueAt         DateTime?        @db.Timestamptz(3)
   completedAt   DateTime?        @db.Timestamptz(3)
   completedById String?          @db.Uuid
+  riskId        String?          @db.Uuid
   createdAt     DateTime         @default(now()) @db.Timestamptz(3)
   updatedAt     DateTime         @updatedAt @db.Timestamptz(3)
   workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
@@ -350,12 +416,14 @@ model Task {
   owner         WorkspaceMember  @relation("TaskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
   createdBy     WorkspaceMember  @relation("TaskCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
   completedBy   WorkspaceMember? @relation("TaskCompleter", fields: [workspaceId, completedById], references: [workspaceId, id], onDelete: Restrict)
+  risk          Risk?            @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
 
   @@unique([workspaceId, id])
   @@index([workspaceId, ownerId, status])
   @@index([workspaceId, status, dueDate])
   @@index([workspaceId, status, dueAt])
   @@index([workspaceId, customerId])
+  @@index([workspaceId, riskId, status])
   @@map("task")
 }
 
@@ -495,6 +563,126 @@ model HealthSnapshot {
   @@unique([workspaceId, customerId, calculationKey])
   @@index([workspaceId, customerId, snapshotAt])
   @@map("health_snapshot")
+}
+
+model Signal {
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId     String            @db.Uuid
+  customerId      String            @db.Uuid
+  type            SignalRuleKey
+  ruleKey         SignalRuleKey
+  ruleVersion     String            @db.VarChar(50)
+  subjectKey      String            @db.VarChar(200)
+  episodeKey      String            @db.Uuid
+  severity        Severity
+  title           String            @db.VarChar(200)
+  description     String?           @db.VarChar(10000)
+  currentValue    Decimal?          @db.Decimal(18, 4)
+  previousValue   Decimal?          @db.Decimal(18, 4)
+  sourceType      String            @db.VarChar(50)
+  sourceRef       String?           @db.VarChar(500)
+  isSimulated     Boolean           @default(false)
+  evidence        Json
+  detectedAt      DateTime          @db.Timestamptz(3)
+  lastEvaluatedAt DateTime          @db.Timestamptz(3)
+  status          SignalStatus      @default(ACTIVE)
+  resolvedAt      DateTime?         @db.Timestamptz(3)
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  workspace       Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer          @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  attentionItems  AttentionSignal[]
+  risks           RiskSignal[]
+
+  @@unique([workspaceId, customerId, id])
+  @@index([workspaceId, customerId, status])
+  @@index([workspaceId, customerId, ruleKey, subjectKey, status])
+  @@map("signal")
+}
+
+model AttentionItem {
+  id                 String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId        String            @db.Uuid
+  customerId         String            @db.Uuid
+  priority           Severity
+  status             AttentionStatus   @default(OPEN)
+  reasonSummary      String            @db.VarChar(10000)
+  evidenceSignature  String            @db.VarChar(64)
+  nearestDeadline    DateTime?         @db.Date
+  dismissedSignature String?           @db.VarChar(64)
+  dismissedPriority  Severity?
+  dismissedReason    String?           @db.VarChar(10000)
+  actedById          String?           @db.Uuid
+  resolvedAt         DateTime?         @db.Timestamptz(3)
+  createdAt          DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt          DateTime          @updatedAt @db.Timestamptz(3)
+  workspace          Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer           Customer          @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  actedBy            WorkspaceMember?  @relation("AttentionActor", fields: [workspaceId, actedById], references: [workspaceId, id], onDelete: Restrict)
+  signals            AttentionSignal[]
+
+  @@unique([workspaceId, customerId, id])
+  @@index([workspaceId, status, priority, nearestDeadline, createdAt, id])
+  @@map("attention_item")
+}
+
+model AttentionSignal {
+  workspaceId     String        @db.Uuid
+  customerId      String        @db.Uuid
+  attentionItemId String        @db.Uuid
+  signalId        String        @db.Uuid
+  createdAt       DateTime      @default(now()) @db.Timestamptz(3)
+  workspace       Workspace     @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer      @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  attentionItem   AttentionItem @relation(fields: [workspaceId, customerId, attentionItemId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  signal          Signal        @relation(fields: [workspaceId, customerId, signalId], references: [workspaceId, customerId, id], onDelete: Restrict)
+
+  @@id([workspaceId, attentionItemId, signalId])
+  @@index([workspaceId, customerId])
+  @@map("attention_signal")
+}
+
+model Risk {
+  id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId          String          @db.Uuid
+  customerId           String          @db.Uuid
+  title                String          @db.VarChar(200)
+  description          String?         @db.VarChar(10000)
+  type                 RiskType
+  severity             Severity
+  ownerId              String          @db.Uuid
+  status               RiskStatus      @default(OPEN)
+  targetResolutionDate DateTime?       @db.Date
+  resolvedAt           DateTime?       @db.Timestamptz(3)
+  resolutionNote       String?         @db.VarChar(10000)
+  createdAt            DateTime        @default(now()) @db.Timestamptz(3)
+  updatedAt            DateTime        @updatedAt @db.Timestamptz(3)
+  workspace            Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer             Customer        @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  owner                WorkspaceMember @relation("RiskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  tasks                Task[]
+  signals              RiskSignal[]
+
+  @@unique([workspaceId, customerId, id])
+  @@index([workspaceId, status, severity, targetResolutionDate, id])
+  @@index([workspaceId, ownerId, status])
+  @@map("risk")
+}
+
+model RiskSignal {
+  workspaceId String    @db.Uuid
+  customerId  String    @db.Uuid
+  riskId      String    @db.Uuid
+  signalId    String    @db.Uuid
+  createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer    Customer  @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  risk        Risk      @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  signal      Signal    @relation(fields: [workspaceId, customerId, signalId], references: [workspaceId, customerId, id], onDelete: Restrict)
+
+  @@id([workspaceId, riskId, signalId])
+  @@index([workspaceId, customerId])
+  @@map("risk_signal")
 }
 
 model SystemEvent {

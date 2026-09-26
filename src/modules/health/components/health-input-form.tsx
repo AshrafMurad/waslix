@@ -22,6 +22,7 @@ export function HealthInputForm({
   locale,
   dimension,
   operationKey,
+  systemOperationKey,
   latest,
   isManualOverride,
 }: {
@@ -29,6 +30,7 @@ export function HealthInputForm({
   locale: string;
   dimension: "USAGE" | "ENGAGEMENT" | "SUPPORT" | "GOALS";
   operationKey: string;
+  systemOperationKey: string;
   latest: { value: number; observedAt: Date; isSimulated: boolean } | null;
   isManualOverride: boolean;
 }) {
@@ -108,11 +110,7 @@ export function HealthInputForm({
           <input type="hidden" name="customerId" value={customerId} />
           <input type="hidden" name="locale" value={locale} />
           <input type="hidden" name="dimension" value={dimension} />
-          <input
-            type="hidden"
-            name="operationKey"
-            value={crypto.randomUUID()}
-          />
+          <input type="hidden" name="operationKey" value={systemOperationKey} />
           <Button variant="outline" disabled={systemPending}>
             {t("actions.useSystem")}
           </Button>

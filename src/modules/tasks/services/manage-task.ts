@@ -153,6 +153,16 @@ export async function updateTask(
 ) {
   if (access.role === "VIEWER") throw new TaskDomainError("TASK_NOT_FOUND");
   return prisma.$transaction(async (transaction) => {
+    const replay = await transaction.systemEvent.findUnique({
+      where: {
+        workspaceId_idempotencyKey: {
+          workspaceId: access.workspaceId,
+          idempotencyKey: input.operationKey,
+        },
+      },
+      select: { entityId: true },
+    });
+    if (replay?.entityId === input.taskId) return { id: input.taskId };
     const task = await transaction.task.findFirst({
       where: { id: input.taskId, workspaceId: access.workspaceId },
       select: {
@@ -191,6 +201,17 @@ export async function updateTask(
         dueDate: calendarDate(input.dueDate),
         dueAt: input.dueAt ? new Date(input.dueAt) : null,
       },
+    });
+    await writeWorkEvent(transaction, {
+      workspaceId: access.workspaceId,
+      customerId: input.customerId,
+      type: "TASK_UPDATED",
+      entityType: "TASK",
+      entityId: input.taskId,
+      actorId: access.memberId,
+      idempotencyKey: input.operationKey,
+      metadata: { version: 1 },
+      jobType: "TASK_CHANGED",
     });
     return { id: input.taskId };
   });

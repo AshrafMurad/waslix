@@ -170,6 +170,15 @@ export async function updateCustomer(
         },
         data: { ownerId: input.ownerId },
       });
+      await transaction.risk.updateMany({
+        where: {
+          workspaceId: access.workspaceId,
+          customerId,
+          ownerId: existing.ownerId,
+          status: { in: ["OPEN", "MONITORING"] },
+        },
+        data: { ownerId: input.ownerId },
+      });
     }
     await syncTags(transaction, access.workspaceId, customerId, input.tags);
     return { id: customerId };
@@ -183,15 +192,34 @@ export async function archiveCustomer(
   if (!canArchiveCustomer(access)) {
     throw new CustomerDomainError("CUSTOMER_NOT_FOUND");
   }
-  const result = await prisma.customer.updateMany({
-    where: {
-      id: customerId,
-      workspaceId: access.workspaceId,
-      status: "ACTIVE",
-    },
-    data: { status: "ARCHIVED", archivedAt: new Date() },
+  await prisma.$transaction(async (transaction) => {
+    const now = new Date();
+    const result = await transaction.customer.updateMany({
+      where: {
+        id: customerId,
+        workspaceId: access.workspaceId,
+        status: "ACTIVE",
+      },
+      data: { status: "ARCHIVED", archivedAt: now },
+    });
+    if (result.count !== 1) throw new CustomerDomainError("CUSTOMER_NOT_FOUND");
+    await transaction.signal.updateMany({
+      where: { workspaceId: access.workspaceId, customerId, status: "ACTIVE" },
+      data: { status: "EXPIRED", resolvedAt: now, lastEvaluatedAt: now },
+    });
+    await transaction.attentionItem.updateMany({
+      where: {
+        workspaceId: access.workspaceId,
+        customerId,
+        status: { in: ["OPEN", "ACKNOWLEDGED"] },
+      },
+      data: {
+        status: "DISMISSED",
+        dismissedReason: "CUSTOMER_ARCHIVED",
+        resolvedAt: now,
+      },
+    });
   });
-  if (result.count !== 1) throw new CustomerDomainError("CUSTOMER_NOT_FOUND");
 }
 
 export async function createContact(

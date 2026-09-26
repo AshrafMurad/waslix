@@ -203,5 +203,27 @@ describe("health engine persistence", () => {
         now,
       ),
     ).rejects.toMatchObject({ code: "HEALTH_NOT_FOUND" });
+
+    await expect(
+      saveGoal(
+        {
+          userId: fixture.users.csm.id,
+          workspaceId: fixture.workspaceA.id,
+          memberId: fixture.memberships.alphaCsm.id,
+          role: "CSM",
+        },
+        {
+          customerId,
+          title: "Unauthorized goal",
+          description: null,
+          ownerId: fixture.memberships.alphaCsm.id,
+          progress: 10,
+          status: "IN_PROGRESS",
+          targetDate: null,
+          operationKey: randomUUID(),
+        },
+        now,
+      ),
+    ).rejects.toMatchObject({ code: "GOAL_NOT_FOUND" });
   });
 });

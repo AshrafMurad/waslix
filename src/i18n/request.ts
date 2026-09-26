@@ -18,6 +18,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
         .default,
       goals: (await import(`../../messages/${locale}/goals.json`)).default,
       health: (await import(`../../messages/${locale}/health.json`)).default,
+      risks: (await import(`../../messages/${locale}/risks.json`)).default,
+      attention: (await import(`../../messages/${locale}/attention.json`))
+        .default,
       tasks: (await import(`../../messages/${locale}/tasks.json`)).default,
       timeline: (await import(`../../messages/${locale}/timeline.json`))
         .default,

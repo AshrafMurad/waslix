@@ -6,11 +6,15 @@ import {
   recalculateCustomerHealth,
   runDailyHealthSweep,
 } from "@/modules/health/services/recalculate-customer-health";
+import { refreshCustomerIntelligence } from "@/modules/signals/services/refresh-customer-intelligence";
 
 const healthJobSchema = z.object({
   workspaceId: z.uuid(),
   customerId: z.uuid(),
   eventKey: z.string().min(1),
+});
+const intelligenceJobSchema = healthJobSchema.extend({
+  customerId: z.uuid().nullable(),
 });
 
 const healthQueue = "HEALTH_RECALCULATE";
@@ -24,7 +28,14 @@ async function main() {
   await boss.start();
   await boss.createQueue(healthQueue, { policy: "key_strict_fifo" });
   await boss.createQueue(dailyQueue, { policy: "singleton" });
-  const queues = new Set([healthQueue, dailyQueue]);
+  await boss.createQueue("TASK_CHANGED", { policy: "key_strict_fifo" });
+  await boss.createQueue("INTELLIGENCE_REFRESH", { policy: "key_strict_fifo" });
+  const queues = new Set([
+    healthQueue,
+    dailyQueue,
+    "TASK_CHANGED",
+    "INTELLIGENCE_REFRESH",
+  ]);
   await boss.work<unknown>(healthQueue, async (jobs) => {
     for (const job of jobs) {
       const payload = healthJobSchema.parse(job.data);
@@ -32,9 +43,34 @@ async function main() {
         workspaceId: payload.workspaceId,
         customerId: payload.customerId,
       });
+      await refreshCustomerIntelligence(
+        payload.workspaceId,
+        payload.customerId,
+      );
     }
   });
-  await boss.work(dailyQueue, async () => runDailyHealthSweep());
+  const refreshIntelligence = async (jobs: Array<{ data: unknown }>) => {
+    for (const job of jobs) {
+      const payload = intelligenceJobSchema.parse(job.data);
+      if (!payload.customerId) continue;
+      await refreshCustomerIntelligence(
+        payload.workspaceId,
+        payload.customerId,
+      );
+    }
+  };
+  await boss.work<unknown>("TASK_CHANGED", refreshIntelligence);
+  await boss.work<unknown>("INTELLIGENCE_REFRESH", refreshIntelligence);
+  await boss.work(dailyQueue, async () => {
+    await runDailyHealthSweep();
+    const { prisma } = await import("@/lib/db/prisma");
+    const customers = await prisma.customer.findMany({
+      where: { status: "ACTIVE" },
+      select: { id: true, workspaceId: true },
+    });
+    for (const customer of customers)
+      await refreshCustomerIntelligence(customer.workspaceId, customer.id);
+  });
   await boss.schedule(
     dailyQueue,
     "0 * * * *",

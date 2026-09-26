@@ -112,6 +112,23 @@ test.describe("authentication and workspace smoke", () => {
     await expect(page).toHaveURL(new RegExp(`/en/customers/${customer.id}$`));
     await expect(page.getByText("Not enough data").first()).toBeVisible();
 
+    await page.goto(`/en/customers/${customer.id}/health`);
+    await expect(page.getByText("Overall health")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Dimension breakdown" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Health inputs" }),
+    ).toBeVisible();
+
+    await page.goto(`/ar/customers/${customer.id}/health`);
+    await expect(page.locator("html")).toHaveAttribute("lang", "ar");
+    await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
+    await expect(page.getByText("الصحة العامة")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "تفصيل الأبعاد" }),
+    ).toBeVisible();
+
     await page.goto("/ar/customers");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
     await expect(page.getByRole("heading", { name: "العملاء" })).toBeVisible();

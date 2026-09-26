@@ -1,0 +1,52 @@
+{
+  "title": "Attention queue",
+  "description": "Customers with active facts that need review, grouped into one clear priority.",
+  "empty": "No customers need attention right now.",
+  "metrics": {
+    "attention": "Needs attention",
+    "critical": "Critical",
+    "atRisk": "At-risk health",
+    "overdue": "Overdue tasks"
+  },
+  "priority": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "CRITICAL": "Critical"
+  },
+  "reasons": {
+    "HEALTH_LOW": "Low health",
+    "HEALTH_DECLINE": "Health declined",
+    "LOW_ENGAGEMENT": "Low engagement",
+    "RENEWAL_PREPARATION": "Renewal preparation",
+    "RENEWAL_DUE": "Renewal due",
+    "RENEWAL_RISK": "Renewal risk",
+    "ONBOARDING_DELAY": "Onboarding delay",
+    "UNMANAGED_RISK": "Risk needs mitigation",
+    "RISK_UNRESOLVED": "Unresolved risk",
+    "TASK_OVERDUE": "High-priority task overdue",
+    "SUPPORT_ESCALATION": "Support escalation",
+    "USAGE_DECLINE": "Usage declined",
+    "GOAL_STALLED": "Goal stalled"
+  },
+  "health": "Health {score}",
+  "healthUnknown": "Health unavailable",
+  "trend": "{delta, number, ::sign-always} points · 30 days",
+  "renewal": "Renewal {date}",
+  "actions": {
+    "acknowledge": "Acknowledge",
+    "dismiss": "Dismiss",
+    "reason": "Dismissal reason",
+    "failed": "The attention item could not be updated."
+  },
+  "myTasks": "My tasks",
+  "viewAll": "View all",
+  "noCustomer": "No customer",
+  "tasksEmpty": "No open tasks assigned to you.",
+  "portfolioHealth": "Portfolio health",
+  "healthStatus": {
+    "HEALTHY": "Healthy",
+    "NEEDS_ATTENTION": "Needs attention",
+    "AT_RISK": "At risk"
+  }
+}

@@ -27,6 +27,9 @@ import { getCustomerOverview } from "@/modules/customers/queries/get-customer-ov
 import { canEditCustomer } from "@/modules/customers/services/customer-permissions";
 import { HealthOverview } from "@/modules/health/components/health-overview";
 import { getHealthOverview } from "@/modules/health/queries/get-health-overview";
+import { RiskForm } from "@/modules/risks/components/risk-form";
+import { RiskList } from "@/modules/risks/components/risk-list";
+import { getRiskOptions, getRisks } from "@/modules/risks/queries/get-risks";
 import { TaskForm } from "@/modules/tasks/components/task-form";
 import { TaskList } from "@/modules/tasks/components/task-list";
 import { getTaskOptions } from "@/modules/tasks/queries/get-task-options";
@@ -143,6 +146,65 @@ export default async function CustomerSectionPage({
               customers={options.customers}
               defaultOwnerId={access.memberId}
               canAssignOwner={canManageAccount}
+            />
+          </Card>
+        ) : null}
+      </div>
+    );
+  }
+
+  if (section === "risks") {
+    const [result, options, riskT] = await Promise.all([
+      getRisks(access, { customerId, cursor }),
+      getRiskOptions(access),
+      getTranslations({ locale, namespace: "risks" }),
+    ]);
+    const canManageAccount =
+      customer.status === "ACTIVE" &&
+      canEditCustomer(access, customer.owner.id);
+    const risks = result.risks.map((risk) => ({
+      id: risk.id,
+      customerId: risk.customerId,
+      title: risk.title,
+      description: risk.description,
+      type: risk.type,
+      severity: risk.severity,
+      status: risk.status,
+      targetResolutionDate:
+        risk.targetResolutionDate?.toISOString().slice(0, 10) ?? null,
+      resolutionNote: risk.resolutionNote,
+      ownerId: risk.ownerId,
+      customerName: risk.customer.name,
+      ownerName: risk.owner.user.name,
+      mitigationCount: risk.tasks.length,
+      updatedAt: risk.updatedAt.toISOString(),
+      canManage:
+        canManageAccount ||
+        (customer.status === "ACTIVE" && risk.ownerId === access.memberId),
+    }));
+    return (
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+        <Card className="gap-0 py-0">
+          <div className="border-b p-5">
+            <h2 className="text-lg font-semibold">{riskT("title")}</h2>
+            <p className="text-muted-foreground mt-1">{riskT("description")}</p>
+          </div>
+          <RiskList
+            risks={risks}
+            locale={locale}
+            customers={options.customers}
+            owners={options.owners}
+          />
+        </Card>
+        {canManageAccount ? (
+          <Card className="p-5">
+            <h2 className="mb-4 font-semibold">{riskT("actions.add")}</h2>
+            <RiskForm
+              locale={locale}
+              operationKey={randomUUID()}
+              lockedCustomerId={customerId}
+              customers={options.customers}
+              owners={options.owners}
             />
           </Card>
         ) : null}

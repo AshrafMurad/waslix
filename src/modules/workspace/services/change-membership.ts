@@ -103,6 +103,17 @@ export async function changeMembershipStatus(
       }
     }
 
+    if (target.status === "ACTIVE" && status === "INACTIVE") {
+      const ownedOpenWork = await transaction.risk.count({
+        where: {
+          workspaceId: access.workspaceId,
+          ownerId: target.id,
+          status: { in: ["OPEN", "MONITORING"] },
+        },
+      });
+      if (ownedOpenWork > 0) throw new WorkspaceAccessDeniedError();
+    }
+
     return transaction.workspaceMember.update({
       where: { id: target.id },
       data: { status },

@@ -1,0 +1,59 @@
+{
+  "eyebrow": "Customer risk",
+  "title": "Risks",
+  "description": "Track threats to customer success, assign mitigation, and retain resolution history.",
+  "empty": "No risks match this view.",
+  "resolution": "Resolution: {note}",
+  "fields": {
+    "customer": "Customer",
+    "chooseCustomer": "Choose a customer",
+    "title": "Risk title",
+    "description": "Description",
+    "type": "Type",
+    "severity": "Severity",
+    "owner": "Owner",
+    "targetDate": "Target resolution date",
+    "resolutionNote": "Resolution note"
+  },
+  "actions": {
+    "add": "Add risk",
+    "edit": "Edit details",
+    "save": "Save risk",
+    "saving": "Saving...",
+    "monitor": "Move to monitoring",
+    "resolve": "Resolve",
+    "reopen": "Reopen",
+    "mitigation": "Create mitigation task"
+  },
+  "type": {
+    "USAGE": "Usage",
+    "ENGAGEMENT": "Engagement",
+    "SUPPORT": "Support",
+    "STAKEHOLDER": "Stakeholder",
+    "ONBOARDING": "Onboarding",
+    "RENEWAL": "Renewal",
+    "COMMERCIAL": "Commercial",
+    "OTHER": "Other"
+  },
+  "severity": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "CRITICAL": "Critical"
+  },
+  "status": {
+    "OPEN": "Open",
+    "MONITORING": "Monitoring",
+    "RESOLVED": "Resolved"
+  },
+  "mitigation": {
+    "active": "Mitigation task active",
+    "none": "No active mitigation task"
+  },
+  "feedback": {
+    "saved": "Risk saved.",
+    "failed": "The risk change could not be saved.",
+    "noteRequired": "Add a resolution note before resolving this risk."
+  },
+  "pagination": { "next": "Next page" }
+}

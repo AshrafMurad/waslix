@@ -1,0 +1,52 @@
+{
+  "title": "قائمة الاهتمام",
+  "description": "العملاء الذين لديهم مؤشرات نشطة تحتاج إلى مراجعة، مجمعة في أولوية واحدة واضحة.",
+  "empty": "لا يوجد عملاء يحتاجون إلى اهتمام الآن.",
+  "metrics": {
+    "attention": "يحتاج إلى اهتمام",
+    "critical": "حرج",
+    "atRisk": "صحة معرضة للخطر",
+    "overdue": "مهام متأخرة"
+  },
+  "priority": {
+    "LOW": "منخفضة",
+    "MEDIUM": "متوسطة",
+    "HIGH": "مرتفعة",
+    "CRITICAL": "حرجة"
+  },
+  "reasons": {
+    "HEALTH_LOW": "صحة منخفضة",
+    "HEALTH_DECLINE": "تراجع الصحة",
+    "LOW_ENGAGEMENT": "تفاعل منخفض",
+    "RENEWAL_PREPARATION": "الاستعداد للتجديد",
+    "RENEWAL_DUE": "موعد التجديد",
+    "RENEWAL_RISK": "خطر التجديد",
+    "ONBOARDING_DELAY": "تأخر التهيئة",
+    "UNMANAGED_RISK": "الخطر يحتاج إلى إجراء",
+    "RISK_UNRESOLVED": "خطر غير محلول",
+    "TASK_OVERDUE": "مهمة عالية الأولوية متأخرة",
+    "SUPPORT_ESCALATION": "تصعيد دعم",
+    "USAGE_DECLINE": "تراجع الاستخدام",
+    "GOAL_STALLED": "هدف متعثر"
+  },
+  "health": "الصحة {score}",
+  "healthUnknown": "بيانات الصحة غير متاحة",
+  "trend": "{delta, number, ::sign-always} نقطة · 30 يوماً",
+  "renewal": "التجديد {date}",
+  "actions": {
+    "acknowledge": "تأكيد الاطلاع",
+    "dismiss": "استبعاد",
+    "reason": "سبب الاستبعاد",
+    "failed": "تعذر تحديث عنصر الاهتمام."
+  },
+  "myTasks": "مهامي",
+  "viewAll": "عرض الكل",
+  "noCustomer": "دون عميل",
+  "tasksEmpty": "لا توجد مهام مفتوحة مسندة إليك.",
+  "portfolioHealth": "صحة المحفظة",
+  "healthStatus": {
+    "HEALTHY": "جيدة",
+    "NEEDS_ATTENTION": "تحتاج إلى اهتمام",
+    "AT_RISK": "معرضة للخطر"
+  }
+}

@@ -227,6 +227,7 @@ export async function HealthOverview({
                   locale={locale}
                   dimension={dimension}
                   operationKey={randomUUID()}
+                  systemOperationKey={randomUUID()}
                   latest={input?.latest ?? null}
                   isManualOverride={input?.isManualOverride ?? false}
                 />

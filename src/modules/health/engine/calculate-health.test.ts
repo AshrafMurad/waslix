@@ -56,6 +56,15 @@ describe("health engine", () => {
     });
   });
 
+  it("rejects normalized scores outside zero to one hundred", () => {
+    expect(() => calculateHealth([input("USAGE", -1)], now)).toThrow(
+      RangeError,
+    );
+    expect(() => calculateHealth([input("SUPPORT", 101)], now)).toThrow(
+      RangeError,
+    );
+  });
+
   it.each([
     [59, "AT_RISK"],
     [60, "NEEDS_ATTENTION"],
