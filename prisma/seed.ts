@@ -4,9 +4,11 @@ import { seedTwoWorkspaceFixture } from "../tests/fixtures/two-workspaces";
 
 async function main() {
   const prisma = new PrismaClient();
+  const configuredFixturePassword = process.env.SEED_FIXTURE_PASSWORD?.trim();
   const fixturePassword =
-    process.env.SEED_FIXTURE_PASSWORD ??
-    (process.env.NODE_ENV === "production" ? undefined : "admin123");
+    process.env.NODE_ENV === "production"
+      ? configuredFixturePassword
+      : (configuredFixturePassword ?? "admin123");
 
   if (!fixturePassword) {
     throw new Error("SEED_FIXTURE_PASSWORD is required in production");
@@ -121,6 +123,9 @@ async function main() {
     const northstar = seededCustomers.get("northstar")!;
     const atlas = seededCustomers.get("atlas")!;
     const cedar = seededCustomers.get("cedar")!;
+    const noura = seededCustomers.get("noura")!;
+    const bayt = seededCustomers.get("bayt")!;
+    const sahab = seededCustomers.get("sahab")!;
     const seededCustomerIds = [...seededCustomers.values()].map(
       (customer) => customer.id,
     );
@@ -162,6 +167,124 @@ async function main() {
           customerId: { in: seededCustomerIds },
         },
       });
+      await transaction.renewal.deleteMany({
+        where: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: { in: seededCustomerIds },
+        },
+      });
+
+      await transaction.renewal.createMany({
+        data: [
+          {
+            workspaceId: fixture.workspaceA.id,
+            customerId: atlas.id,
+            ownerId: atlas.ownerId,
+            contractValue: "210000.00",
+            currency: "SAR",
+            startAt: new Date("2026-01-01T00:00:00.000Z"),
+            renewalAt: new Date("2026-10-03T00:00:00.000Z"),
+            stage: "UPCOMING",
+            readinessStatus: "AT_RISK",
+            readinessReasons: ["HIGH_RISK_OPEN", "ENGAGEMENT_STALE"],
+            readinessCalculatedAt: new Date("2026-09-26T09:00:00.000Z"),
+            expectedOutcome: "RENEW",
+          },
+          {
+            workspaceId: fixture.workspaceA.id,
+            customerId: northstar.id,
+            ownerId: northstar.ownerId,
+            contractValue: "125000.00",
+            currency: "SAR",
+            startAt: new Date("2026-04-01T00:00:00.000Z"),
+            renewalAt: new Date("2026-10-24T00:00:00.000Z"),
+            stage: "PREPARING",
+            readinessStatus: "NEEDS_ATTENTION",
+            readinessReasons: ["RISK_OPEN", "GOALS_LOW"],
+            readinessCalculatedAt: new Date("2026-09-26T09:00:00.000Z"),
+            expectedOutcome: "EXPAND",
+          },
+          {
+            workspaceId: fixture.workspaceA.id,
+            customerId: cedar.id,
+            ownerId: cedar.ownerId,
+            contractValue: "154000.00",
+            currency: "SAR",
+            startAt: new Date("2026-03-01T00:00:00.000Z"),
+            renewalAt: new Date("2026-11-20T00:00:00.000Z"),
+            stage: "DISCUSSION",
+            readinessStatus: "HEALTHY",
+            readinessReasons: [],
+            readinessCalculatedAt: new Date("2026-09-26T09:00:00.000Z"),
+            expectedOutcome: "RENEW",
+          },
+          {
+            workspaceId: fixture.workspaceA.id,
+            customerId: noura.id,
+            ownerId: noura.ownerId,
+            contractValue: "86000.00",
+            currency: "SAR",
+            startAt: new Date("2026-08-01T00:00:00.000Z"),
+            renewalAt: new Date("2026-12-26T00:00:00.000Z"),
+            stage: "UPCOMING",
+            readinessStatus: null,
+            readinessReasons: [],
+            readinessCalculatedAt: null,
+            expectedOutcome: "UNKNOWN",
+          },
+          {
+            workspaceId: fixture.workspaceA.id,
+            customerId: bayt.id,
+            ownerId: bayt.ownerId,
+            contractValue: "72000.00",
+            currency: "SAR",
+            startAt: new Date("2026-02-01T00:00:00.000Z"),
+            renewalAt: new Date("2026-09-10T00:00:00.000Z"),
+            stage: "RENEWED",
+            readinessStatus: "NEEDS_ATTENTION",
+            readinessReasons: ["ONBOARDING_DELAYED"],
+            readinessCalculatedAt: new Date("2026-08-15T09:00:00.000Z"),
+            expectedOutcome: "RENEW",
+            outcome: "RENEWED",
+            completedAt: new Date("2026-09-08T12:00:00.000Z"),
+          },
+          {
+            workspaceId: fixture.workspaceA.id,
+            customerId: sahab.id,
+            ownerId: sahab.ownerId,
+            contractValue: "98000.00",
+            currency: "SAR",
+            startAt: new Date("2025-09-01T00:00:00.000Z"),
+            renewalAt: new Date("2026-08-28T00:00:00.000Z"),
+            stage: "CHURNED",
+            readinessStatus: "AT_RISK",
+            readinessReasons: ["HEALTH_AT_RISK", "ENGAGEMENT_STALE"],
+            readinessCalculatedAt: new Date("2026-08-01T09:00:00.000Z"),
+            expectedOutcome: "CHURN",
+            outcome: "CHURNED",
+            completedAt: new Date("2026-08-25T12:00:00.000Z"),
+            churnReason: "Customer consolidated tools during budget reduction.",
+          },
+        ],
+      });
+      await Promise.all([
+        transaction.customer.update({
+          where: { id: atlas.id },
+          data: { renewalDate: new Date("2026-10-03T00:00:00.000Z") },
+        }),
+        transaction.customer.update({
+          where: { id: northstar.id },
+          data: { renewalDate: new Date("2026-10-24T00:00:00.000Z") },
+        }),
+        transaction.customer.update({
+          where: { id: cedar.id },
+          data: { renewalDate: new Date("2026-11-20T00:00:00.000Z") },
+        }),
+        transaction.customer.update({
+          where: { id: noura.id },
+          data: { renewalDate: new Date("2026-12-26T00:00:00.000Z") },
+        }),
+      ]);
 
       const northstarRisk = await transaction.risk.create({
         data: {
@@ -347,6 +470,10 @@ async function main() {
         ],
       });
     });
+    await seedTwoWorkspaceFixture(
+      prisma,
+      process.env.NODE_ENV === "production" ? fixturePassword : "admin123",
+    );
   } finally {
     await prisma.$disconnect();
   }

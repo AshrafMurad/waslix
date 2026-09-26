@@ -6,6 +6,7 @@ import { Prisma, type Severity } from "@prisma/client";
 
 import { prisma } from "@/lib/db/prisma";
 import { calculateAttention } from "@/modules/attention/engine/calculate-attention";
+import { refreshRecommendationsForCustomer } from "@/modules/recommendations/services/manage-recommendations";
 
 import { evaluateSignals, signalRuleVersion } from "../engine/evaluate-signals";
 
@@ -125,6 +126,17 @@ export async function refreshCustomerIntelligence(
           status: "DISMISSED",
           dismissedReason: "CUSTOMER_ARCHIVED",
           resolvedAt: now,
+        },
+      });
+      await transaction.recommendation.updateMany({
+        where: {
+          workspaceId,
+          customerId,
+          status: "SUGGESTED",
+        },
+        data: {
+          status: "DISMISSED",
+          dismissedReason: "CUSTOMER_ARCHIVED",
         },
       });
       return { signalCount: 0, attention: null };
@@ -303,6 +315,12 @@ export async function refreshCustomerIntelligence(
       customerId,
       activeSignals.map((signal) => signal.id),
       attention,
+      now,
+    );
+    await refreshRecommendationsForCustomer(
+      transaction,
+      workspaceId,
+      customerId,
       now,
     );
     return { signalCount: activeSignals.length, attention };

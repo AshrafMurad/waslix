@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
+import { syncPlaybookForTaskStatus } from "@/modules/playbooks/services/manage-playbook";
 import { writeWorkEvent } from "@/modules/work-events/services/write-work-event";
 
 import type { TaskInput, TaskStatusInput } from "../validation/task-input";
@@ -290,6 +291,42 @@ export async function changeTaskStatus(
           idempotencyKey: input.operationKey,
           metadata: { version: 1, before: task.status, after: input.status },
           jobType: "TASK_CHANGED",
+        });
+      }
+      await syncPlaybookForTaskStatus(transaction, {
+        workspaceId: access.workspaceId,
+        taskId: task.id,
+        taskStatus: input.status,
+        actorId: access.memberId,
+        operationKey: input.operationKey,
+        now,
+      });
+      if (input.status === "COMPLETED") {
+        await transaction.recommendation.updateMany({
+          where: {
+            workspaceId: access.workspaceId,
+            taskId: task.id,
+            status: "ACCEPTED",
+          },
+          data: { status: "COMPLETED", completedAt: now },
+        });
+      } else if (input.status === "CANCELLED") {
+        await transaction.recommendation.updateMany({
+          where: {
+            workspaceId: access.workspaceId,
+            taskId: task.id,
+            status: "ACCEPTED",
+          },
+          data: { status: "DISMISSED", dismissedReason: "TASK_CANCELLED" },
+        });
+      } else if (task.status === "COMPLETED") {
+        await transaction.recommendation.updateMany({
+          where: {
+            workspaceId: access.workspaceId,
+            taskId: task.id,
+            status: "COMPLETED",
+          },
+          data: { status: "ACCEPTED", completedAt: null },
         });
       }
       return { id: task.id };

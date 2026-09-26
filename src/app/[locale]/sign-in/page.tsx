@@ -2,6 +2,12 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { isLocale } from "@/i18n/config";
+import { redirect } from "@/i18n/navigation";
+import {
+  AuthenticationRequiredError,
+  requireWorkspaceAccess,
+  WorkspaceAccessDeniedError,
+} from "@/lib/auth/access-context";
 import { SignInForm } from "@/modules/auth/components/sign-in-form";
 
 export default async function SignInPage({
@@ -15,6 +21,19 @@ export default async function SignInPage({
   }
 
   setRequestLocale(locale);
+
+  try {
+    await requireWorkspaceAccess();
+    redirect({ href: "/overview", locale });
+  } catch (error) {
+    if (
+      !(error instanceof AuthenticationRequiredError) &&
+      !(error instanceof WorkspaceAccessDeniedError)
+    ) {
+      throw error;
+    }
+  }
+
   const t = await getTranslations({ locale, namespace: "auth" });
 
   return (

@@ -12,7 +12,9 @@ type WorkEventInput = {
     | "RISK"
     | "ONBOARDING"
     | "MILESTONE"
-    | "RENEWAL";
+    | "RENEWAL"
+    | "RECOMMENDATION"
+    | "PLAYBOOK_RUN";
   entityId: string;
   actorId: string;
   idempotencyKey: string;

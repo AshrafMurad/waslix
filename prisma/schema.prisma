@@ -127,6 +127,44 @@ enum AttentionStatus {
   DISMISSED
 }
 
+enum RecommendationStatus {
+  SUGGESTED
+  ACCEPTED
+  COMPLETED
+  DISMISSED
+}
+
+enum RecommendationType {
+  REVIEW_HEALTH
+  SCHEDULE_CHECK_IN
+  START_PLAYBOOK
+  FOLLOW_UP
+  CREATE_MITIGATION
+  REVIEW_SUPPORT
+  REVIEW_GOALS
+  COMPLETE_TASK
+}
+
+enum PlaybookTriggerType {
+  AT_RISK_RECOVERY
+  RENEWAL_PREPARATION
+  ONBOARDING_RECOVERY
+  LOW_ENGAGEMENT
+}
+
+enum PlaybookRunStatus {
+  ACTIVE
+  COMPLETED
+  DISMISSED
+}
+
+enum PlaybookStepStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
 enum RiskType {
   USAGE
   ENGAGEMENT
@@ -279,11 +317,15 @@ model Workspace {
   signals          Signal[]
   attentionItems   AttentionItem[]
   attentionSignals AttentionSignal[]
+  recommendations  Recommendation[]
   risks            Risk[]
   riskSignals      RiskSignal[]
   onboardings      Onboarding[]
   milestones       OnboardingMilestone[]
   renewals         Renewal[]
+  playbookTemplates PlaybookTemplate[]
+  playbookRuns     PlaybookRun[]
+  playbookSteps    PlaybookStep[]
 
   @@map("workspace")
 }
@@ -310,6 +352,7 @@ model WorkspaceMember {
   ownedMilestones  OnboardingMilestone[] @relation("MilestoneOwner")
   ownedRenewals    Renewal[]             @relation("RenewalOwner")
   attentionActions AttentionItem[]       @relation("AttentionActor")
+  ownedPlaybookRuns PlaybookRun[]        @relation("PlaybookRunOwner")
 
   @@unique([workspaceId, userId])
   @@unique([workspaceId, id])
@@ -467,6 +510,10 @@ model Task {
   risk          Risk?                @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
   renewal       Renewal?             @relation(fields: [workspaceId, customerId, renewalId], references: [workspaceId, customerId, id], onDelete: Restrict)
   milestone     OnboardingMilestone? @relation(fields: [workspaceId, customerId, milestoneId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  playbookRunId String?              @db.Uuid
+  playbookRun   PlaybookRun?         @relation(fields: [workspaceId, customerId, playbookRunId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  recommendation Recommendation?
+  playbookStep  PlaybookStep?
 
   @@unique([workspaceId, id])
   @@index([workspaceId, ownerId, status])
@@ -476,6 +523,7 @@ model Task {
   @@index([workspaceId, riskId, status])
   @@index([workspaceId, renewalId, status])
   @@index([workspaceId, milestoneId, status])
+  @@index([workspaceId, playbookRunId, status])
   @@map("task")
 }
 
@@ -644,6 +692,7 @@ model Signal {
   workspace       Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   customer        Customer          @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
   attentionItems  AttentionSignal[]
+  recommendations Recommendation[]
   risks           RiskSignal[]
 
   @@unique([workspaceId, customerId, id])
@@ -694,6 +743,37 @@ model AttentionSignal {
   @@map("attention_signal")
 }
 
+model Recommendation {
+  id              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId     String               @db.Uuid
+  customerId      String               @db.Uuid
+  signalId        String?              @db.Uuid
+  ruleKey         SignalRuleKey
+  episodeKey      String               @db.Uuid
+  type            RecommendationType
+  title           String               @db.VarChar(200)
+  reason          String               @db.VarChar(10000)
+  priority        Severity
+  status          RecommendationStatus @default(SUGGESTED)
+  taskId          String?              @db.Uuid
+  playbookRunId   String?              @db.Uuid
+  completedAt     DateTime?            @db.Timestamptz(3)
+  dismissedReason String?              @db.VarChar(10000)
+  createdAt       DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime             @updatedAt @db.Timestamptz(3)
+  workspace       Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer             @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  signal          Signal?              @relation(fields: [workspaceId, customerId, signalId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  task            Task?                @relation(fields: [workspaceId, taskId], references: [workspaceId, id], onDelete: Restrict)
+  playbookRun     PlaybookRun?         @relation(fields: [workspaceId, customerId, playbookRunId], references: [workspaceId, customerId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, customerId, ruleKey, episodeKey])
+  @@unique([workspaceId, taskId])
+  @@unique([workspaceId, playbookRunId])
+  @@index([workspaceId, customerId, status, priority])
+  @@map("recommendation")
+}
+
 model Risk {
   id                   String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   workspaceId          String          @db.Uuid
@@ -714,6 +794,7 @@ model Risk {
   owner                WorkspaceMember @relation("RiskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
   tasks                Task[]
   signals              RiskSignal[]
+  playbookRuns         PlaybookRun[]
 
   @@unique([workspaceId, customerId, id])
   @@index([workspaceId, status, severity, targetResolutionDate, id])
@@ -818,6 +899,96 @@ model Renewal {
   @@index([workspaceId, stage])
   @@index([workspaceId, ownerId, stage])
   @@map("renewal")
+}
+
+model PlaybookTemplate {
+  id          String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId String                 @db.Uuid
+  key         String                 @db.VarChar(100)
+  name        String                 @db.VarChar(200)
+  description String                 @db.VarChar(10000)
+  triggerType PlaybookTriggerType
+  version     Int
+  isActive    Boolean                @default(true)
+  createdAt   DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime               @updatedAt @db.Timestamptz(3)
+  workspace   Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  steps       PlaybookTemplateStep[]
+  runs        PlaybookRun[]
+
+  @@unique([workspaceId, key, version])
+  @@unique([workspaceId, id])
+  @@index([workspaceId, key, isActive])
+  @@map("playbook_template")
+}
+
+model PlaybookTemplateStep {
+  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId   String           @db.Uuid
+  templateId    String           @db.Uuid
+  title         String           @db.VarChar(200)
+  description   String?          @db.VarChar(10000)
+  position      Int
+  dueOffsetDays Int
+  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime         @updatedAt @db.Timestamptz(3)
+  workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  template      PlaybookTemplate @relation(fields: [workspaceId, templateId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([workspaceId, templateId, position])
+  @@map("playbook_template_step")
+}
+
+model PlaybookRun {
+  id              String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId     String              @db.Uuid
+  customerId      String              @db.Uuid
+  templateId      String              @db.Uuid
+  templateVersion Int
+  ownerId         String              @db.Uuid
+  riskId          String?             @db.Uuid
+  status          PlaybookRunStatus   @default(ACTIVE)
+  startedAt       DateTime            @default(now()) @db.Timestamptz(3)
+  completedAt     DateTime?           @db.Timestamptz(3)
+  dismissedReason String?             @db.VarChar(10000)
+  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
+  workspace       Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer            @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  template        PlaybookTemplate    @relation(fields: [workspaceId, templateId], references: [workspaceId, id], onDelete: Restrict)
+  owner           WorkspaceMember     @relation("PlaybookRunOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  risk            Risk?               @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  tasks           Task[]
+  steps           PlaybookStep[]
+  recommendation  Recommendation?
+
+  @@unique([workspaceId, customerId, id])
+  @@index([workspaceId, ownerId, status])
+  @@map("playbook_run")
+}
+
+model PlaybookStep {
+  id            String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId   String             @db.Uuid
+  customerId    String             @db.Uuid
+  playbookRunId String             @db.Uuid
+  title         String             @db.VarChar(200)
+  description   String?            @db.VarChar(10000)
+  position      Int
+  status        PlaybookStepStatus @default(OPEN)
+  taskId        String             @db.Uuid
+  completedAt   DateTime?          @db.Timestamptz(3)
+  createdAt     DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime           @updatedAt @db.Timestamptz(3)
+  workspace     Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer      Customer           @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  playbookRun   PlaybookRun        @relation(fields: [workspaceId, customerId, playbookRunId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  task          Task               @relation(fields: [workspaceId, taskId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, playbookRunId, position])
+  @@unique([workspaceId, taskId])
+  @@index([workspaceId, customerId, status])
+  @@map("playbook_step")
 }
 
 model SystemEvent {

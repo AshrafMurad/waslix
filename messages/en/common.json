@@ -2,7 +2,9 @@
   "home": {
     "kicker": "Waslix foundation",
     "title": "Customer success starts here",
-    "description": "The project foundation is ready with locale-prefixed routing, English and Arabic catalogs, Tailwind, and shadcn configuration."
+    "description": "The project foundation is ready with locale-prefixed routing, English and Arabic catalogs, Tailwind, and shadcn configuration.",
+    "signIn": "Sign in",
+    "openWorkspace": "Open workspace"
   },
   "datePicker": {
     "choose": "Choose a date",

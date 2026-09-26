@@ -1,6 +1,14 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
 import { isLocale } from "@/i18n/config";
+import { Link, redirect } from "@/i18n/navigation";
+import {
+  AuthenticationRequiredError,
+  requireWorkspaceAccess,
+  WorkspaceAccessDeniedError,
+} from "@/lib/auth/access-context";
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -9,8 +17,22 @@ type HomePageProps = {
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
 
-  if (isLocale(locale)) {
-    setRequestLocale(locale);
+  if (!isLocale(locale)) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+
+  try {
+    await requireWorkspaceAccess();
+    redirect({ href: "/overview", locale });
+  } catch (error) {
+    if (
+      !(error instanceof AuthenticationRequiredError) &&
+      !(error instanceof WorkspaceAccessDeniedError)
+    ) {
+      throw error;
+    }
   }
 
   const t = await getTranslations({ locale, namespace: "common" });
@@ -28,6 +50,14 @@ export default async function HomePage({ params }: HomePageProps) {
           <p className="text-muted-foreground max-w-xl text-base leading-7">
             {t("home.description")}
           </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button asChild>
+            <Link href="/sign-in">{t("home.signIn")}</Link>
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/workspace">{t("home.openWorkspace")}</Link>
+          </Button>
         </div>
       </section>
     </main>
