@@ -5,6 +5,10 @@ import { Check, RotateCcw, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenuItem,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 import { Spinner } from "@/components/ui/spinner";
 
 import {
@@ -21,6 +25,7 @@ export function TaskStatusButton({
   status,
   operationKey,
   targetStatus,
+  display = "button",
 }: {
   taskId: string;
   customerId: string | null;
@@ -28,6 +33,7 @@ export function TaskStatusButton({
   status: "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
   operationKey: string;
   targetStatus?: "COMPLETED" | "OPEN" | "CANCELLED";
+  display?: "button" | "menu-item";
 }) {
   const t = useTranslations("tasks");
   const [state, action, pending] = useActionState(
@@ -44,14 +50,43 @@ export function TaskStatusButton({
     });
   };
 
+  const label =
+    target === "COMPLETED"
+      ? t("actions.complete")
+      : target === "OPEN"
+        ? t("actions.reopen")
+        : t("actions.cancel");
+  const icon = pending ? (
+    <Spinner aria-label={label} />
+  ) : target === "COMPLETED" ? (
+    <Check aria-hidden="true" />
+  ) : target === "OPEN" ? (
+    <RotateCcw aria-hidden="true" />
+  ) : (
+    <X aria-hidden="true" />
+  );
+
   return (
-    <form onSubmit={submit} className="flex items-center gap-2">
+    <form
+      onSubmit={submit}
+      className={display === "button" ? "flex items-center gap-2" : undefined}
+    >
       <input type="hidden" name="taskId" value={taskId} />
       <input type="hidden" name="customerId" value={customerId ?? ""} />
       <input type="hidden" name="locale" value={locale} />
       <input type="hidden" name="status" value={target} />
       <input type="hidden" name="operationKey" value={operationKey} />
-      {target === "CANCELLED" ? (
+      {display === "menu-item" ? (
+        <DropdownMenuItem
+          asChild
+          variant={target === "CANCELLED" ? "destructive" : "default"}
+        >
+          <button type="submit" disabled={pending || status === "CANCELLED"}>
+            {icon}
+            {label}
+          </button>
+        </DropdownMenuItem>
+      ) : target === "CANCELLED" ? (
         <Button
           type="submit"
           disabled={pending || status === "CANCELLED"}
@@ -59,9 +94,8 @@ export function TaskStatusButton({
           variant="ghost"
           className="text-risk"
         >
-          {pending ? <Spinner aria-label={t("actions.cancel")} /> : null}
-          {!pending ? <X aria-hidden="true" /> : null}
-          {t("actions.cancel")}
+          {icon}
+          {label}
         </Button>
       ) : (
         <Button
@@ -70,26 +104,20 @@ export function TaskStatusButton({
           aria-busy={pending}
           variant={target === "COMPLETED" ? "default" : "outline"}
         >
-          {pending ? (
-            <Spinner
-              aria-label={
-                target === "COMPLETED"
-                  ? t("actions.complete")
-                  : t("actions.reopen")
-              }
-            />
-          ) : target === "COMPLETED" ? (
-            <Check aria-hidden="true" />
-          ) : (
-            <RotateCcw aria-hidden="true" />
-          )}
-          {target === "COMPLETED" ? t("actions.complete") : t("actions.reopen")}
+          {icon}
+          {label}
         </Button>
       )}
       {state.status === "error" ? (
-        <span className="text-risk text-xs" role="alert">
-          {t("feedback.failed")}
-        </span>
+        display === "menu-item" ? (
+          <DropdownMenuLabel className="text-risk font-normal" role="alert">
+            {t("feedback.failed")}
+          </DropdownMenuLabel>
+        ) : (
+          <span className="text-risk text-xs" role="alert">
+            {t("feedback.failed")}
+          </span>
+        )
       ) : null}
     </form>
   );

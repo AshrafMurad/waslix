@@ -3,7 +3,7 @@
   "title": "Risks",
   "description": "Track threats to customer success, assign mitigation, and retain resolution history.",
   "empty": "No risks match this view.",
-  "resolution": "Resolution: {note}",
+  "resolution": "Resolution: <note></note>",
   "target": "Target {date}",
   "missingTarget": "No target date",
   "columns": {
@@ -39,6 +39,7 @@
     "addDescription": "Record a customer risk and assign clear ownership.",
     "editDescription": "Update the risk details without changing its lifecycle history.",
     "manage": "Manage risk",
+    "actions": "Risk actions",
     "manageDescription": "Move the risk through monitoring, mitigation, and resolution.",
     "close": "Close"
   },

@@ -1,8 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Pencil, SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,8 +11,13 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -74,6 +79,11 @@ function RiskRow({
 }) {
   const t = useTranslations("risks");
   const format = useFormatter();
+  const [editOpen, setEditOpen] = useState(false);
+  const [editOperationKey, setEditOperationKey] = useState(
+    `${risk.id}:edit:${risk.updatedAt}`,
+  );
+  const [manageOpen, setManageOpen] = useState(false);
   const [statusState, statusAction, statusPending] = useActionState(
     changeRiskStatusAction,
     initial,
@@ -94,16 +104,17 @@ function RiskRow({
   return (
     <TableRow>
       <TableCell className="w-full min-w-52 whitespace-normal sm:min-w-64">
-        <Link
-          href={`/customers/${risk.customerId}/risks`}
-          className="font-semibold hover:underline"
-          dir="auto"
-        >
-          {risk.title}
-        </Link>
-        <p className="text-muted-foreground mt-1 text-xs" dir="auto">
-          {risk.customerName}
-        </p>
+        <div dir="auto" className="text-start">
+          <Link
+            href={`/customers/${risk.customerId}/risks`}
+            className="font-semibold hover:underline"
+          >
+            {risk.title}
+          </Link>
+          <p className="text-muted-foreground mt-1 text-xs">
+            {risk.customerName}
+          </p>
+        </div>
         <div className="mt-2 flex flex-wrap gap-2 sm:hidden">
           <span
             className={
@@ -119,13 +130,15 @@ function RiskRow({
           </span>
         </div>
         {risk.description ? (
-          <p className="mt-2 line-clamp-2 text-sm" dir="auto">
+          <p className="mt-2 line-clamp-2 text-start text-sm" dir="auto">
             {risk.description}
           </p>
         ) : null}
         {risk.resolutionNote ? (
-          <p className="text-muted-foreground mt-2 text-xs" dir="auto">
-            {t("resolution", { note: risk.resolutionNote })}
+          <p className="text-muted-foreground mt-2 text-start text-xs">
+            {t.rich("resolution", {
+              note: () => <bdi>{risk.resolutionNote}</bdi>,
+            })}
           </p>
         ) : null}
         <p className="text-muted-foreground mt-2 text-xs sm:hidden">
@@ -148,34 +161,59 @@ function RiskRow({
           {t(`status.${risk.status}`)}
         </span>
       </TableCell>
-      <TableCell className="hidden lg:table-cell" dir="auto">
-        {risk.ownerName}
+      <TableCell className="hidden text-start lg:table-cell">
+        <bdi>{risk.ownerName}</bdi>
       </TableCell>
       <TableCell className="text-muted-foreground hidden text-xs whitespace-normal xl:table-cell">
         {risk.mitigationCount ? t("mitigation.active") : t("mitigation.none")}
       </TableCell>
       <TableCell className="w-0 whitespace-normal">
-        <div className="flex justify-end gap-2">
-          {risk.canManage && risk.status !== "RESOLVED" ? (
-            <RiskFormDialog
-              locale={locale}
-              initialOperationKey={`${risk.id}:edit:${risk.updatedAt}`}
-              customers={customers}
-              owners={owners}
-              value={risk}
-            />
-          ) : null}
-          {risk.canManage ? (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon-sm"
-                  aria-label={t("dialog.manage")}
-                >
-                  <MoreHorizontal aria-hidden="true" />
-                </Button>
-              </DialogTrigger>
+        {risk.canManage ? (
+          <>
+            <div className="flex justify-end">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label={t("dialog.actions")}
+                  >
+                    <MoreHorizontal aria-hidden="true" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {risk.status !== "RESOLVED" ? (
+                    <DropdownMenuItem
+                      onSelect={() => {
+                        setEditOperationKey(crypto.randomUUID());
+                        setEditOpen(true);
+                      }}
+                    >
+                      <Pencil aria-hidden="true" />
+                      {t("actions.edit")}
+                    </DropdownMenuItem>
+                  ) : null}
+                  <DropdownMenuItem onSelect={() => setManageOpen(true)}>
+                    <SlidersHorizontal aria-hidden="true" />
+                    {t("dialog.manage")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            {risk.status !== "RESOLVED" ? (
+              <RiskFormDialog
+                key={editOperationKey}
+                locale={locale}
+                initialOperationKey={editOperationKey}
+                customers={customers}
+                owners={owners}
+                value={risk}
+                open={editOpen}
+                onOpenChange={setEditOpen}
+                hideTrigger
+              />
+            ) : null}
+            <Dialog open={manageOpen} onOpenChange={setManageOpen}>
               <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                   <DialogTitle dir="auto">{risk.title}</DialogTitle>
@@ -342,8 +380,8 @@ function RiskRow({
                 ) : null}
               </DialogContent>
             </Dialog>
-          ) : null}
-        </div>
+          </>
+        ) : null}
       </TableCell>
     </TableRow>
   );
@@ -359,7 +397,7 @@ export function RiskList(props: {
   if (!props.risks.length)
     return <p className="text-muted-foreground p-6">{t("empty")}</p>;
   return (
-    <Table>
+    <Table dir={props.locale === "ar" ? "rtl" : "ltr"}>
       <TableHeader>
         <TableRow>
           <TableHead>{t("columns.risk")}</TableHead>

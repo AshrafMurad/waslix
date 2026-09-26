@@ -5,6 +5,14 @@
   "empty": "No tasks match this view.",
   "standalone": "No customer",
   "due": "Due {date}",
+  "notSet": "Not set",
+  "columns": {
+    "task": "Task",
+    "status": "Status",
+    "due": "Due",
+    "owner": "Owner",
+    "actions": "Actions"
+  },
   "actions": {
     "add": "Add task",
     "edit": "Edit",
@@ -12,7 +20,8 @@
     "saving": "Saving...",
     "complete": "Complete task",
     "reopen": "Reopen task",
-    "cancel": "Cancel task"
+    "cancel": "Cancel task",
+    "more": "Open task actions"
   },
   "fields": {
     "customer": "Customer",
