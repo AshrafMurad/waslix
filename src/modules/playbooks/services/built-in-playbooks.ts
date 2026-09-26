@@ -28,24 +28,28 @@ export const builtInPlaybooks: Record<
     steps: [
       {
         title: "Review risk and health evidence",
-        description: "Confirm the signals, recent changes and open commitments.",
+        description:
+          "Confirm the signals, recent changes and open commitments.",
         dueOffsetDays: 1,
       },
       {
         title: "Align internally on recovery owner",
-        description: "Set the plan owner and success criteria before customer outreach.",
+        description:
+          "Set the plan owner and success criteria before customer outreach.",
         dueOffsetDays: 2,
       },
       {
         title: "Schedule recovery conversation",
-        description: "Book a customer conversation with the right stakeholders.",
+        description:
+          "Book a customer conversation with the right stakeholders.",
         dueOffsetDays: 3,
       },
     ],
   },
   "renewal-preparation": {
     name: "Renewal Preparation",
-    description: "Prepare evidence, risks and next steps for an upcoming renewal.",
+    description:
+      "Prepare evidence, risks and next steps for an upcoming renewal.",
     triggerType: "RENEWAL_PREPARATION",
     steps: [
       {
@@ -55,12 +59,14 @@ export const builtInPlaybooks: Record<
       },
       {
         title: "Confirm stakeholder plan",
-        description: "Identify sponsor, blockers and the next renewal conversation.",
+        description:
+          "Identify sponsor, blockers and the next renewal conversation.",
         dueOffsetDays: 3,
       },
       {
         title: "Document renewal next steps",
-        description: "Record the agreed plan and update the renewal stage if needed.",
+        description:
+          "Record the agreed plan and update the renewal stage if needed.",
         dueOffsetDays: 5,
       },
     ],

@@ -267,9 +267,9 @@ export async function syncPlaybookForTaskStatus(
 export async function dismissPlaybookRun(
   access: WorkspaceAccessContext,
   input: { playbookRunId: string; reason: string; operationKey: string },
-  now = new Date(),
 ) {
-  if (access.role === "VIEWER") throw new PlaybookDomainError("PLAYBOOK_NOT_FOUND");
+  if (access.role === "VIEWER")
+    throw new PlaybookDomainError("PLAYBOOK_NOT_FOUND");
   if (!input.reason.trim()) {
     throw new PlaybookDomainError("PLAYBOOK_DISMISS_REASON_REQUIRED");
   }

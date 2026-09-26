@@ -35,6 +35,7 @@
   "renewal": "Renewal {date}",
   "actions": {
     "acknowledge": "Acknowledge",
+    "viewNextAction": "View next action",
     "dismiss": "Dismiss",
     "reason": "Dismissal reason",
     "failed": "The attention item could not be updated."

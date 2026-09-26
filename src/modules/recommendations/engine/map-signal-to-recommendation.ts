@@ -5,7 +5,8 @@ export type RecommendationTargetKind = "TASK" | "PLAYBOOK" | "EXISTING_TASK";
 export type RecommendationMapping = {
   type: RecommendationType;
   targetKind: RecommendationTargetKind;
-  templateKey?: "at-risk-recovery" | "renewal-preparation" | "onboarding-recovery";
+  templateKey?:
+    "at-risk-recovery" | "renewal-preparation" | "onboarding-recovery";
   taskTitle?: string;
   dueOffsetDays?: number;
 };

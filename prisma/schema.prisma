@@ -324,6 +324,7 @@ model Workspace {
   milestones       OnboardingMilestone[]
   renewals         Renewal[]
   playbookTemplates PlaybookTemplate[]
+  playbookTemplateSteps PlaybookTemplateStep[]
   playbookRuns     PlaybookRun[]
   playbookSteps    PlaybookStep[]
 
@@ -448,9 +449,12 @@ model Customer {
   attentionSignals     AttentionSignal[]
   risks                Risk[]
   riskSignals          RiskSignal[]
+  recommendations      Recommendation[]
   onboarding           Onboarding?
   milestones           OnboardingMilestone[]
   renewals             Renewal[]
+  playbookRuns         PlaybookRun[]
+  playbookSteps        PlaybookStep[]
 
   @@unique([workspaceId, id])
   @@unique([workspaceId, externalKey])
@@ -770,6 +774,7 @@ model Recommendation {
   @@unique([workspaceId, customerId, ruleKey, episodeKey])
   @@unique([workspaceId, taskId])
   @@unique([workspaceId, playbookRunId])
+  @@unique([workspaceId, customerId, playbookRunId])
   @@index([workspaceId, customerId, status, priority])
   @@map("recommendation")
 }

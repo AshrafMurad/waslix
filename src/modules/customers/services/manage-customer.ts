@@ -214,6 +214,15 @@ export async function updateCustomer(
         },
         data: { ownerId: input.ownerId },
       });
+      await transaction.playbookRun.updateMany({
+        where: {
+          workspaceId: access.workspaceId,
+          customerId,
+          ownerId: existing.ownerId,
+          status: "ACTIVE",
+        },
+        data: { ownerId: input.ownerId },
+      });
     }
     await syncTags(transaction, access.workspaceId, customerId, input.tags);
     return { id: customerId };
@@ -252,6 +261,17 @@ export async function archiveCustomer(
         status: "DISMISSED",
         dismissedReason: "CUSTOMER_ARCHIVED",
         resolvedAt: now,
+      },
+    });
+    await transaction.recommendation.updateMany({
+      where: {
+        workspaceId: access.workspaceId,
+        customerId,
+        status: "SUGGESTED",
+      },
+      data: {
+        status: "DISMISSED",
+        dismissedReason: "CUSTOMER_ARCHIVED",
       },
     });
     await transaction.renewal.updateMany({

@@ -47,6 +47,7 @@ export default async function OverviewPage({
         : null,
       ownerName: item.customer.owner.user.name,
       healthScore: item.customer.currentHealth?.overallScore ?? null,
+      recommendations: item.customer.recommendations,
     },
   }));
   return (

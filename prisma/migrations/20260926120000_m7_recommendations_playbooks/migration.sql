@@ -56,6 +56,7 @@ CREATE TABLE "playbook_step" (
 CREATE UNIQUE INDEX "recommendation_workspace_customer_rule_episode_key" ON "recommendation"("workspaceId","customerId","ruleKey","episodeKey");
 CREATE UNIQUE INDEX "recommendation_workspace_task_key" ON "recommendation"("workspaceId","taskId") WHERE "taskId" IS NOT NULL;
 CREATE UNIQUE INDEX "recommendation_workspace_run_key" ON "recommendation"("workspaceId","playbookRunId") WHERE "playbookRunId" IS NOT NULL;
+CREATE UNIQUE INDEX "recommendation_workspace_customer_run_key" ON "recommendation"("workspaceId","customerId","playbookRunId") WHERE "playbookRunId" IS NOT NULL;
 CREATE INDEX "recommendation_workspace_customer_status_priority_idx" ON "recommendation"("workspaceId","customerId","status","priority");
 CREATE UNIQUE INDEX "playbook_template_workspace_key_version_key" ON "playbook_template"("workspaceId","key","version");
 CREATE UNIQUE INDEX "playbook_template_workspace_id_key" ON "playbook_template"("workspaceId","id");

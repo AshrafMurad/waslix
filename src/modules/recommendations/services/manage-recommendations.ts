@@ -41,7 +41,12 @@ function signalReason(signal: {
 
 async function defaultOwnerForSignal(
   transaction: Prisma.TransactionClient,
-  input: { workspaceId: string; customerId: string; ruleKey: SignalRuleKey; subjectKey: string },
+  input: {
+    workspaceId: string;
+    customerId: string;
+    ruleKey: SignalRuleKey;
+    subjectKey: string;
+  },
 ) {
   const customer = await transaction.customer.findFirst({
     where: { id: input.customerId, workspaceId: input.workspaceId },
@@ -54,35 +59,59 @@ async function defaultOwnerForSignal(
   if (!subjectId) return customer.ownerId;
   if (["UNMANAGED_RISK", "RISK_UNRESOLVED"].includes(input.ruleKey)) {
     const risk = await transaction.risk.findFirst({
-      where: { id: subjectId, workspaceId: input.workspaceId, customerId: input.customerId },
+      where: {
+        id: subjectId,
+        workspaceId: input.workspaceId,
+        customerId: input.customerId,
+      },
       select: { ownerId: true },
     });
     return risk?.ownerId ?? customer.ownerId;
   }
-  if (["RENEWAL_PREPARATION", "RENEWAL_DUE", "RENEWAL_RISK"].includes(input.ruleKey)) {
+  if (
+    ["RENEWAL_PREPARATION", "RENEWAL_DUE", "RENEWAL_RISK"].includes(
+      input.ruleKey,
+    )
+  ) {
     const renewal = await transaction.renewal.findFirst({
-      where: { id: subjectId, workspaceId: input.workspaceId, customerId: input.customerId },
+      where: {
+        id: subjectId,
+        workspaceId: input.workspaceId,
+        customerId: input.customerId,
+      },
       select: { ownerId: true },
     });
     return renewal?.ownerId ?? customer.ownerId;
   }
   if (input.ruleKey === "ONBOARDING_DELAY") {
     const onboarding = await transaction.onboarding.findFirst({
-      where: { id: subjectId, workspaceId: input.workspaceId, customerId: input.customerId },
+      where: {
+        id: subjectId,
+        workspaceId: input.workspaceId,
+        customerId: input.customerId,
+      },
       select: { ownerId: true },
     });
     return onboarding?.ownerId ?? customer.ownerId;
   }
   if (input.ruleKey === "GOAL_STALLED") {
     const goal = await transaction.successGoal.findFirst({
-      where: { id: subjectId, workspaceId: input.workspaceId, customerId: input.customerId },
+      where: {
+        id: subjectId,
+        workspaceId: input.workspaceId,
+        customerId: input.customerId,
+      },
       select: { ownerId: true },
     });
     return goal?.ownerId ?? customer.ownerId;
   }
   if (input.ruleKey === "TASK_OVERDUE") {
     const task = await transaction.task.findFirst({
-      where: { id: subjectId, workspaceId: input.workspaceId, customerId: input.customerId },
+      where: {
+        id: subjectId,
+        workspaceId: input.workspaceId,
+        customerId: input.customerId,
+      },
       select: { ownerId: true },
     });
     return task?.ownerId ?? customer.ownerId;
@@ -104,7 +133,8 @@ async function requireEligibleOwner(
     },
     select: { id: true },
   });
-  if (!owner) throw new RecommendationDomainError("RECOMMENDATION_OWNER_INVALID");
+  if (!owner)
+    throw new RecommendationDomainError("RECOMMENDATION_OWNER_INVALID");
 }
 
 export async function refreshRecommendationsForCustomer(
@@ -181,7 +211,12 @@ export async function refreshRecommendationsForCustomer(
 
 export async function acceptRecommendation(
   access: WorkspaceAccessContext,
-  input: { recommendationId: string; ownerId?: string | null; dueDate?: string | null; operationKey: string },
+  input: {
+    recommendationId: string;
+    ownerId?: string | null;
+    dueDate?: string | null;
+    operationKey: string;
+  },
   now = new Date(),
 ) {
   if (access.role === "VIEWER") {
@@ -189,7 +224,12 @@ export async function acceptRecommendation(
   }
   return prisma.$transaction(async (transaction) => {
     const replay = await transaction.systemEvent.findUnique({
-      where: { workspaceId_idempotencyKey: { workspaceId: access.workspaceId, idempotencyKey: input.operationKey } },
+      where: {
+        workspaceId_idempotencyKey: {
+          workspaceId: access.workspaceId,
+          idempotencyKey: input.operationKey,
+        },
+      },
       select: { entityId: true },
     });
     if (replay?.entityId === input.recommendationId) {
@@ -237,9 +277,12 @@ export async function acceptRecommendation(
     let playbookRunId: string | null = null;
     if (mapping.targetKind === "EXISTING_TASK") {
       taskId = subjectKey.split(":")[1] ?? null;
-      if (!taskId) throw new RecommendationDomainError("RECOMMENDATION_NOT_FOUND");
+      if (!taskId)
+        throw new RecommendationDomainError("RECOMMENDATION_NOT_FOUND");
     } else if (mapping.targetKind === "PLAYBOOK") {
-      const riskId = recommendation.ruleKey.includes("RISK") ? subjectKey.split(":")[1] : null;
+      const riskId = recommendation.ruleKey.includes("RISK")
+        ? subjectKey.split(":")[1]
+        : null;
       const run = await startPlaybookRun(transaction, {
         workspaceId: access.workspaceId,
         customerId: recommendation.customerId,
@@ -259,12 +302,19 @@ export async function acceptRecommendation(
           title: mapping.taskTitle!,
           ownerId,
           createdById: access.memberId,
-          priority: recommendation.ruleKey === "TASK_OVERDUE" ? "HIGH" : "MEDIUM",
+          priority:
+            recommendation.ruleKey === "TASK_OVERDUE" ? "HIGH" : "MEDIUM",
           dueDate: input.dueDate
             ? new Date(`${input.dueDate}T00:00:00.000Z`)
             : dateFromOffset(now, mapping.dueOffsetDays ?? 3),
-          riskId: recommendation.ruleKey === "UNMANAGED_RISK" ? subjectKey.split(":")[1] : null,
-          renewalId: recommendation.ruleKey === "RENEWAL_DUE" ? subjectKey.split(":")[1] : null,
+          riskId:
+            recommendation.ruleKey === "UNMANAGED_RISK"
+              ? subjectKey.split(":")[1]
+              : null,
+          renewalId:
+            recommendation.ruleKey === "RENEWAL_DUE"
+              ? subjectKey.split(":")[1]
+              : null,
         },
         select: { id: true },
       });
@@ -305,12 +355,22 @@ export async function dismissRecommendation(
     throw new RecommendationDomainError("RECOMMENDATION_NOT_FOUND");
   }
   if (!input.reason.trim()) {
-    throw new RecommendationDomainError("RECOMMENDATION_DISMISS_REASON_REQUIRED");
+    throw new RecommendationDomainError(
+      "RECOMMENDATION_DISMISS_REASON_REQUIRED",
+    );
   }
   return prisma.$transaction(async (transaction) => {
     const recommendation = await transaction.recommendation.findFirst({
-      where: { id: input.recommendationId, workspaceId: access.workspaceId, status: "SUGGESTED" },
-      select: { id: true, customerId: true, customer: { select: { ownerId: true, status: true } } },
+      where: {
+        id: input.recommendationId,
+        workspaceId: access.workspaceId,
+        status: "SUGGESTED",
+      },
+      select: {
+        id: true,
+        customerId: true,
+        customer: { select: { ownerId: true, status: true } },
+      },
     });
     if (
       !recommendation ||

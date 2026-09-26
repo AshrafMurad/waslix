@@ -54,7 +54,8 @@ function RecommendationRow({
     dismissRecommendationAction,
     initial,
   );
-  const error = acceptState.status === "error" || dismissState.status === "error";
+  const error =
+    acceptState.status === "error" || dismissState.status === "error";
   const reason = (() => {
     try {
       const parsed = JSON.parse(recommendation.reason) as { ruleKey?: string };

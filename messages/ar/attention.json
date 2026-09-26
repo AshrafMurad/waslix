@@ -35,6 +35,7 @@
   "renewal": "التجديد {date}",
   "actions": {
     "acknowledge": "تأكيد الاطلاع",
+    "viewNextAction": "عرض الإجراء التالي",
     "dismiss": "استبعاد",
     "reason": "سبب الاستبعاد",
     "failed": "تعذر تحديث عنصر الاهتمام."

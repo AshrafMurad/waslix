@@ -1,0 +1,46 @@
+{
+  "title": "Next best action",
+  "description": "Evidence-backed recommendations from the current account signals.",
+  "empty": "No active recommendations for this customer.",
+  "types": {
+    "REVIEW_HEALTH": "Review health",
+    "SCHEDULE_CHECK_IN": "Schedule check-in",
+    "START_PLAYBOOK": "Start playbook",
+    "FOLLOW_UP": "Follow up",
+    "CREATE_MITIGATION": "Create mitigation",
+    "REVIEW_SUPPORT": "Review support",
+    "REVIEW_GOALS": "Review goals",
+    "COMPLETE_TASK": "Complete task"
+  },
+  "rules": {
+    "HEALTH_LOW": "Health is below the at-risk threshold.",
+    "HEALTH_DECLINE": "Health declined meaningfully over the last 30 days.",
+    "LOW_ENGAGEMENT": "No meaningful customer interaction was recorded recently.",
+    "RENEWAL_PREPARATION": "The renewal window needs preparation.",
+    "RENEWAL_DUE": "Renewal next steps should be confirmed.",
+    "RENEWAL_RISK": "The upcoming renewal has risk evidence.",
+    "ONBOARDING_DELAY": "Onboarding is delayed against its milestones or target date.",
+    "UNMANAGED_RISK": "A high-priority risk has no active mitigation task.",
+    "RISK_UNRESOLVED": "A high-priority risk remains unresolved.",
+    "TASK_OVERDUE": "A high-priority task is overdue.",
+    "SUPPORT_ESCALATION": "Support evidence indicates escalation risk.",
+    "USAGE_DECLINE": "Usage score declined significantly.",
+    "GOAL_STALLED": "A success goal has not moved recently."
+  },
+  "priority": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High",
+    "CRITICAL": "Critical"
+  },
+  "status": {
+    "playbookStarted": "Playbook started"
+  },
+  "actions": {
+    "accept": "Accept",
+    "dismiss": "Dismiss",
+    "reason": "Dismissal reason",
+    "openTask": "Open task",
+    "failed": "The recommendation could not be updated."
+  }
+}

@@ -23,6 +23,9 @@ export default getRequestConfig(async ({ requestLocale }) => {
         .default,
       renewals: (await import(`../../messages/${locale}/renewals.json`))
         .default,
+      recommendations: (
+        await import(`../../messages/${locale}/recommendations.json`)
+      ).default,
       attention: (await import(`../../messages/${locale}/attention.json`))
         .default,
       tasks: (await import(`../../messages/${locale}/tasks.json`)).default,
