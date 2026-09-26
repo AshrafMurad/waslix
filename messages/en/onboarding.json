@@ -1,0 +1,55 @@
+{
+  "title": "Onboarding milestones",
+  "missing": "Not set",
+  "critical": "Critical",
+  "noDescription": "No description provided.",
+  "progress": "{completed}/{total} milestones complete · {percent}%",
+  "milestoneMeta": "Owner: {owner} · Due: {due} · Status: {status}",
+  "start": {
+    "title": "Start onboarding",
+    "description": "Generate the default onboarding milestones once and begin tracking first value."
+  },
+  "summary": {
+    "title": "Onboarding summary",
+    "completedAt": "Completed"
+  },
+  "adoption": {
+    "title": "Ready for Adoption",
+    "description": "Onboarding is complete. Move the customer to Adoption only after confirming the lifecycle change."
+  },
+  "fields": {
+    "owner": "Owner",
+    "startDate": "Start date",
+    "targetDate": "Target completion",
+    "title": "Milestone title",
+    "description": "Description",
+    "dueDate": "Due date",
+    "critical": "Critical milestone"
+  },
+  "state": {
+    "delayed": "Delayed",
+    "onTrack": "On track"
+  },
+  "status": {
+    "NOT_STARTED": "Not started",
+    "IN_PROGRESS": "In progress",
+    "COMPLETED": "Completed"
+  },
+  "actions": {
+    "start": "Start onboarding",
+    "starting": "Starting...",
+    "complete": "Complete",
+    "reopen": "Reopen",
+    "saveMilestone": "Save milestone",
+    "save": "Save",
+    "saving": "Saving...",
+    "moveToAdoption": "Move to Adoption",
+    "moving": "Moving..."
+  },
+  "feedback": {
+    "started": "Onboarding started.",
+    "saved": "Milestone saved.",
+    "adopted": "Customer moved to Adoption.",
+    "failed": "The onboarding change could not be saved."
+  }
+}

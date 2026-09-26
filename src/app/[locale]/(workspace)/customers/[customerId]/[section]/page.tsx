@@ -27,6 +27,10 @@ import { getCustomerOverview } from "@/modules/customers/queries/get-customer-ov
 import { canEditCustomer } from "@/modules/customers/services/customer-permissions";
 import { HealthOverview } from "@/modules/health/components/health-overview";
 import { getHealthOverview } from "@/modules/health/queries/get-health-overview";
+import { OnboardingPanel } from "@/modules/onboarding/components/onboarding-panel";
+import { getCustomerOnboarding } from "@/modules/onboarding/queries/get-customer-onboarding";
+import { RenewalPanel } from "@/modules/renewals/components/renewal-panel";
+import { getCustomerRenewals } from "@/modules/renewals/queries/get-renewals";
 import { RiskFormDialog } from "@/modules/risks/components/risk-form-dialog";
 import { RiskList } from "@/modules/risks/components/risk-list";
 import { getRiskOptions, getRisks } from "@/modules/risks/queries/get-risks";
@@ -36,6 +40,7 @@ import { getTaskOptions } from "@/modules/tasks/queries/get-task-options";
 import { getTasks } from "@/modules/tasks/queries/get-tasks";
 import { TimelineList } from "@/modules/timeline/components/timeline-list";
 import { getCustomerTimeline } from "@/modules/timeline/queries/get-customer-timeline";
+import { getWorkspaceMembers } from "@/modules/workspace/queries/get-workspace-members";
 
 const sections = [
   "health",
@@ -150,6 +155,68 @@ export default async function CustomerSectionPage({
           </Card>
         ) : null}
       </div>
+    );
+  }
+
+  if (section === "onboarding") {
+    const [onboarding, members] = await Promise.all([
+      getCustomerOnboarding(access, customerId),
+      getWorkspaceMembers(access),
+    ]);
+    if (!onboarding) notFound();
+    const owners = members
+      .filter(
+        (member) =>
+          member.status === "ACTIVE" &&
+          ["ADMIN", "CS_MANAGER", "CSM"].includes(member.role),
+      )
+      .map((member) => ({ id: member.id, name: member.user.name }));
+    const canManage =
+      customer.status === "ACTIVE" &&
+      canEditCustomer(access, customer.owner.id);
+    return (
+      <OnboardingPanel
+        locale={locale}
+        customerId={customerId}
+        onboarding={onboarding.customer.onboarding}
+        progress={onboarding.progress}
+        owners={owners}
+        defaultOwnerId={customer.owner.id}
+        canManage={canManage}
+        shouldSuggestAdoption={onboarding.shouldSuggestAdoption}
+      />
+    );
+  }
+
+  if (section === "renewal") {
+    const [renewalCustomer, members] = await Promise.all([
+      getCustomerRenewals(access, customerId),
+      getWorkspaceMembers(access),
+    ]);
+    if (!renewalCustomer) notFound();
+    const owners = members
+      .filter(
+        (member) =>
+          member.status === "ACTIVE" &&
+          ["ADMIN", "CS_MANAGER", "CSM"].includes(member.role),
+      )
+      .map((member) => ({ id: member.id, name: member.user.name }));
+    const canManage =
+      customer.status === "ACTIVE" &&
+      canEditCustomer(access, customer.owner.id);
+    return (
+      <RenewalPanel
+        locale={locale}
+        customerId={customerId}
+        renewals={renewalCustomer.renewals.map((renewal) => ({
+          ...renewal,
+          contractValue: renewal.contractValue.toString(),
+        }))}
+        owners={owners}
+        defaultOwnerId={customer.owner.id}
+        defaultCurrency={customer.currency}
+        canManage={canManage}
+      />
     );
   }
 

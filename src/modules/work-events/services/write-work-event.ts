@@ -4,7 +4,15 @@ type WorkEventInput = {
   workspaceId: string;
   customerId: string | null;
   type: string;
-  entityType: "TASK" | "CUSTOMER" | "GOAL" | "HEALTH_INPUT" | "RISK";
+  entityType:
+    | "TASK"
+    | "CUSTOMER"
+    | "GOAL"
+    | "HEALTH_INPUT"
+    | "RISK"
+    | "ONBOARDING"
+    | "MILESTONE"
+    | "RENEWAL";
   entityId: string;
   actorId: string;
   idempotencyKey: string;

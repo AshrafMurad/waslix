@@ -179,6 +179,41 @@ export async function updateCustomer(
         },
         data: { ownerId: input.ownerId },
       });
+      await transaction.onboarding.updateMany({
+        where: {
+          workspaceId: access.workspaceId,
+          customerId,
+          ownerId: existing.ownerId,
+          status: { in: ["NOT_STARTED", "IN_PROGRESS"] },
+        },
+        data: { ownerId: input.ownerId },
+      });
+      await transaction.onboardingMilestone.updateMany({
+        where: {
+          workspaceId: access.workspaceId,
+          customerId,
+          ownerId: existing.ownerId,
+          status: { in: ["NOT_STARTED", "IN_PROGRESS"] },
+        },
+        data: { ownerId: input.ownerId },
+      });
+      await transaction.renewal.updateMany({
+        where: {
+          workspaceId: access.workspaceId,
+          customerId,
+          ownerId: existing.ownerId,
+          stage: {
+            in: [
+              "UPCOMING",
+              "PREPARING",
+              "DISCUSSION",
+              "NEGOTIATION",
+              "COMMITTED",
+            ],
+          },
+        },
+        data: { ownerId: input.ownerId },
+      });
     }
     await syncTags(transaction, access.workspaceId, customerId, input.tags);
     return { id: customerId };
@@ -218,6 +253,22 @@ export async function archiveCustomer(
         dismissedReason: "CUSTOMER_ARCHIVED",
         resolvedAt: now,
       },
+    });
+    await transaction.renewal.updateMany({
+      where: {
+        workspaceId: access.workspaceId,
+        customerId,
+        stage: {
+          in: [
+            "UPCOMING",
+            "PREPARING",
+            "DISCUSSION",
+            "NEGOTIATION",
+            "COMMITTED",
+          ],
+        },
+      },
+      data: { readinessPending: false },
     });
   });
 }

@@ -1,0 +1,55 @@
+{
+  "title": "مراحل التهيئة",
+  "missing": "غير محدد",
+  "critical": "حرجة",
+  "noDescription": "لا يوجد وصف.",
+  "progress": "اكتملت {completed} من {total} مراحل · {percent}%",
+  "milestoneMeta": "المالك: {owner} · الاستحقاق: {due} · الحالة: {status}",
+  "start": {
+    "title": "بدء التهيئة",
+    "description": "أنشئ مراحل التهيئة الافتراضية مرة واحدة وابدأ متابعة الوصول إلى القيمة الأولى."
+  },
+  "summary": {
+    "title": "ملخص التهيئة",
+    "completedAt": "اكتملت"
+  },
+  "adoption": {
+    "title": "جاهز لمرحلة الاعتماد",
+    "description": "اكتملت التهيئة. انقل العميل إلى الاعتماد فقط بعد تأكيد تغيير المرحلة."
+  },
+  "fields": {
+    "owner": "المالك",
+    "startDate": "تاريخ البدء",
+    "targetDate": "تاريخ الإكمال المستهدف",
+    "title": "عنوان المرحلة",
+    "description": "الوصف",
+    "dueDate": "تاريخ الاستحقاق",
+    "critical": "مرحلة حرجة"
+  },
+  "state": {
+    "delayed": "متأخرة",
+    "onTrack": "على المسار"
+  },
+  "status": {
+    "NOT_STARTED": "لم تبدأ",
+    "IN_PROGRESS": "قيد التنفيذ",
+    "COMPLETED": "مكتملة"
+  },
+  "actions": {
+    "start": "بدء التهيئة",
+    "starting": "جار البدء...",
+    "complete": "إكمال",
+    "reopen": "إعادة الفتح",
+    "saveMilestone": "حفظ المرحلة",
+    "save": "حفظ",
+    "saving": "جار الحفظ...",
+    "moveToAdoption": "نقل إلى الاعتماد",
+    "moving": "جار النقل..."
+  },
+  "feedback": {
+    "started": "بدأت التهيئة.",
+    "saved": "تم حفظ المرحلة.",
+    "adopted": "تم نقل العميل إلى الاعتماد.",
+    "failed": "تعذر حفظ تغيير التهيئة."
+  }
+}

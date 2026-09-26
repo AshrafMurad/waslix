@@ -83,6 +83,29 @@ export async function refreshCustomerIntelligence(
             targetDate: true,
           },
         },
+        onboarding: {
+          select: {
+            id: true,
+            status: true,
+            targetCompletionDate: true,
+            milestones: {
+              select: {
+                id: true,
+                status: true,
+                isCritical: true,
+                dueDate: true,
+              },
+            },
+          },
+        },
+        renewals: {
+          select: {
+            id: true,
+            stage: true,
+            renewalAt: true,
+            readinessStatus: true,
+          },
+        },
       },
     });
     if (!customer) return null;
@@ -147,6 +170,22 @@ export async function refreshCustomerIntelligence(
       goals: customer.successGoals.map((goal) => ({
         ...goal,
         targetDate: dateOnly(goal.targetDate),
+      })),
+      onboarding: customer.onboarding
+        ? {
+            ...customer.onboarding,
+            targetCompletionDate: dateOnly(
+              customer.onboarding.targetCompletionDate,
+            ),
+            milestones: customer.onboarding.milestones.map((milestone) => ({
+              ...milestone,
+              dueDate: dateOnly(milestone.dueDate),
+            })),
+          }
+        : null,
+      renewals: customer.renewals.map((renewal) => ({
+        ...renewal,
+        renewalAt: dateOnly(renewal.renewalAt)!,
       })),
     });
     const existing = await transaction.signal.findMany({

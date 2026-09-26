@@ -4,6 +4,10 @@ export type SignalRuleKey =
   | "HEALTH_LOW"
   | "HEALTH_DECLINE"
   | "LOW_ENGAGEMENT"
+  | "RENEWAL_PREPARATION"
+  | "RENEWAL_DUE"
+  | "RENEWAL_RISK"
+  | "ONBOARDING_DELAY"
   | "UNMANAGED_RISK"
   | "RISK_UNRESOLVED"
   | "TASK_OVERDUE"
@@ -17,7 +21,8 @@ export type SignalCandidate = {
   severity: "MEDIUM" | "HIGH" | "CRITICAL";
   currentValue: number | null;
   previousValue: number | null;
-  sourceType: "HEALTH" | "ACTIVITY" | "RISK" | "TASK" | "GOAL";
+  sourceType:
+    "HEALTH" | "ACTIVITY" | "RISK" | "TASK" | "GOAL" | "ONBOARDING" | "RENEWAL";
   sourceRef: string;
   deadline: string | null;
   evidence: Record<string, string | number | boolean | null>;
@@ -56,6 +61,30 @@ export type SignalFacts = {
       "NOT_STARTED" | "IN_PROGRESS" | "AT_RISK" | "ACHIEVED" | "CANCELLED";
     progressObservedAt: Date;
     targetDate: string | null;
+  }>;
+  onboarding?: {
+    id: string;
+    status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+    targetCompletionDate: string | null;
+    milestones: Array<{
+      id: string;
+      status: "NOT_STARTED" | "IN_PROGRESS" | "COMPLETED";
+      isCritical: boolean;
+      dueDate: string | null;
+    }>;
+  } | null;
+  renewals?: Array<{
+    id: string;
+    stage:
+      | "UPCOMING"
+      | "PREPARING"
+      | "DISCUSSION"
+      | "NEGOTIATION"
+      | "COMMITTED"
+      | "RENEWED"
+      | "CHURNED";
+    renewalAt: string;
+    readinessStatus: "HEALTHY" | "NEEDS_ATTENTION" | "AT_RISK" | null;
   }>;
 };
 
@@ -223,6 +252,84 @@ export function evaluateSignals(facts: SignalFacts): SignalCandidate[] {
         sourceRef: goal.id,
         deadline: goal.targetDate,
         evidence: { days: elapsedDays(facts.now, goal.progressObservedAt) },
+      });
+    }
+  }
+  if (facts.onboarding && facts.onboarding.status !== "COMPLETED") {
+    const targetPassed =
+      facts.onboarding.targetCompletionDate != null &&
+      facts.onboarding.targetCompletionDate < facts.localToday;
+    const delayedCritical = facts.onboarding.milestones.find(
+      (milestone) =>
+        milestone.status !== "COMPLETED" &&
+        milestone.isCritical &&
+        milestone.dueDate != null &&
+        calendarDays(facts.localToday, milestone.dueDate) >= 5,
+    );
+    if (targetPassed || delayedCritical) {
+      candidates.push({
+        ruleKey: "ONBOARDING_DELAY",
+        subjectKey: `onboarding:${facts.onboarding.id}`,
+        severity: "HIGH",
+        currentValue: delayedCritical?.dueDate
+          ? calendarDays(facts.localToday, delayedCritical.dueDate)
+          : null,
+        previousValue: null,
+        sourceType: "ONBOARDING",
+        sourceRef: facts.onboarding.id,
+        deadline:
+          delayedCritical?.dueDate ?? facts.onboarding.targetCompletionDate,
+        evidence: {
+          targetPassed,
+          milestoneId: delayedCritical?.id ?? null,
+        },
+      });
+    }
+  }
+  for (const renewal of facts.renewals ?? []) {
+    if (renewal.stage === "RENEWED" || renewal.stage === "CHURNED") continue;
+    const daysUntil = Math.floor(
+      (Date.parse(`${renewal.renewalAt}T00:00:00Z`) -
+        Date.parse(`${facts.localToday}T00:00:00Z`)) /
+        dayMs,
+    );
+    if (daysUntil <= 30 && daysUntil >= 0 && renewal.stage === "UPCOMING") {
+      candidates.push({
+        ruleKey: "RENEWAL_PREPARATION",
+        subjectKey: `renewal:${renewal.id}`,
+        severity: daysUntil <= 7 ? "CRITICAL" : "HIGH",
+        currentValue: daysUntil,
+        previousValue: null,
+        sourceType: "RENEWAL",
+        sourceRef: renewal.id,
+        deadline: renewal.renewalAt,
+        evidence: { daysUntil, stage: renewal.stage },
+      });
+    }
+    if (daysUntil <= 14) {
+      candidates.push({
+        ruleKey: "RENEWAL_DUE",
+        subjectKey: `renewal:${renewal.id}`,
+        severity: daysUntil <= 7 ? "CRITICAL" : "HIGH",
+        currentValue: daysUntil,
+        previousValue: null,
+        sourceType: "RENEWAL",
+        sourceRef: renewal.id,
+        deadline: renewal.renewalAt,
+        evidence: { daysUntil, stage: renewal.stage },
+      });
+    }
+    if (daysUntil <= 60 && renewal.readinessStatus === "AT_RISK") {
+      candidates.push({
+        ruleKey: "RENEWAL_RISK",
+        subjectKey: `renewal:${renewal.id}`,
+        severity: "HIGH",
+        currentValue: daysUntil,
+        previousValue: null,
+        sourceType: "RENEWAL",
+        sourceRef: renewal.id,
+        deadline: renewal.renewalAt,
+        evidence: { daysUntil, readinessStatus: renewal.readinessStatus },
       });
     }
   }

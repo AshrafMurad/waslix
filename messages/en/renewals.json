@@ -1,0 +1,89 @@
+{
+  "title": "Renewal cycle",
+  "description": "Track the current commercial cycle, readiness, stages, and explicit outcome.",
+  "empty": "No active renewal cycle exists for this customer.",
+  "missing": "Not set",
+  "portfolio": {
+    "eyebrow": "Renewals",
+    "title": "Renewal pipeline",
+    "description": "Review active renewal cycles by date, stage, readiness, owner, and contract value.",
+    "empty": "No active renewals are in the pipeline."
+  },
+  "columns": {
+    "customer": "Customer",
+    "date": "Renewal date",
+    "stage": "Stage",
+    "readiness": "Readiness",
+    "value": "Contract value"
+  },
+  "form": {
+    "create": "Create renewal",
+    "edit": "Edit active renewal"
+  },
+  "history": {
+    "title": "Past cycles",
+    "empty": "No completed renewal cycles yet."
+  },
+  "fields": {
+    "owner": "Owner",
+    "renewalAt": "Renewal date",
+    "startAt": "Cycle start",
+    "value": "Contract value",
+    "currency": "Currency",
+    "stage": "Stage",
+    "note": "Note",
+    "outcome": "Outcome",
+    "nextRenewalAt": "Next renewal date",
+    "nextValue": "Next contract value",
+    "churnReason": "Churn reason"
+  },
+  "stage": {
+    "UPCOMING": "Upcoming",
+    "PREPARING": "Preparing",
+    "DISCUSSION": "Discussion",
+    "NEGOTIATION": "Negotiation",
+    "COMMITTED": "Committed",
+    "RENEWED": "Renewed",
+    "CHURNED": "Churned"
+  },
+  "readiness": {
+    "HEALTHY": "Healthy",
+    "NEEDS_ATTENTION": "Needs attention",
+    "AT_RISK": "At risk",
+    "notAssessed": "Not assessed",
+    "pending": "Readiness is pending recalculation.",
+    "window": "Not assessed until the 60-day readiness window.",
+    "calculated": "Calculated {date}"
+  },
+  "reasons": {
+    "HEALTH_AT_RISK": "Health is at risk.",
+    "HEALTH_NEEDS_ATTENTION": "Health needs attention.",
+    "HEALTH_MISSING": "Health is missing.",
+    "HIGH_RISK_OPEN": "A high or critical risk is open.",
+    "RISK_OPEN": "An unresolved risk is open.",
+    "SUPPORT_ESCALATION": "Support score indicates escalation.",
+    "ENGAGEMENT_MISSING": "No meaningful engagement is recorded.",
+    "ENGAGEMENT_STALE": "Meaningful engagement is stale.",
+    "GOALS_MISSING": "No eligible goals are available.",
+    "GOALS_LOW": "Goal progress is below target.",
+    "ONBOARDING_DELAYED": "Onboarding is delayed."
+  },
+  "outcome": {
+    "RENEWED": "Renewed",
+    "EXPANDED": "Expanded",
+    "CONTRACTED": "Contracted",
+    "CHURNED": "Churned"
+  },
+  "actions": {
+    "save": "Save renewal",
+    "saving": "Saving...",
+    "changeStage": "Change stage",
+    "recordRenewed": "Record renewed",
+    "recordChurned": "Record churned"
+  },
+  "feedback": {
+    "saved": "Renewal saved.",
+    "completed": "Renewal outcome recorded.",
+    "failed": "The renewal change could not be saved."
+  }
+}

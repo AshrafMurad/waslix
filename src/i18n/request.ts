@@ -19,6 +19,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
       goals: (await import(`../../messages/${locale}/goals.json`)).default,
       health: (await import(`../../messages/${locale}/health.json`)).default,
       risks: (await import(`../../messages/${locale}/risks.json`)).default,
+      onboarding: (await import(`../../messages/${locale}/onboarding.json`))
+        .default,
+      renewals: (await import(`../../messages/${locale}/renewals.json`))
+        .default,
       attention: (await import(`../../messages/${locale}/attention.json`))
         .default,
       tasks: (await import(`../../messages/${locale}/tasks.json`)).default,
