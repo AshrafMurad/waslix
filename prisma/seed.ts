@@ -129,7 +129,76 @@ async function main() {
     const seededCustomerIds = [...seededCustomers.values()].map(
       (customer) => customer.id,
     );
+    const m7Recommendation = (
+      ruleKey:
+        | "HEALTH_LOW"
+        | "HEALTH_DECLINE"
+        | "LOW_ENGAGEMENT"
+        | "RENEWAL_PREPARATION"
+        | "RENEWAL_DUE"
+        | "RENEWAL_RISK"
+        | "ONBOARDING_DELAY"
+        | "UNMANAGED_RISK"
+        | "RISK_UNRESOLVED"
+        | "TASK_OVERDUE"
+        | "SUPPORT_ESCALATION"
+        | "USAGE_DECLINE"
+        | "GOAL_STALLED",
+      type:
+        | "REVIEW_HEALTH"
+        | "SCHEDULE_CHECK_IN"
+        | "START_PLAYBOOK"
+        | "FOLLOW_UP"
+        | "CREATE_MITIGATION"
+        | "REVIEW_SUPPORT"
+        | "REVIEW_GOALS"
+        | "COMPLETE_TASK",
+      priority: "MEDIUM" | "HIGH" | "CRITICAL",
+      customer: { id: string },
+      signal: { id: string; episodeKey: string },
+      subjectKey: string,
+    ) => ({
+      workspaceId: fixture.workspaceA.id,
+      customerId: customer.id,
+      signalId: signal.id,
+      ruleKey,
+      episodeKey: signal.episodeKey,
+      type,
+      title: ruleKey,
+      reason: JSON.stringify({ version: 1, ruleKey, subjectKey }),
+      priority,
+      status: "SUGGESTED" as const,
+    });
     await prisma.$transaction(async (transaction) => {
+      await transaction.recommendation.deleteMany({
+        where: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: { in: seededCustomerIds },
+        },
+      });
+      await transaction.playbookStep.deleteMany({
+        where: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: { in: seededCustomerIds },
+        },
+      });
+      await transaction.task.deleteMany({
+        where: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: { in: seededCustomerIds },
+          OR: [
+            { riskId: { not: null } },
+            { playbookRunId: { not: null } },
+            { id: "52000000-0000-4000-8000-000000000098" },
+          ],
+        },
+      });
+      await transaction.playbookRun.deleteMany({
+        where: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: { in: seededCustomerIds },
+        },
+      });
       await transaction.attentionSignal.deleteMany({
         where: {
           workspaceId: fixture.workspaceA.id,
@@ -285,6 +354,14 @@ async function main() {
           data: { renewalDate: new Date("2026-12-26T00:00:00.000Z") },
         }),
       ]);
+      const atlasRenewal = await transaction.renewal.findFirstOrThrow({
+        where: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: atlas.id,
+          stage: "UPCOMING",
+        },
+        select: { id: true },
+      });
 
       const northstarRisk = await transaction.risk.create({
         data: {
@@ -342,6 +419,19 @@ async function main() {
           priority: "HIGH",
           dueDate: new Date("2026-10-01T00:00:00.000Z"),
         },
+      });
+      const cedarOverdueTask = await transaction.task.create({
+        data: {
+          id: "52000000-0000-4000-8000-000000000098",
+          workspaceId: fixture.workspaceA.id,
+          customerId: cedar.id,
+          title: "Replan executive escalation follow-up",
+          ownerId: cedar.ownerId,
+          createdById: fixture.memberships.alphaAdmin.id,
+          priority: "HIGH",
+          dueDate: new Date("2026-09-20T00:00:00.000Z"),
+        },
+        select: { id: true },
       });
 
       const northstarUnresolved = await transaction.signal.create({
@@ -467,6 +557,215 @@ async function main() {
             attentionItemId: atlasAttention.id,
             signalId: atlasUnresolved.id,
           },
+        ],
+      });
+
+      const seededRecommendationSignals = [
+        {
+          id: "53000000-0000-4000-8000-000000000011",
+          customerId: northstar.id,
+          ruleKey: "HEALTH_LOW" as const,
+          subjectKey: "customer",
+          episodeKey: "54000000-0000-4000-8000-000000000011",
+          severity: "HIGH" as const,
+          sourceType: "HEALTH",
+          sourceRef: "seed-health-low",
+          currentValue: 48,
+          previousValue: 66,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000012",
+          customerId: northstar.id,
+          ruleKey: "HEALTH_DECLINE" as const,
+          subjectKey: "customer",
+          episodeKey: "54000000-0000-4000-8000-000000000012",
+          severity: "HIGH" as const,
+          sourceType: "HEALTH",
+          sourceRef: "seed-health-decline",
+          currentValue: 58,
+          previousValue: 75,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000013",
+          customerId: noura.id,
+          ruleKey: "LOW_ENGAGEMENT" as const,
+          subjectKey: "customer",
+          episodeKey: "54000000-0000-4000-8000-000000000013",
+          severity: "MEDIUM" as const,
+          sourceType: "ACTIVITY",
+          sourceRef: "customer",
+          currentValue: 28,
+          previousValue: null,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000014",
+          customerId: atlas.id,
+          ruleKey: "RENEWAL_PREPARATION" as const,
+          subjectKey: `renewal:${atlasRenewal.id}`,
+          episodeKey: "54000000-0000-4000-8000-000000000014",
+          severity: "HIGH" as const,
+          sourceType: "RENEWAL",
+          sourceRef: atlasRenewal.id,
+          currentValue: 7,
+          previousValue: null,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000015",
+          customerId: atlas.id,
+          ruleKey: "RENEWAL_DUE" as const,
+          subjectKey: `renewal:${atlasRenewal.id}`,
+          episodeKey: "54000000-0000-4000-8000-000000000015",
+          severity: "CRITICAL" as const,
+          sourceType: "RENEWAL",
+          sourceRef: atlasRenewal.id,
+          currentValue: 7,
+          previousValue: null,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000016",
+          customerId: atlas.id,
+          ruleKey: "RENEWAL_RISK" as const,
+          subjectKey: `renewal:${atlasRenewal.id}`,
+          episodeKey: "54000000-0000-4000-8000-000000000016",
+          severity: "HIGH" as const,
+          sourceType: "RENEWAL",
+          sourceRef: atlasRenewal.id,
+          currentValue: 48,
+          previousValue: null,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000017",
+          customerId: bayt.id,
+          ruleKey: "ONBOARDING_DELAY" as const,
+          subjectKey: "onboarding:seed-onboarding-delay",
+          episodeKey: "54000000-0000-4000-8000-000000000017",
+          severity: "HIGH" as const,
+          sourceType: "ONBOARDING",
+          sourceRef: "seed-onboarding-delay",
+          currentValue: 12,
+          previousValue: null,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000018",
+          customerId: cedar.id,
+          ruleKey: "TASK_OVERDUE" as const,
+          subjectKey: `task:${cedarOverdueTask.id}`,
+          episodeKey: "54000000-0000-4000-8000-000000000018",
+          severity: "HIGH" as const,
+          sourceType: "TASK",
+          sourceRef: cedarOverdueTask.id,
+          currentValue: null,
+          previousValue: null,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000019",
+          customerId: cedar.id,
+          ruleKey: "SUPPORT_ESCALATION" as const,
+          subjectKey: "customer",
+          episodeKey: "54000000-0000-4000-8000-000000000019",
+          severity: "HIGH" as const,
+          sourceType: "HEALTH",
+          sourceRef: "seed-support-escalation",
+          currentValue: 35,
+          previousValue: null,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000020",
+          customerId: noura.id,
+          ruleKey: "USAGE_DECLINE" as const,
+          subjectKey: "customer",
+          episodeKey: "54000000-0000-4000-8000-000000000020",
+          severity: "HIGH" as const,
+          sourceType: "HEALTH",
+          sourceRef: "seed-usage-decline",
+          currentValue: 42,
+          previousValue: 70,
+        },
+        {
+          id: "53000000-0000-4000-8000-000000000021",
+          customerId: sahab.id,
+          ruleKey: "GOAL_STALLED" as const,
+          subjectKey: "goal:seed-goal-stalled",
+          episodeKey: "54000000-0000-4000-8000-000000000021",
+          severity: "MEDIUM" as const,
+          sourceType: "GOAL",
+          sourceRef: "seed-goal-stalled",
+          currentValue: 35,
+          previousValue: null,
+        },
+      ];
+      await transaction.signal.createMany({
+        data: seededRecommendationSignals.map((signal) => ({
+          id: signal.id,
+          workspaceId: fixture.workspaceA.id,
+          customerId: signal.customerId,
+          type: signal.ruleKey,
+          ruleKey: signal.ruleKey,
+          ruleVersion: "signals-v1",
+          subjectKey: signal.subjectKey,
+          episodeKey: signal.episodeKey,
+          severity: signal.severity,
+          title: signal.ruleKey,
+          currentValue: signal.currentValue,
+          previousValue: signal.previousValue,
+          sourceType: signal.sourceType,
+          sourceRef: signal.sourceRef,
+          evidence: { version: 1, seed: true },
+          detectedAt: new Date("2026-09-24T09:00:00.000Z"),
+          lastEvaluatedAt: new Date("2026-09-26T09:00:00.000Z"),
+        })),
+      });
+      await transaction.recommendation.createMany({
+        data: [
+          m7Recommendation(
+            "RISK_UNRESOLVED",
+            "START_PLAYBOOK",
+            "HIGH",
+            northstar,
+            northstarUnresolved,
+            `risk:${northstarRisk.id}`,
+          ),
+          m7Recommendation(
+            "UNMANAGED_RISK",
+            "CREATE_MITIGATION",
+            "HIGH",
+            northstar,
+            northstarUnmanaged,
+            `risk:${northstarRisk.id}`,
+          ),
+          m7Recommendation(
+            "RISK_UNRESOLVED",
+            "START_PLAYBOOK",
+            "CRITICAL",
+            atlas,
+            atlasUnresolved,
+            `risk:${atlasRisk.id}`,
+          ),
+          ...seededRecommendationSignals.map((signal) => {
+            const recommendationType = (
+              {
+                HEALTH_LOW: "REVIEW_HEALTH",
+                HEALTH_DECLINE: "REVIEW_HEALTH",
+                LOW_ENGAGEMENT: "SCHEDULE_CHECK_IN",
+                RENEWAL_PREPARATION: "START_PLAYBOOK",
+                RENEWAL_DUE: "FOLLOW_UP",
+                RENEWAL_RISK: "START_PLAYBOOK",
+                ONBOARDING_DELAY: "START_PLAYBOOK",
+                TASK_OVERDUE: "COMPLETE_TASK",
+                SUPPORT_ESCALATION: "REVIEW_SUPPORT",
+                USAGE_DECLINE: "REVIEW_HEALTH",
+                GOAL_STALLED: "REVIEW_GOALS",
+              } as const
+            )[signal.ruleKey];
+            return m7Recommendation(
+              signal.ruleKey,
+              recommendationType,
+              signal.severity,
+              { id: signal.customerId },
+              signal,
+              signal.subjectKey,
+            );
+          }),
         ],
       });
     });
