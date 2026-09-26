@@ -27,7 +27,7 @@ import { getCustomerOverview } from "@/modules/customers/queries/get-customer-ov
 import { canEditCustomer } from "@/modules/customers/services/customer-permissions";
 import { HealthOverview } from "@/modules/health/components/health-overview";
 import { getHealthOverview } from "@/modules/health/queries/get-health-overview";
-import { RiskForm } from "@/modules/risks/components/risk-form";
+import { RiskFormDialog } from "@/modules/risks/components/risk-form-dialog";
 import { RiskList } from "@/modules/risks/components/risk-list";
 import { getRiskOptions, getRisks } from "@/modules/risks/queries/get-risks";
 import { TaskForm } from "@/modules/tasks/components/task-form";
@@ -183,32 +183,29 @@ export default async function CustomerSectionPage({
         (customer.status === "ACTIVE" && risk.ownerId === access.memberId),
     }));
     return (
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-        <Card className="gap-0 py-0">
-          <div className="border-b p-5">
+      <Card className="gap-0 overflow-hidden py-0">
+        <div className="flex flex-col gap-4 border-b p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div>
             <h2 className="text-lg font-semibold">{riskT("title")}</h2>
             <p className="text-muted-foreground mt-1">{riskT("description")}</p>
           </div>
-          <RiskList
-            risks={risks}
-            locale={locale}
-            customers={options.customers}
-            owners={options.owners}
-          />
-        </Card>
-        {canManageAccount ? (
-          <Card className="p-5">
-            <h2 className="mb-4 font-semibold">{riskT("actions.add")}</h2>
-            <RiskForm
+          {canManageAccount ? (
+            <RiskFormDialog
               locale={locale}
-              operationKey={randomUUID()}
+              initialOperationKey={randomUUID()}
               lockedCustomerId={customerId}
               customers={options.customers}
               owners={options.owners}
             />
-          </Card>
-        ) : null}
-      </div>
+          ) : null}
+        </div>
+        <RiskList
+          risks={risks}
+          locale={locale}
+          customers={options.customers}
+          owners={options.owners}
+        />
+      </Card>
     );
   }
 

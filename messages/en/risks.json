@@ -4,6 +4,8 @@
   "description": "Track threats to customer success, assign mitigation, and retain resolution history.",
   "empty": "No risks match this view.",
   "resolution": "Resolution: {note}",
+  "target": "Target {date}",
+  "missingTarget": "No target date",
   "columns": {
     "risk": "Customer and risk",
     "severity": "Severity",
@@ -32,6 +34,13 @@
     "resolve": "Resolve",
     "reopen": "Reopen",
     "mitigation": "Create mitigation task"
+  },
+  "dialog": {
+    "addDescription": "Record a customer risk and assign clear ownership.",
+    "editDescription": "Update the risk details without changing its lifecycle history.",
+    "manage": "Manage risk",
+    "manageDescription": "Move the risk through monitoring, mitigation, and resolution.",
+    "close": "Close"
   },
   "type": {
     "USAGE": "Usage",

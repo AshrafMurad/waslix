@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
-import { RiskForm } from "@/modules/risks/components/risk-form";
+import { RiskFormDialog } from "@/modules/risks/components/risk-form-dialog";
 import { RiskList } from "@/modules/risks/components/risk-list";
 import { getRiskOptions, getRisks } from "@/modules/risks/queries/get-risks";
 
@@ -64,34 +64,33 @@ export default async function RisksPage({
       : options.customers;
   return (
     <div className="space-y-6">
-      <div className="space-y-1">
-        <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-          {t("eyebrow")}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-        <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
-      </div>
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-        <Card className="gap-0 py-0">
-          <RiskList
-            risks={risks}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1">
+          <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
+            {t("eyebrow")}
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {t("title")}
+          </h1>
+          <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
+        </div>
+        {access.role !== "VIEWER" && manageableCustomers.length ? (
+          <RiskFormDialog
             locale={locale}
-            customers={options.customers}
+            initialOperationKey={randomUUID()}
+            customers={manageableCustomers}
             owners={options.owners}
           />
-        </Card>
-        {access.role !== "VIEWER" && manageableCustomers.length ? (
-          <Card className="p-5">
-            <h2 className="mb-4 font-semibold">{t("actions.add")}</h2>
-            <RiskForm
-              locale={locale}
-              operationKey={randomUUID()}
-              customers={manageableCustomers}
-              owners={options.owners}
-            />
-          </Card>
         ) : null}
       </div>
+      <Card className="gap-0 overflow-hidden py-0">
+        <RiskList
+          risks={risks}
+          locale={locale}
+          customers={options.customers}
+          owners={options.owners}
+        />
+      </Card>
       {result.nextCursor ? (
         <div className="flex justify-end">
           <Link

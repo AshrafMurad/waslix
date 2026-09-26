@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useActionState } from "react";
+import { startTransition, useActionState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
 import { DatePicker } from "@/components/shared/date-picker";
@@ -50,6 +50,7 @@ type RiskFormProps = {
   owners: Array<{ id: string; name: string }>;
   lockedCustomerId?: string;
   value?: RiskValue;
+  onSuccess?: () => void;
 };
 
 export function RiskForm({
@@ -59,9 +60,13 @@ export function RiskForm({
   owners,
   lockedCustomerId,
   value,
+  onSuccess,
 }: RiskFormProps) {
   const t = useTranslations("risks");
   const [state, action, pending] = useActionState(saveRiskAction, initialState);
+  useEffect(() => {
+    if (state.status === "success") onSuccess?.();
+  }, [state.status, onSuccess]);
   const customerId = lockedCustomerId ?? value?.customerId;
   const defaultOwner =
     value?.ownerId ??

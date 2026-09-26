@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
+import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +31,7 @@ import {
   createRiskMitigationAction,
   type RiskActionState,
 } from "../actions/risk-actions";
-import { RiskForm } from "./risk-form";
+import { RiskFormDialog } from "./risk-form-dialog";
 
 const initial: RiskActionState = { status: "idle" };
 
@@ -72,6 +73,7 @@ function RiskRow({
   owners: Array<{ id: string; name: string }>;
 }) {
   const t = useTranslations("risks");
+  const format = useFormatter();
   const [statusState, statusAction, statusPending] = useActionState(
     changeRiskStatusAction,
     initial,
@@ -83,9 +85,15 @@ function RiskRow({
   const resolutionError = statusState.fieldErrors?.resolutionNote
     ? t("validation.required")
     : null;
+  const targetDate = risk.targetResolutionDate
+    ? format.dateTime(new Date(`${risk.targetResolutionDate}T00:00:00.000Z`), {
+        dateStyle: "medium",
+        timeZone: "UTC",
+      })
+    : t("missingTarget");
   return (
     <TableRow>
-      <TableCell className="min-w-64 whitespace-normal">
+      <TableCell className="w-full min-w-52 whitespace-normal sm:min-w-64">
         <Link
           href={`/customers/${risk.customerId}/risks`}
           className="font-semibold hover:underline"
@@ -96,6 +104,20 @@ function RiskRow({
         <p className="text-muted-foreground mt-1 text-xs" dir="auto">
           {risk.customerName}
         </p>
+        <div className="mt-2 flex flex-wrap gap-2 sm:hidden">
+          <span
+            className={
+              risk.severity === "CRITICAL" || risk.severity === "HIGH"
+                ? "text-risk bg-risk/10 rounded-md px-2 py-1 text-xs font-medium"
+                : "text-attention bg-attention/10 rounded-md px-2 py-1 text-xs font-medium"
+            }
+          >
+            {t(`severity.${risk.severity}`)}
+          </span>
+          <span className="bg-raised rounded-md px-2 py-1 text-xs font-medium">
+            {t(`status.${risk.status}`)}
+          </span>
+        </div>
         {risk.description ? (
           <p className="mt-2 line-clamp-2 text-sm" dir="auto">
             {risk.description}
@@ -106,8 +128,11 @@ function RiskRow({
             {t("resolution", { note: risk.resolutionNote })}
           </p>
         ) : null}
+        <p className="text-muted-foreground mt-2 text-xs sm:hidden">
+          {t("target", { date: targetDate })}
+        </p>
       </TableCell>
-      <TableCell>
+      <TableCell className="hidden sm:table-cell">
         <span
           className={
             risk.severity === "CRITICAL" || risk.severity === "HIGH"
@@ -118,159 +143,207 @@ function RiskRow({
           {t(`severity.${risk.severity}`)}
         </span>
       </TableCell>
-      <TableCell>{t(`status.${risk.status}`)}</TableCell>
-      <TableCell dir="auto">{risk.ownerName}</TableCell>
-      <TableCell className="text-muted-foreground text-xs whitespace-normal">
+      <TableCell className="hidden sm:table-cell">
+        <span className="bg-raised rounded-md px-2 py-1 text-xs font-medium">
+          {t(`status.${risk.status}`)}
+        </span>
+      </TableCell>
+      <TableCell className="hidden lg:table-cell" dir="auto">
+        {risk.ownerName}
+      </TableCell>
+      <TableCell className="text-muted-foreground hidden text-xs whitespace-normal xl:table-cell">
         {risk.mitigationCount ? t("mitigation.active") : t("mitigation.none")}
       </TableCell>
-      <TableCell className="min-w-72 whitespace-normal">
-        {risk.canManage && risk.status !== "RESOLVED" ? (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="sm">
-                {t("actions.edit")}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
-              <DialogHeader>
-                <DialogTitle>{t("actions.edit")}</DialogTitle>
-                <DialogDescription>{t("description")}</DialogDescription>
-              </DialogHeader>
-              <RiskForm
-                locale={locale}
-                operationKey={`${risk.id}:edit:${risk.updatedAt}`}
-                customers={customers}
-                owners={owners}
-                value={risk}
-              />
-            </DialogContent>
-          </Dialog>
-        ) : null}
-        {risk.canManage && risk.status !== "RESOLVED" ? (
-          <div className="mt-2 flex flex-wrap gap-2">
-            <form action={mitigationAction}>
-              <input type="hidden" name="locale" value={locale} />
-              <input type="hidden" name="riskId" value={risk.id} />
-              <input type="hidden" name="customerId" value={risk.customerId} />
-              <input
-                type="hidden"
-                name="operationKey"
-                value={`${risk.id}:mitigation`}
-              />
-              <Button
-                type="submit"
-                variant="outline"
-                size="sm"
-                disabled={mitigationPending || risk.mitigationCount > 0}
-              >
-                {mitigationPending ? (
-                  <Spinner aria-label={t("actions.saving")} />
-                ) : null}
-                {t("actions.mitigation")}
-              </Button>
-            </form>
-            {risk.status === "OPEN" ? (
-              <form action={statusAction}>
-                <input type="hidden" name="locale" value={locale} />
-                <input type="hidden" name="riskId" value={risk.id} />
-                <input
-                  type="hidden"
-                  name="customerId"
-                  value={risk.customerId}
-                />
-                <input type="hidden" name="status" value="MONITORING" />
-                <input type="hidden" name="resolutionNote" value="" />
-                <input
-                  type="hidden"
-                  name="operationKey"
-                  value={`${risk.id}:monitor:${risk.updatedAt}`}
-                />
-                <Button
-                  type="submit"
-                  variant="outline"
-                  size="sm"
-                  disabled={statusPending}
-                >
-                  {statusPending ? (
-                    <Spinner aria-label={t("actions.saving")} />
-                  ) : null}
-                  {t("actions.monitor")}
-                </Button>
-              </form>
-            ) : null}
-            <form action={statusAction} className="flex flex-1 flex-wrap gap-2">
-              <input type="hidden" name="locale" value={locale} />
-              <input type="hidden" name="riskId" value={risk.id} />
-              <input type="hidden" name="customerId" value={risk.customerId} />
-              <input type="hidden" name="status" value="RESOLVED" />
-              <input
-                type="hidden"
-                name="operationKey"
-                value={`${risk.id}:resolve:${risk.updatedAt}`}
-              />
-              <Field
-                data-invalid={Boolean(resolutionError)}
-                className="min-w-56 flex-1 gap-1"
-              >
-                <FieldLabel htmlFor={`risk-resolution-${risk.id}`}>
-                  {t("fields.resolutionNote")}
-                </FieldLabel>
-                <Input
-                  id={`risk-resolution-${risk.id}`}
-                  name="resolutionNote"
-                  maxLength={10000}
-                  dir="auto"
-                  aria-required="true"
-                  aria-invalid={Boolean(resolutionError)}
-                  aria-describedby={
-                    resolutionError
-                      ? `risk-resolution-${risk.id}-error`
-                      : undefined
-                  }
-                />
-                <FieldError id={`risk-resolution-${risk.id}-error`}>
-                  {resolutionError}
-                </FieldError>
-              </Field>
-              <Button type="submit" size="sm" disabled={statusPending}>
-                {statusPending ? (
-                  <Spinner aria-label={t("actions.saving")} />
-                ) : null}
-                {t("actions.resolve")}
-              </Button>
-            </form>
-          </div>
-        ) : risk.canManage ? (
-          <form action={statusAction}>
-            <input type="hidden" name="locale" value={locale} />
-            <input type="hidden" name="riskId" value={risk.id} />
-            <input type="hidden" name="customerId" value={risk.customerId} />
-            <input type="hidden" name="status" value="OPEN" />
-            <input type="hidden" name="resolutionNote" value="" />
-            <input
-              type="hidden"
-              name="operationKey"
-              value={`${risk.id}:reopen:${risk.updatedAt}`}
+      <TableCell className="w-0 whitespace-normal">
+        <div className="flex justify-end gap-2">
+          {risk.canManage && risk.status !== "RESOLVED" ? (
+            <RiskFormDialog
+              locale={locale}
+              initialOperationKey={`${risk.id}:edit:${risk.updatedAt}`}
+              customers={customers}
+              owners={owners}
+              value={risk}
             />
-            <Button
-              type="submit"
-              variant="outline"
-              size="sm"
-              disabled={statusPending}
-            >
-              {statusPending ? (
-                <Spinner aria-label={t("actions.saving")} />
-              ) : null}
-              {t("actions.reopen")}
-            </Button>
-          </form>
-        ) : null}
-        {statusState.status === "error" ||
-        mitigationState.status === "error" ? (
-          <p role="alert" className="text-risk text-sm">
-            {t("feedback.failed")}
-          </p>
-        ) : null}
+          ) : null}
+          {risk.canManage ? (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={t("dialog.manage")}
+                >
+                  <MoreHorizontal aria-hidden="true" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-lg">
+                <DialogHeader>
+                  <DialogTitle dir="auto">{risk.title}</DialogTitle>
+                  <DialogDescription>
+                    {t("dialog.manageDescription")}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="bg-raised grid gap-3 rounded-md p-4 text-sm sm:grid-cols-2">
+                  <div>
+                    <p className="text-muted-foreground text-xs">
+                      {t("fields.owner")}
+                    </p>
+                    <p className="mt-1 font-medium" dir="auto">
+                      {risk.ownerName}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-xs">
+                      {t("fields.targetDate")}
+                    </p>
+                    <p className="mt-1 font-medium">{targetDate}</p>
+                  </div>
+                </div>
+                {risk.status !== "RESOLVED" ? (
+                  <div className="space-y-4">
+                    <div className="flex flex-wrap gap-2">
+                      <form action={mitigationAction}>
+                        <input type="hidden" name="locale" value={locale} />
+                        <input type="hidden" name="riskId" value={risk.id} />
+                        <input
+                          type="hidden"
+                          name="customerId"
+                          value={risk.customerId}
+                        />
+                        <input
+                          type="hidden"
+                          name="operationKey"
+                          value={`${risk.id}:mitigation`}
+                        />
+                        <Button
+                          type="submit"
+                          variant="outline"
+                          size="sm"
+                          disabled={
+                            mitigationPending || risk.mitigationCount > 0
+                          }
+                        >
+                          {mitigationPending ? (
+                            <Spinner aria-label={t("actions.saving")} />
+                          ) : null}
+                          {t("actions.mitigation")}
+                        </Button>
+                      </form>
+                      {risk.status === "OPEN" ? (
+                        <form action={statusAction}>
+                          <input type="hidden" name="locale" value={locale} />
+                          <input type="hidden" name="riskId" value={risk.id} />
+                          <input
+                            type="hidden"
+                            name="customerId"
+                            value={risk.customerId}
+                          />
+                          <input
+                            type="hidden"
+                            name="status"
+                            value="MONITORING"
+                          />
+                          <input type="hidden" name="resolutionNote" value="" />
+                          <input
+                            type="hidden"
+                            name="operationKey"
+                            value={`${risk.id}:monitor:${risk.updatedAt}`}
+                          />
+                          <Button
+                            type="submit"
+                            variant="outline"
+                            size="sm"
+                            disabled={statusPending}
+                          >
+                            {statusPending ? (
+                              <Spinner aria-label={t("actions.saving")} />
+                            ) : null}
+                            {t("actions.monitor")}
+                          </Button>
+                        </form>
+                      ) : null}
+                    </div>
+                    <form action={statusAction} className="space-y-3">
+                      <input type="hidden" name="locale" value={locale} />
+                      <input type="hidden" name="riskId" value={risk.id} />
+                      <input
+                        type="hidden"
+                        name="customerId"
+                        value={risk.customerId}
+                      />
+                      <input type="hidden" name="status" value="RESOLVED" />
+                      <input
+                        type="hidden"
+                        name="operationKey"
+                        value={`${risk.id}:resolve:${risk.updatedAt}`}
+                      />
+                      <Field data-invalid={Boolean(resolutionError)}>
+                        <FieldLabel htmlFor={`risk-resolution-${risk.id}`}>
+                          {t("fields.resolutionNote")}
+                        </FieldLabel>
+                        <Input
+                          id={`risk-resolution-${risk.id}`}
+                          name="resolutionNote"
+                          maxLength={10000}
+                          dir="auto"
+                          aria-required="true"
+                          aria-invalid={Boolean(resolutionError)}
+                          aria-describedby={
+                            resolutionError
+                              ? `risk-resolution-${risk.id}-error`
+                              : undefined
+                          }
+                        />
+                        <FieldError id={`risk-resolution-${risk.id}-error`}>
+                          {resolutionError}
+                        </FieldError>
+                      </Field>
+                      <Button type="submit" disabled={statusPending}>
+                        {statusPending ? (
+                          <Spinner aria-label={t("actions.saving")} />
+                        ) : null}
+                        {t("actions.resolve")}
+                      </Button>
+                    </form>
+                  </div>
+                ) : (
+                  <form action={statusAction}>
+                    <input type="hidden" name="locale" value={locale} />
+                    <input type="hidden" name="riskId" value={risk.id} />
+                    <input
+                      type="hidden"
+                      name="customerId"
+                      value={risk.customerId}
+                    />
+                    <input type="hidden" name="status" value="OPEN" />
+                    <input type="hidden" name="resolutionNote" value="" />
+                    <input
+                      type="hidden"
+                      name="operationKey"
+                      value={`${risk.id}:reopen:${risk.updatedAt}`}
+                    />
+                    <Button
+                      type="submit"
+                      variant="outline"
+                      disabled={statusPending}
+                    >
+                      {statusPending ? (
+                        <Spinner aria-label={t("actions.saving")} />
+                      ) : null}
+                      {t("actions.reopen")}
+                    </Button>
+                  </form>
+                )}
+                {statusState.status === "error" ||
+                mitigationState.status === "error" ? (
+                  <p role="alert" className="text-risk text-sm">
+                    {t("feedback.failed")}
+                  </p>
+                ) : null}
+              </DialogContent>
+            </Dialog>
+          ) : null}
+        </div>
       </TableCell>
     </TableRow>
   );
@@ -290,11 +363,19 @@ export function RiskList(props: {
       <TableHeader>
         <TableRow>
           <TableHead>{t("columns.risk")}</TableHead>
-          <TableHead>{t("columns.severity")}</TableHead>
-          <TableHead>{t("columns.status")}</TableHead>
-          <TableHead>{t("columns.owner")}</TableHead>
-          <TableHead>{t("columns.mitigation")}</TableHead>
-          <TableHead>{t("columns.actions")}</TableHead>
+          <TableHead className="hidden sm:table-cell">
+            {t("columns.severity")}
+          </TableHead>
+          <TableHead className="hidden sm:table-cell">
+            {t("columns.status")}
+          </TableHead>
+          <TableHead className="hidden lg:table-cell">
+            {t("columns.owner")}
+          </TableHead>
+          <TableHead className="hidden xl:table-cell">
+            {t("columns.mitigation")}
+          </TableHead>
+          <TableHead className="text-end">{t("columns.actions")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
