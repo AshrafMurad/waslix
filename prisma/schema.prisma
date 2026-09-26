@@ -441,31 +441,31 @@ model Contact {
 }
 
 model Task {
-  id            String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId   String           @db.Uuid
-  customerId    String?          @db.Uuid
-  title         String           @db.VarChar(200)
-  description   String?          @db.VarChar(10000)
-  ownerId       String           @db.Uuid
-  createdById   String           @db.Uuid
-  priority      TaskPriority     @default(MEDIUM)
-  status        TaskStatus       @default(OPEN)
-  dueDate       DateTime?        @db.Date
-  dueAt         DateTime?        @db.Timestamptz(3)
-  completedAt   DateTime?        @db.Timestamptz(3)
-  completedById String?          @db.Uuid
-  riskId        String?          @db.Uuid
-  renewalId     String?          @db.Uuid
-  milestoneId   String?          @db.Uuid
-  createdAt     DateTime         @default(now()) @db.Timestamptz(3)
-  updatedAt     DateTime         @updatedAt @db.Timestamptz(3)
-  workspace     Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  customer      Customer?        @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
-  owner         WorkspaceMember  @relation("TaskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
-  createdBy     WorkspaceMember  @relation("TaskCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
-  completedBy   WorkspaceMember? @relation("TaskCompleter", fields: [workspaceId, completedById], references: [workspaceId, id], onDelete: Restrict)
-  risk          Risk?            @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
-  renewal       Renewal?         @relation(fields: [workspaceId, customerId, renewalId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId   String               @db.Uuid
+  customerId    String?              @db.Uuid
+  title         String               @db.VarChar(200)
+  description   String?              @db.VarChar(10000)
+  ownerId       String               @db.Uuid
+  createdById   String               @db.Uuid
+  priority      TaskPriority         @default(MEDIUM)
+  status        TaskStatus           @default(OPEN)
+  dueDate       DateTime?            @db.Date
+  dueAt         DateTime?            @db.Timestamptz(3)
+  completedAt   DateTime?            @db.Timestamptz(3)
+  completedById String?              @db.Uuid
+  riskId        String?              @db.Uuid
+  renewalId     String?              @db.Uuid
+  milestoneId   String?              @db.Uuid
+  createdAt     DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime             @updatedAt @db.Timestamptz(3)
+  workspace     Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer      Customer?            @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  owner         WorkspaceMember      @relation("TaskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  createdBy     WorkspaceMember      @relation("TaskCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  completedBy   WorkspaceMember?     @relation("TaskCompleter", fields: [workspaceId, completedById], references: [workspaceId, id], onDelete: Restrict)
+  risk          Risk?                @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  renewal       Renewal?             @relation(fields: [workspaceId, customerId, renewalId], references: [workspaceId, customerId, id], onDelete: Restrict)
   milestone     OnboardingMilestone? @relation(fields: [workspaceId, customerId, milestoneId], references: [workspaceId, customerId, id], onDelete: Restrict)
 
   @@unique([workspaceId, id])
@@ -738,21 +738,21 @@ model RiskSignal {
 }
 
 model Onboarding {
-  id                                String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId                       String                @db.Uuid
-  customerId                        String                @db.Uuid
-  ownerId                           String                @db.Uuid
-  status                            OnboardingStatus      @default(NOT_STARTED)
-  startDate                         DateTime?             @db.Date
-  targetCompletionDate              DateTime?             @db.Date
-  completedAt                       DateTime?             @db.Timestamptz(3)
-  adoptionDismissedForCompletedAt   DateTime?             @db.Timestamptz(3)
-  createdAt                         DateTime              @default(now()) @db.Timestamptz(3)
-  updatedAt                         DateTime              @updatedAt @db.Timestamptz(3)
-  workspace                         Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  customer                          Customer              @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
-  owner                             WorkspaceMember       @relation("OnboardingOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
-  milestones                        OnboardingMilestone[]
+  id                              String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId                     String                @db.Uuid
+  customerId                      String                @db.Uuid
+  ownerId                         String                @db.Uuid
+  status                          OnboardingStatus      @default(NOT_STARTED)
+  startDate                       DateTime?             @db.Date
+  targetCompletionDate            DateTime?             @db.Date
+  completedAt                     DateTime?             @db.Timestamptz(3)
+  adoptionDismissedForCompletedAt DateTime?             @db.Timestamptz(3)
+  createdAt                       DateTime              @default(now()) @db.Timestamptz(3)
+  updatedAt                       DateTime              @updatedAt @db.Timestamptz(3)
+  workspace                       Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer                        Customer              @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  owner                           WorkspaceMember       @relation("OnboardingOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  milestones                      OnboardingMilestone[]
 
   @@unique([workspaceId, customerId])
   @@unique([workspaceId, customerId, id])
