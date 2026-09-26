@@ -48,6 +48,11 @@ export async function getOverviewDashboard(
             renewalDate: true,
             owner: { select: { user: { select: { name: true } } } },
             currentHealth: { select: { overallScore: true, status: true } },
+            recommendations: {
+              where: { status: "SUGGESTED" },
+              select: { id: true },
+              take: 3,
+            },
           },
         },
       },

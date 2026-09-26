@@ -14,6 +14,8 @@ import {
   canEditCustomer,
 } from "@/modules/customers/services/customer-permissions";
 import { GoalSection } from "@/modules/goals/components/goal-section";
+import { NextBestActionCard } from "@/modules/recommendations/components/next-best-action-card";
+import { getCustomerNextActions } from "@/modules/recommendations/queries/get-customer-next-actions";
 
 function dateInput(date: Date | null) {
   return date?.toISOString().slice(0, 10) ?? "";
@@ -28,9 +30,10 @@ export default async function CustomerOverviewPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
   const access = await requireProtectedPage(locale);
-  const [customer, options, t] = await Promise.all([
+  const [customer, options, nextActions, t] = await Promise.all([
     getCustomerOverview(access, customerId),
     getCustomerOptions(access),
+    getCustomerNextActions(access, customerId),
     getTranslations({ locale, namespace: "customers" }),
   ]);
   if (!customer) notFound();
@@ -58,6 +61,14 @@ export default async function CustomerOverviewPage({
           </div>
         </Card>
         <div className="space-y-4">
+          {nextActions ? (
+            <NextBestActionCard
+              recommendations={nextActions.recommendations}
+              customerId={customerId}
+              locale={locale}
+              canAct={nextActions.canAct}
+            />
+          ) : null}
           {canEdit ? (
             <CustomerFormDialog
               mode="edit"

@@ -26,6 +26,7 @@ type Item = {
     renewalDate: string | null;
     ownerName: string;
     healthScore: number | null;
+    recommendations?: { id: string }[];
   };
 };
 
@@ -90,6 +91,13 @@ function AttentionRow({
           <p className="text-muted-foreground mb-2 text-xs">
             {t("renewal", { date: item.customer.renewalDate })}
           </p>
+        ) : null}
+        {item.customer.recommendations?.length ? (
+          <Button asChild size="sm" variant="outline" className="mb-2">
+            <Link href={`/customers/${item.customer.id}`}>
+              {t("actions.viewNextAction")}
+            </Link>
+          </Button>
         ) : null}
         {canAct ? (
           <div className="space-y-2">
