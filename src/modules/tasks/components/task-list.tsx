@@ -108,6 +108,11 @@ export async function TaskList({
                 <p className="text-muted-foreground mt-1 text-sm">
                   <bdi>{task.customer?.name ?? t("standalone")}</bdi>
                 </p>
+                {task.description ? (
+                  <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+                    <bdi>{task.description}</bdi>
+                  </p>
+                ) : null}
                 {task.dueDate || task.dueAt ? (
                   <p className="text-muted-foreground mt-1 text-xs md:hidden">
                     {t("due", {

@@ -38,7 +38,7 @@ export function TaskViewTabs({
     >
       <TabsList
         aria-label={label}
-        className="mx-4 mt-4 mb-2 h-auto max-w-[calc(100%-2rem)] justify-start gap-1 overflow-x-auto rtl:ms-auto"
+        className="mx-4 mt-4 mb-2 h-auto max-w-[calc(100%-2rem)] justify-start gap-1 overflow-x-auto rtl:me-auto"
       >
         {taskFilters.map((filter) => (
           <TabsTrigger

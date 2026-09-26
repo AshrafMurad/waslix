@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { MoreHorizontal, Pencil, SlidersHorizontal } from "lucide-react";
 
@@ -80,10 +80,12 @@ function RiskRow({
   const t = useTranslations("risks");
   const format = useFormatter();
   const [editOpen, setEditOpen] = useState(false);
+  const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [editOperationKey, setEditOperationKey] = useState(
     `${risk.id}:edit:${risk.updatedAt}`,
   );
   const [manageOpen, setManageOpen] = useState(false);
+  const closeMenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [statusState, statusAction, statusPending] = useActionState(
     changeRiskStatusAction,
     initial,
@@ -101,18 +103,37 @@ function RiskRow({
         timeZone: "UTC",
       })
     : t("missingTarget");
+  const cancelMenuClose = () => {
+    if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current);
+  };
+  const openMenuOnHover = (event: React.MouseEvent) => {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+      return;
+    cancelMenuClose();
+    setActionMenuOpen(true);
+  };
+  const closeMenuAfterHover = () => {
+    cancelMenuClose();
+    closeMenuTimer.current = setTimeout(() => setActionMenuOpen(false), 120);
+  };
+  useEffect(
+    () => () => {
+      if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current);
+    },
+    [],
+  );
   return (
     <TableRow>
       <TableCell className="w-full min-w-52 whitespace-normal sm:min-w-64">
-        <div dir="auto" className="text-start">
+        <div className="text-start">
           <Link
             href={`/customers/${risk.customerId}/risks`}
             className="font-semibold hover:underline"
           >
-            {risk.title}
+            <bdi>{risk.title}</bdi>
           </Link>
           <p className="text-muted-foreground mt-1 text-xs">
-            {risk.customerName}
+            <bdi>{risk.customerName}</bdi>
           </p>
         </div>
         <div className="mt-2 flex flex-wrap gap-2 sm:hidden">
@@ -130,8 +151,8 @@ function RiskRow({
           </span>
         </div>
         {risk.description ? (
-          <p className="mt-2 line-clamp-2 text-start text-sm" dir="auto">
-            {risk.description}
+          <p className="mt-2 line-clamp-2 text-start text-sm">
+            <bdi>{risk.description}</bdi>
           </p>
         ) : null}
         {risk.resolutionNote ? (
@@ -171,20 +192,30 @@ function RiskRow({
         {risk.canManage ? (
           <>
             <div className="flex justify-end">
-              <DropdownMenu>
+              <DropdownMenu
+                open={actionMenuOpen}
+                onOpenChange={setActionMenuOpen}
+              >
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon-sm"
                     aria-label={t("dialog.actions")}
+                    onMouseEnter={openMenuOnHover}
+                    onMouseLeave={closeMenuAfterHover}
                   >
                     <MoreHorizontal aria-hidden="true" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent
+                  align="end"
+                  onMouseEnter={cancelMenuClose}
+                  onMouseLeave={closeMenuAfterHover}
+                >
                   {risk.status !== "RESOLVED" ? (
                     <DropdownMenuItem
                       onSelect={() => {
+                        setActionMenuOpen(false);
                         setEditOperationKey(crypto.randomUUID());
                         setEditOpen(true);
                       }}
@@ -193,7 +224,12 @@ function RiskRow({
                       {t("actions.edit")}
                     </DropdownMenuItem>
                   ) : null}
-                  <DropdownMenuItem onSelect={() => setManageOpen(true)}>
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      setActionMenuOpen(false);
+                      setManageOpen(true);
+                    }}
+                  >
                     <SlidersHorizontal aria-hidden="true" />
                     {t("dialog.manage")}
                   </DropdownMenuItem>

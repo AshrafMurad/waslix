@@ -22,13 +22,23 @@ import {
 import { TaskForm } from "./task-form";
 import { TaskStatusButton } from "./task-status-button";
 
-type TaskActionsMenuProps = React.ComponentProps<typeof TaskForm> & {
+type TaskActionsMenuTask = NonNullable<
+  React.ComponentProps<typeof TaskForm>["task"]
+> & {
+  status: "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
+};
+
+type TaskActionsMenuProps = Omit<
+  React.ComponentProps<typeof TaskForm>,
+  "onSuccess" | "task"
+> & {
   editTitle: string;
   editDescription: string;
   editLabel: string;
   moreLabel: string;
   statusOperationKey: string;
   cancelOperationKey: string;
+  task: TaskActionsMenuTask;
 };
 
 export function TaskActionsMenu({

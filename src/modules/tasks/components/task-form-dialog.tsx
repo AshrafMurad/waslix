@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 
 import { TaskForm } from "./task-form";
 
@@ -21,7 +20,6 @@ type TaskFormDialogProps = React.ComponentProps<typeof TaskForm> & {
   description: string;
   triggerLabel: string;
   mode: "create" | "edit";
-  triggerStyle?: "button" | "menu-item";
 };
 
 export function TaskFormDialog({
@@ -29,30 +27,22 @@ export function TaskFormDialog({
   description,
   triggerLabel,
   mode,
-  triggerStyle = "button",
   ...formProps
 }: TaskFormDialogProps) {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      {triggerStyle === "menu-item" ? (
-        <DropdownMenuItem onSelect={() => setOpen(true)}>
-          <Pencil aria-hidden="true" />
+      <DialogTrigger asChild>
+        <Button
+          type="button"
+          variant={mode === "edit" ? "ghost" : "default"}
+          size={mode === "edit" ? "default" : "lg"}
+        >
+          {mode === "create" ? <Plus aria-hidden="true" /> : null}
           {triggerLabel}
-        </DropdownMenuItem>
-      ) : (
-        <DialogTrigger asChild>
-          <Button
-            type="button"
-            variant={mode === "edit" ? "ghost" : "default"}
-            size={mode === "edit" ? "default" : "lg"}
-          >
-            {mode === "create" ? <Plus aria-hidden="true" /> : null}
-            {triggerLabel}
-          </Button>
-        </DialogTrigger>
-      )}
+        </Button>
+      </DialogTrigger>
       <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
