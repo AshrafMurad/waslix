@@ -71,8 +71,8 @@ export async function TaskList({
           <TableHead className="hidden px-4 lg:table-cell">
             {t("columns.owner")}
           </TableHead>
-          <TableHead className="bg-raised sticky end-0 w-14 px-2">
-            <span className="sr-only">{t("columns.actions")}</span>
+          <TableHead className="bg-raised sticky end-0 w-24 px-2 text-center">
+            {t("columns.actions")}
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -152,7 +152,7 @@ export async function TaskList({
                 <bdi>{task.owner.user.name}</bdi>
               </TableCell>
               {canEdit ? (
-                <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 text-end transition-colors">
+                <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 pt-3 text-center align-top transition-colors">
                   <TaskActionsMenu
                     editTitle={t("actions.edit")}
                     editDescription={t("description")}
@@ -174,7 +174,7 @@ export async function TaskList({
                   />
                 </TableCell>
               ) : (
-                <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 transition-colors" />
+                <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 pt-3 text-center align-top transition-colors" />
               )}
             </TableRow>
           );

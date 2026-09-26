@@ -90,7 +90,11 @@ export function TaskActionsMenu({
             />
           ) : null}
           {task.status !== "CANCELLED" ? <DropdownMenuSeparator /> : null}
-          <DropdownMenuItem onSelect={() => setEditOpen(true)}>
+          <DropdownMenuItem
+            onSelect={() => {
+              setEditOpen(true);
+            }}
+          >
             <Pencil aria-hidden="true" />
             {editLabel}
           </DropdownMenuItem>

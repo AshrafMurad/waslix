@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { MoreHorizontal, Pencil, SlidersHorizontal } from "lucide-react";
 
@@ -80,12 +80,10 @@ function RiskRow({
   const t = useTranslations("risks");
   const format = useFormatter();
   const [editOpen, setEditOpen] = useState(false);
-  const [actionMenuOpen, setActionMenuOpen] = useState(false);
   const [editOperationKey, setEditOperationKey] = useState(
     `${risk.id}:edit:${risk.updatedAt}`,
   );
   const [manageOpen, setManageOpen] = useState(false);
-  const closeMenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [statusState, statusAction, statusPending] = useActionState(
     changeRiskStatusAction,
     initial,
@@ -103,25 +101,6 @@ function RiskRow({
         timeZone: "UTC",
       })
     : t("missingTarget");
-  const cancelMenuClose = () => {
-    if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current);
-  };
-  const openMenuOnHover = (event: React.MouseEvent) => {
-    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
-      return;
-    cancelMenuClose();
-    setActionMenuOpen(true);
-  };
-  const closeMenuAfterHover = () => {
-    cancelMenuClose();
-    closeMenuTimer.current = setTimeout(() => setActionMenuOpen(false), 120);
-  };
-  useEffect(
-    () => () => {
-      if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current);
-    },
-    [],
-  );
   return (
     <TableRow>
       <TableCell className="w-full min-w-52 whitespace-normal sm:min-w-64">
@@ -188,34 +167,24 @@ function RiskRow({
       <TableCell className="text-muted-foreground hidden text-xs whitespace-normal xl:table-cell">
         {risk.mitigationCount ? t("mitigation.active") : t("mitigation.none")}
       </TableCell>
-      <TableCell className="w-0 whitespace-normal">
+      <TableCell className="w-0 align-top whitespace-normal md:align-middle">
         {risk.canManage ? (
           <>
-            <div className="flex justify-end">
-              <DropdownMenu
-                open={actionMenuOpen}
-                onOpenChange={setActionMenuOpen}
-              >
+            <div className="flex justify-start md:justify-center">
+              <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
                     size="icon-sm"
                     aria-label={t("dialog.actions")}
-                    onMouseEnter={openMenuOnHover}
-                    onMouseLeave={closeMenuAfterHover}
                   >
                     <MoreHorizontal aria-hidden="true" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  onMouseEnter={cancelMenuClose}
-                  onMouseLeave={closeMenuAfterHover}
-                >
+                <DropdownMenuContent align="end">
                   {risk.status !== "RESOLVED" ? (
                     <DropdownMenuItem
                       onSelect={() => {
-                        setActionMenuOpen(false);
                         setEditOperationKey(crypto.randomUUID());
                         setEditOpen(true);
                       }}
@@ -226,7 +195,6 @@ function RiskRow({
                   ) : null}
                   <DropdownMenuItem
                     onSelect={() => {
-                      setActionMenuOpen(false);
                       setManageOpen(true);
                     }}
                   >
@@ -449,7 +417,9 @@ export function RiskList(props: {
           <TableHead className="hidden xl:table-cell">
             {t("columns.mitigation")}
           </TableHead>
-          <TableHead className="text-end">{t("columns.actions")}</TableHead>
+          <TableHead className="text-start md:text-center">
+            {t("columns.actions")}
+          </TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
