@@ -26,16 +26,21 @@ export const riskInputSchema = z.object({
   operationKey: z.string().trim().min(1).max(200),
 });
 
-export const riskStatusInputSchema = z.object({
-  riskId: z.uuid(),
-  customerId: z.uuid().optional(),
-  status: z.enum(["OPEN", "MONITORING", "RESOLVED"]),
-  resolutionNote: z.preprocess(
-    emptyToNull,
-    z.string().trim().max(10000).nullable(),
-  ),
-  operationKey: z.string().trim().min(1).max(200),
-});
+export const riskStatusInputSchema = z
+  .object({
+    riskId: z.uuid(),
+    customerId: z.uuid().optional(),
+    status: z.enum(["OPEN", "MONITORING", "RESOLVED"]),
+    resolutionNote: z.preprocess(
+      emptyToNull,
+      z.string().trim().max(10000).nullable(),
+    ),
+    operationKey: z.string().trim().min(1).max(200),
+  })
+  .refine(
+    (value) => value.status !== "RESOLVED" || Boolean(value.resolutionNote),
+    { path: ["resolutionNote"], message: "REQUIRED" },
+  );
 
 export const riskMitigationInputSchema = z.object({
   riskId: z.uuid(),

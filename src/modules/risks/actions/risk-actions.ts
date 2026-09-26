@@ -37,6 +37,16 @@ function state(error: unknown): RiskActionState {
       ),
     };
   }
+  if (
+    error instanceof RiskDomainError &&
+    error.code === "RISK_RESOLUTION_NOTE_REQUIRED"
+  ) {
+    return {
+      status: "error",
+      code: error.code,
+      fieldErrors: { resolutionNote: "REQUIRED" },
+    };
+  }
   return {
     status: "error",
     code: error instanceof RiskDomainError ? error.code : "RISK_SAVE_FAILED",

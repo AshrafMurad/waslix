@@ -4,6 +4,14 @@
   "description": "Track threats to customer success, assign mitigation, and retain resolution history.",
   "empty": "No risks match this view.",
   "resolution": "Resolution: {note}",
+  "columns": {
+    "risk": "Customer and risk",
+    "severity": "Severity",
+    "status": "Status",
+    "owner": "Owner",
+    "mitigation": "Mitigation",
+    "actions": "Actions"
+  },
   "fields": {
     "customer": "Customer",
     "chooseCustomer": "Choose a customer",
@@ -54,6 +62,10 @@
     "saved": "Risk saved.",
     "failed": "The risk change could not be saved.",
     "noteRequired": "Add a resolution note before resolving this risk."
+  },
+  "validation": {
+    "required": "This field is required.",
+    "invalid": "Enter a valid value."
   },
   "pagination": { "next": "Next page" }
 }
