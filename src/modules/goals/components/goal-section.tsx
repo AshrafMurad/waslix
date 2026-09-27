@@ -35,6 +35,7 @@ type GoalSectionProps = {
 
 export async function GoalSection(props: GoalSectionProps) {
   const t = await getTranslations({ locale: props.locale, namespace: "goals" });
+  const direction = props.locale === "ar" ? "rtl" : "ltr";
   const date = new Intl.DateTimeFormat(props.locale, {
     calendar: "gregory",
     day: "numeric",
@@ -42,7 +43,7 @@ export async function GoalSection(props: GoalSectionProps) {
     year: "numeric",
   });
   return (
-    <Card>
+    <Card dir={direction}>
       <div className="flex items-start justify-between gap-4 border-b p-5">
         <div>
           <h2 className="text-lg font-semibold">{t("title")}</h2>

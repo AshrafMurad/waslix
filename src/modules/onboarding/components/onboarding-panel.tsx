@@ -81,6 +81,7 @@ export function OnboardingPanel({
   shouldSuggestAdoption: boolean;
 }) {
   const t = useTranslations("onboarding");
+  const direction = locale === "ar" ? "rtl" : "ltr";
   const format = useFormatter();
   const [startState, startAction, startPending] = useActionState(
     startOnboardingAction,
@@ -100,7 +101,7 @@ export function OnboardingPanel({
 
   if (!onboarding) {
     return (
-      <Card className="p-5">
+      <Card className="p-5" dir={direction}>
         <h2 className="text-lg font-semibold">{t("start.title")}</h2>
         <p className="text-muted-foreground mt-1 text-sm">
           {t("start.description")}
@@ -141,7 +142,10 @@ export function OnboardingPanel({
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+    <div
+      className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]"
+      dir={direction}
+    >
       <Card className="gap-0 overflow-hidden py-0">
         <div className="border-b p-5">
           <div className="flex items-start justify-between gap-4">

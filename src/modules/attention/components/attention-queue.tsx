@@ -161,14 +161,15 @@ export function AttentionQueue({
   canAct: boolean;
 }) {
   const t = useTranslations("attention");
+  const direction = locale === "ar" ? "rtl" : "ltr";
   if (!items.length)
     return (
-      <Empty className="rounded-none border-0">
+      <Empty className="rounded-none border-0" dir={direction}>
         <EmptyDescription>{t("empty")}</EmptyDescription>
       </Empty>
     );
   return (
-    <ul className="divide-y">
+    <ul className="divide-y" dir={direction}>
       {items.map((item) => (
         <AttentionRow
           key={item.id}

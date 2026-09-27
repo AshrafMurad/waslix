@@ -79,6 +79,7 @@ function RiskRow({
   owners: Array<{ id: string; name: string }>;
 }) {
   const t = useTranslations("risks");
+  const direction = locale === "ar" ? "rtl" : "ltr";
   const format = useFormatter();
   const [editOpen, setEditOpen] = useState(false);
   const [editOperationKey, setEditOperationKey] = useState(
@@ -219,7 +220,7 @@ function RiskRow({
               />
             ) : null}
             <Dialog open={manageOpen} onOpenChange={setManageOpen}>
-              <DialogContent className="sm:max-w-lg">
+              <DialogContent className="sm:max-w-lg" dir={direction}>
                 <DialogHeader>
                   <DialogTitle dir="auto">{risk.title}</DialogTitle>
                   <DialogDescription>

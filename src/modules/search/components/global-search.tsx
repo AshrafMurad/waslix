@@ -2,6 +2,7 @@
 
 import { Search } from "lucide-react";
 import { useEffect, useState, useTransition } from "react";
+import { useLocale } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -30,6 +31,8 @@ type GlobalSearchProps = {
 };
 
 export function GlobalSearch({ labels }: GlobalSearchProps) {
+  const locale = useLocale();
+  const direction = locale === "ar" ? "rtl" : "ltr";
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
@@ -72,7 +75,7 @@ export function GlobalSearch({ labels }: GlobalSearchProps) {
         </kbd>
       </Button>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent dir={direction}>
           <DialogHeader>
             <DialogTitle>{labels.title}</DialogTitle>
           </DialogHeader>
@@ -84,6 +87,7 @@ export function GlobalSearch({ labels }: GlobalSearchProps) {
               if (nextQuery.trim().length < 2) setResults([]);
             }}
             placeholder={labels.placeholder}
+            dir="auto"
             autoFocus
           />
           <div

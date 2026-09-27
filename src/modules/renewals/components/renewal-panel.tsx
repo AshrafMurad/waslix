@@ -79,6 +79,7 @@ export function RenewalPanel({
   canManage: boolean;
 }) {
   const t = useTranslations("renewals");
+  const direction = locale === "ar" ? "rtl" : "ltr";
   const active = renewals.find(
     (renewal) => !["RENEWED", "CHURNED"].includes(renewal.stage),
   );
@@ -86,7 +87,10 @@ export function RenewalPanel({
     ["RENEWED", "CHURNED"].includes(renewal.stage),
   );
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+    <div
+      className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]"
+      dir={direction}
+    >
       <Card className="p-5">
         <h2 className="text-lg font-semibold">{t("title")}</h2>
         <p className="text-muted-foreground mt-1 text-sm">{t("description")}</p>

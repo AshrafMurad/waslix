@@ -27,6 +27,7 @@ export async function HealthOverview({
   canEdit: boolean;
 }) {
   const t = await getTranslations({ locale, namespace: "health" });
+  const direction = locale === "ar" ? "rtl" : "ltr";
   const number = new Intl.NumberFormat(locale);
   const percent = new Intl.NumberFormat(locale, { style: "percent" });
   const dateTime = new Intl.DateTimeFormat(locale, {
@@ -50,7 +51,7 @@ export async function HealthOverview({
           : "text-muted-foreground";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir={direction}>
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
         <Card className="p-5">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
