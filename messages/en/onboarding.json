@@ -3,6 +3,7 @@
   "missing": "Not set",
   "critical": "Critical",
   "noDescription": "No description provided.",
+  "emptyMilestones": "No onboarding milestones have been generated yet.",
   "progress": "{completed}/{total} milestones complete · {percent}%",
   "milestoneMeta": "Owner: {owner} · Due: {due} · Status: {status}",
   "start": {

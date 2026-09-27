@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/i18n/navigation";
 
@@ -161,7 +162,11 @@ export function AttentionQueue({
 }) {
   const t = useTranslations("attention");
   if (!items.length)
-    return <p className="text-muted-foreground p-6">{t("empty")}</p>;
+    return (
+      <Empty className="rounded-none border-0">
+        <EmptyDescription>{t("empty")}</EmptyDescription>
+      </Empty>
+    );
   return (
     <ul className="divide-y">
       {items.map((item) => (

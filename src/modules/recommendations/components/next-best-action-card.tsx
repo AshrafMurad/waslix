@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/i18n/navigation";
 
@@ -173,7 +174,9 @@ export function NextBestActionCard({
           ))}
         </ul>
       ) : (
-        <p className="text-muted-foreground mt-4 text-sm">{t("empty")}</p>
+        <Empty className="mt-4 border-0 p-0 md:p-0">
+          <EmptyDescription>{t("empty")}</EmptyDescription>
+        </Empty>
       )}
     </Card>
   );

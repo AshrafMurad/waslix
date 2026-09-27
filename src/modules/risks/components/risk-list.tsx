@@ -18,6 +18,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
@@ -399,25 +400,29 @@ export function RiskList(props: {
 }) {
   const t = useTranslations("risks");
   if (!props.risks.length)
-    return <p className="text-muted-foreground p-6">{t("empty")}</p>;
+    return (
+      <Empty className="rounded-none border-0">
+        <EmptyDescription>{t("empty")}</EmptyDescription>
+      </Empty>
+    );
   return (
     <Table dir={props.locale === "ar" ? "rtl" : "ltr"}>
       <TableHeader>
-        <TableRow>
-          <TableHead>{t("columns.risk")}</TableHead>
-          <TableHead className="hidden sm:table-cell">
+        <TableRow className="bg-raised hover:bg-raised">
+          <TableHead className="px-4">{t("columns.risk")}</TableHead>
+          <TableHead className="hidden px-4 sm:table-cell">
             {t("columns.severity")}
           </TableHead>
-          <TableHead className="hidden sm:table-cell">
+          <TableHead className="hidden px-4 sm:table-cell">
             {t("columns.status")}
           </TableHead>
-          <TableHead className="hidden lg:table-cell">
+          <TableHead className="hidden px-4 lg:table-cell">
             {t("columns.owner")}
           </TableHead>
-          <TableHead className="hidden xl:table-cell">
+          <TableHead className="hidden px-4 xl:table-cell">
             {t("columns.mitigation")}
           </TableHead>
-          <TableHead className="text-start md:text-center">
+          <TableHead className="px-4 text-start md:text-center">
             {t("columns.actions")}
           </TableHead>
         </TableRow>

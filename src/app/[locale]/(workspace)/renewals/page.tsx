@@ -6,6 +6,7 @@ import {
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import {
   Table,
   TableBody,
@@ -47,25 +48,25 @@ export default async function RenewalsPage({
         </p>
       </div>
       <Card className="gap-0 overflow-hidden py-0">
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-raised hover:bg-raised">
-              <TableHead className="px-4">{t("columns.customer")}</TableHead>
-              <TableHead className="px-4">{t("columns.date")}</TableHead>
-              <TableHead className="hidden px-4 md:table-cell">
-                {t("columns.stage")}
-              </TableHead>
-              <TableHead className="hidden px-4 lg:table-cell">
-                {t("columns.readiness")}
-              </TableHead>
-              <TableHead className="hidden px-4 lg:table-cell">
-                {t("columns.value")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {portfolio.renewals.length ? (
-              portfolio.renewals.map((renewal) => (
+        {portfolio.renewals.length ? (
+          <Table dir={locale === "ar" ? "rtl" : "ltr"}>
+            <TableHeader>
+              <TableRow className="bg-raised hover:bg-raised">
+                <TableHead className="px-4">{t("columns.customer")}</TableHead>
+                <TableHead className="px-4">{t("columns.date")}</TableHead>
+                <TableHead className="hidden px-4 md:table-cell">
+                  {t("columns.stage")}
+                </TableHead>
+                <TableHead className="hidden px-4 lg:table-cell">
+                  {t("columns.readiness")}
+                </TableHead>
+                <TableHead className="hidden px-4 lg:table-cell">
+                  {t("columns.value")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {portfolio.renewals.map((renewal) => (
                 <TableRow key={renewal.id}>
                   <TableCell className="px-4 py-3">
                     <Link
@@ -99,16 +100,14 @@ export default async function RenewalsPage({
                     })}
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={5} className="text-muted-foreground p-6">
-                  {t("portfolio.empty")}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+              ))}
+            </TableBody>
+          </Table>
+        ) : (
+          <Empty className="rounded-none border-0">
+            <EmptyDescription>{t("portfolio.empty")}</EmptyDescription>
+          </Empty>
+        )}
       </Card>
     </div>
   );

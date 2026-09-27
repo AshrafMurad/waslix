@@ -3,6 +3,7 @@
   "missing": "غير محدد",
   "critical": "حرجة",
   "noDescription": "لا يوجد وصف.",
+  "emptyMilestones": "لم يتم إنشاء مراحل التهيئة بعد.",
   "progress": "اكتملت {completed} من {total} مراحل · {percent}%",
   "milestoneMeta": "المالك: {owner} · الاستحقاق: {due} · الحالة: {status}",
   "start": {

@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { getTranslations } from "next-intl/server";
 
 import { Card } from "@/components/ui/card";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Link } from "@/i18n/navigation";
 
 import type { getHealthOverview } from "../queries/get-health-overview";
@@ -208,7 +209,9 @@ export async function HealthOverview({
             </p>
           </div>
         ) : (
-          <p className="text-muted-foreground mt-4">{t("history.empty")}</p>
+          <Empty className="mt-4 border-0 p-0 md:p-0">
+            <EmptyDescription>{t("history.empty")}</EmptyDescription>
+          </Empty>
         )}
       </Card>
 

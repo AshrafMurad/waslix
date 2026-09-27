@@ -2,6 +2,14 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { getPortfolioAnalytics } from "@/modules/analytics/queries/get-portfolio-analytics";
@@ -16,8 +24,8 @@ function first(value: string | string[] | undefined) {
 
 function Metric({ label, value }: { label: string; value: string | number }) {
   return (
-    <Card>
-      <CardContent className="space-y-2 p-4">
+    <Card className="p-5">
+      <CardContent className="space-y-2 p-0">
         <p className="text-muted-foreground text-sm">{label}</p>
         <p className="text-3xl font-semibold tabular-nums">{value}</p>
       </CardContent>
@@ -232,35 +240,37 @@ export default async function AnalyticsPage({
         <CardHeader>
           <CardTitle>{t("workload.title")}</CardTitle>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full min-w-[36rem] text-sm">
-            <thead className="text-muted-foreground text-start">
-              <tr className="border-b">
-                <th className="py-3 text-start font-medium">
-                  {t("workload.owner")}
-                </th>
-                <th className="py-3 text-start font-medium">
+        <CardContent className="px-0 pb-0">
+          <Table className="min-w-2xl" dir={locale === "ar" ? "rtl" : "ltr"}>
+            <TableHeader>
+              <TableRow className="bg-raised hover:bg-raised">
+                <TableHead className="px-6">{t("workload.owner")}</TableHead>
+                <TableHead className="px-4">
                   {t("workload.customers")}
-                </th>
-                <th className="py-3 text-start font-medium">
-                  {t("workload.tasks")}
-                </th>
-                <th className="py-3 text-start font-medium">
-                  {t("workload.risks")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+                </TableHead>
+                <TableHead className="px-4">{t("workload.tasks")}</TableHead>
+                <TableHead className="px-4">{t("workload.risks")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {analytics.ownerWorkload.map((owner) => (
-                <tr key={owner.ownerId} className="border-b last:border-0">
-                  <td className="py-3">{owner.ownerName}</td>
-                  <td className="py-3 tabular-nums">{owner.customers}</td>
-                  <td className="py-3 tabular-nums">{owner.tasks}</td>
-                  <td className="py-3 tabular-nums">{owner.risks}</td>
-                </tr>
+                <TableRow key={owner.ownerId}>
+                  <TableCell className="px-6 py-3" dir="auto">
+                    {owner.ownerName}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 tabular-nums">
+                    {owner.customers}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 tabular-nums">
+                    {owner.tasks}
+                  </TableCell>
+                  <TableCell className="px-4 py-3 tabular-nums">
+                    {owner.risks}
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

@@ -6,6 +6,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { DatePicker } from "@/components/shared/date-picker";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
@@ -97,7 +98,9 @@ export function RenewalPanel({
             canManage={canManage || active.ownerId === defaultOwnerId}
           />
         ) : (
-          <p className="text-muted-foreground mt-5 text-sm">{t("empty")}</p>
+          <Empty className="mt-5 border-0 p-0 md:p-0">
+            <EmptyDescription>{t("empty")}</EmptyDescription>
+          </Empty>
         )}
       </Card>
       <div className="space-y-6">
@@ -120,9 +123,9 @@ export function RenewalPanel({
               ))}
             </ul>
           ) : (
-            <p className="text-muted-foreground mt-3 text-sm">
-              {t("history.empty")}
-            </p>
+            <Empty className="mt-3 border-0 p-0 md:p-0">
+              <EmptyDescription>{t("history.empty")}</EmptyDescription>
+            </Empty>
           )}
         </Card>
       </div>

@@ -6,6 +6,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { DatePicker } from "@/components/shared/date-picker";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -165,21 +166,27 @@ export function OnboardingPanel({
             </span>
           </div>
         </div>
-        <ul className="divide-y">
-          {onboarding.milestones.map((milestone) => (
-            <MilestoneItem
-              key={milestone.id}
-              locale={locale}
-              customerId={customerId}
-              milestone={milestone}
-              owners={owners}
-              canManage={canManage || milestone.ownerId === defaultOwnerId}
-              isDelayed={
-                progress?.delayedMilestoneIds.includes(milestone.id) ?? false
-              }
-            />
-          ))}
-        </ul>
+        {onboarding.milestones.length ? (
+          <ul className="divide-y">
+            {onboarding.milestones.map((milestone) => (
+              <MilestoneItem
+                key={milestone.id}
+                locale={locale}
+                customerId={customerId}
+                milestone={milestone}
+                owners={owners}
+                canManage={canManage || milestone.ownerId === defaultOwnerId}
+                isDelayed={
+                  progress?.delayedMilestoneIds.includes(milestone.id) ?? false
+                }
+              />
+            ))}
+          </ul>
+        ) : (
+          <Empty className="rounded-none border-0">
+            <EmptyDescription>{t("emptyMilestones")}</EmptyDescription>
+          </Empty>
+        )}
       </Card>
       <div className="space-y-6">
         <Card className="p-5">

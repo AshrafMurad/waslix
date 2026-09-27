@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Empty, EmptyDescription } from "@/components/ui/empty";
 import {
   Dialog,
   DialogContent,
@@ -128,7 +129,9 @@ export async function GoalSection(props: GoalSectionProps) {
           ))}
         </ul>
       ) : (
-        <p className="text-muted-foreground p-6">{t("empty")}</p>
+        <Empty className="rounded-none border-0">
+          <EmptyDescription>{t("empty")}</EmptyDescription>
+        </Empty>
       )}
     </Card>
   );
