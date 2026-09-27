@@ -1,6 +1,9 @@
 import { PgBoss } from "pg-boss";
+import { mkdir, writeFile } from "node:fs/promises";
+import { dirname } from "node:path";
 import { z } from "zod";
 
+import { serverEnvironment } from "@/config/server-env";
 import { dispatchOutboxBatch } from "@/lib/jobs/dispatch-outbox";
 import {
   recalculateCustomerHealth,
@@ -19,11 +22,16 @@ const intelligenceJobSchema = healthJobSchema.extend({
 
 const healthQueue = "HEALTH_RECALCULATE";
 const dailyQueue = "HEALTH_DAILY_SWEEP";
+const heartbeatFile =
+  serverEnvironment.WORKER_HEARTBEAT_FILE ?? "/tmp/waslix-worker-heartbeat";
+
+async function writeWorkerHeartbeat() {
+  await mkdir(dirname(heartbeatFile), { recursive: true });
+  await writeFile(heartbeatFile, new Date().toISOString());
+}
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("DATABASE_URL is required");
-  const boss = new PgBoss(connectionString);
+  const boss = new PgBoss(serverEnvironment.DATABASE_URL);
   boss.on("error", (error) => console.error("pg-boss error", error.name));
   await boss.start();
   await boss.createQueue(healthQueue, { policy: "key_strict_fifo" });
@@ -77,6 +85,7 @@ async function main() {
     {},
     { tz: "UTC", missed: "once" },
   );
+  await writeWorkerHeartbeat();
 
   const dispatch = () =>
     dispatchOutboxBatch(async (delivery) => {
@@ -91,7 +100,12 @@ async function main() {
       });
     });
   await dispatch();
-  const interval = setInterval(() => void dispatch(), 5 * 60 * 1000);
+  const interval = setInterval(
+    () => {
+      void dispatch().then(writeWorkerHeartbeat);
+    },
+    5 * 60 * 1000,
+  );
   await new Promise<void>((resolve) => {
     const stop = () => resolve();
     process.once("SIGINT", stop);

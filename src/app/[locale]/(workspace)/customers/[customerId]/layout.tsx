@@ -3,20 +3,9 @@ import { notFound } from "next/navigation";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { isLocale } from "@/i18n/config";
-import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
+import { CustomerTabs } from "@/modules/customers/components/customer-tabs";
 import { getCustomerOverview } from "@/modules/customers/queries/get-customer-overview";
-
-const tabs = [
-  "overview",
-  "health",
-  "timeline",
-  "onboarding",
-  "risks",
-  "tasks",
-  "renewal",
-  "contacts",
-] as const;
 
 export default async function CustomerLayout({
   children,
@@ -82,7 +71,7 @@ export default async function CustomerLayout({
               {customer.industry ?? t("missing")}
             </p>
           </div>
-          <div className="rounded-md border px-4 py-3">
+          <div className="w-full rounded-md border px-4 py-3 sm:w-auto">
             <p className="text-muted-foreground text-xs">
               {t("summary.health")}
             </p>
@@ -121,23 +110,20 @@ export default async function CustomerLayout({
             </div>
           ))}
         </dl>
-        <nav aria-label={t("tabs.label")} className="overflow-x-auto border-b">
-          <div className="flex min-w-max gap-1">
-            {tabs.map((tab) => (
-              <Link
-                key={tab}
-                href={
-                  tab === "overview"
-                    ? `/customers/${customerId}`
-                    : `/customers/${customerId}/${tab}`
-                }
-                className="hover:bg-raised min-h-10 rounded-t-md px-3 py-2 font-medium"
-              >
-                {t(`tabs.${tab}`)}
-              </Link>
-            ))}
-          </div>
-        </nav>
+        <CustomerTabs
+          customerId={customerId}
+          label={t("tabs.label")}
+          labels={{
+            overview: t("tabs.overview"),
+            health: t("tabs.health"),
+            timeline: t("tabs.timeline"),
+            onboarding: t("tabs.onboarding"),
+            risks: t("tabs.risks"),
+            tasks: t("tabs.tasks"),
+            renewal: t("tabs.renewal"),
+            contacts: t("tabs.contacts"),
+          }}
+        />
       </header>
       {children}
     </div>

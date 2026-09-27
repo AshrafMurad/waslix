@@ -1,11 +1,10 @@
 import { PgBoss } from "pg-boss";
 
+import { serverEnvironment } from "@/config/server-env";
 import { dispatchOutboxBatch } from "@/lib/jobs/dispatch-outbox";
 
 async function main() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) throw new Error("DATABASE_URL is required");
-  const boss = new PgBoss(connectionString);
+  const boss = new PgBoss(serverEnvironment.DATABASE_URL);
   boss.on("error", (error) => console.error("pg-boss error", error.name));
   await boss.start();
   const queues = new Set<string>();

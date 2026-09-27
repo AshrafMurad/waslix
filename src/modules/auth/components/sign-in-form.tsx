@@ -25,6 +25,10 @@ export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
   }>({});
   const [isPending, setIsPending] = useState(false);
 
+  function clearFormError() {
+    setError(undefined);
+  }
+
   async function signIn(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
@@ -36,7 +40,7 @@ export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
         : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
           ? t("validation.email")
           : undefined,
-      password: password ? undefined : t("validation.required"),
+      password: password.trim() ? undefined : t("validation.required"),
     };
 
     setFieldErrors(nextFieldErrors);
@@ -77,6 +81,7 @@ export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
           autoComplete="email"
           aria-required="true"
           aria-invalid={Boolean(fieldErrors.email)}
+          onChange={clearFormError}
           aria-describedby={
             fieldErrors.email ? "sign-in-email-error" : undefined
           }
@@ -94,6 +99,7 @@ export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
           autoComplete="current-password"
           aria-required="true"
           aria-invalid={Boolean(fieldErrors.password)}
+          onChange={clearFormError}
           aria-describedby={
             fieldErrors.password ? "sign-in-password-error" : undefined
           }

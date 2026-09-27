@@ -47,7 +47,8 @@ type CustomerTableProps = {
     | "renewal"
     | "unknown"
     | "archived"
-    | "missing",
+    | "missing"
+    | "scrollHint",
     string
   >;
 };
@@ -146,38 +147,44 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
   });
 
   return (
-    <Table
-      className="min-w-4xl border-collapse"
-      dir={locale === "ar" ? "rtl" : "ltr"}
-    >
-      <TableHeader>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow
-            key={headerGroup.id}
-            className="bg-raised hover:bg-raised text-start"
-          >
-            {headerGroup.headers.map((header) => (
-              <TableHead key={header.id} className="px-4 text-start">
-                {flexRender(
-                  header.column.columnDef.header,
-                  header.getContext(),
-                )}
-              </TableHead>
-            ))}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody>
-        {table.getRowModel().rows.map((row) => (
-          <TableRow key={row.id}>
-            {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id} className="px-4 text-start">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <>
+      <p id="customer-table-scroll-hint" className="sr-only">
+        {labels.scrollHint}
+      </p>
+      <Table
+        aria-describedby="customer-table-scroll-hint"
+        className="min-w-4xl border-collapse"
+        dir={locale === "ar" ? "rtl" : "ltr"}
+      >
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow
+              key={headerGroup.id}
+              className="bg-raised hover:bg-raised text-start"
+            >
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id} className="px-4 text-start">
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext(),
+                  )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id} className="px-4 text-start">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </>
   );
 }

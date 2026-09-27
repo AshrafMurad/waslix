@@ -5,6 +5,7 @@
   },
   "navigation": {
     "label": "Workspace navigation",
+    "skipToContent": "Skip to workspace content",
     "overview": "Overview",
     "customers": "Customers",
     "tasks": "Tasks",

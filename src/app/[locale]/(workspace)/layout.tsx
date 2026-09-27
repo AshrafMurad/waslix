@@ -29,6 +29,7 @@ export default async function WorkspaceLayout({
       roleLabel={t(`roles.${access.role}`)}
       labels={{
         navigation: t("navigation.label"),
+        skipToContent: t("navigation.skipToContent"),
         unavailable: t("navigation.unavailable"),
         menu: t("controls.menu"),
         account: t("account.label"),

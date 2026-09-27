@@ -147,6 +147,7 @@ export default async function CustomersPage({
               unknown: t("healthUnknown"),
               archived: t("status.ARCHIVED"),
               missing: t("missing"),
+              scrollHint: t("table.scrollHint"),
             }}
           />
         ) : (

@@ -5,6 +5,7 @@
   },
   "navigation": {
     "label": "التنقل في مساحة العمل",
+    "skipToContent": "تجاوز إلى محتوى مساحة العمل",
     "overview": "نظرة عامة",
     "customers": "العملاء",
     "tasks": "المهام",

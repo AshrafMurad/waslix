@@ -31,6 +31,7 @@ import { WorkspaceSwitcher } from "./workspace-switcher";
 
 type ShellLabels = {
   navigation: string;
+  skipToContent: string;
   unavailable: string;
   menu: string;
   account: string;
@@ -171,6 +172,12 @@ export function ApplicationShell({
 
   return (
     <div className="bg-background min-h-screen md:grid md:grid-cols-[16rem_1fr]">
+      <a
+        href="#workspace-content"
+        className="bg-surface text-foreground fixed start-3 top-3 z-50 -translate-y-16 rounded-md border px-3 py-2 font-medium shadow-sm transition-transform focus-visible:translate-y-0 focus-visible:ring-2"
+      >
+        {labels.skipToContent}
+      </a>
       <aside className="bg-surface sticky top-0 hidden h-screen border-e p-4 md:flex md:flex-col">
         <Link href="/overview" className="mb-6 flex items-center gap-3 px-2">
           <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-md text-base font-semibold">
@@ -238,7 +245,11 @@ export function ApplicationShell({
             />
           </div>
         </header>
-        <main className="mx-auto w-full max-w-screen-2xl p-4 md:p-6 lg:p-8">
+        <main
+          id="workspace-content"
+          tabIndex={-1}
+          className="mx-auto w-full max-w-screen-2xl p-4 md:p-6 lg:p-8"
+        >
           {children}
         </main>
       </div>

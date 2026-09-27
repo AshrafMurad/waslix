@@ -31,6 +31,19 @@ test.describe("authentication and workspace smoke", () => {
     await expect(page.getByLabel("Email")).toHaveValue("admin@example.com");
     await expect(page.getByLabel("Password")).toHaveValue("admin123");
 
+    await page.getByLabel("Email").fill("not-an-email");
+    await page.getByLabel("Password").fill(" ");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page.getByText("Enter a valid email address.")).toBeVisible();
+    await expect(page.getByText("This field is required.")).toBeVisible();
+
+    await page.getByLabel("Email").fill("missing@example.com");
+    await page.getByLabel("Password").fill("WrongPassword123!");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(
+      page.getByText("The email or password is incorrect."),
+    ).toBeVisible();
+
     const signUpResponse = await request.post("/api/auth/sign-up/email", {
       data: { name: "E2E Admin", email, password },
     });
@@ -98,12 +111,13 @@ test.describe("authentication and workspace smoke", () => {
 
     await expect(page).toHaveURL(/\/en\/overview$/);
     await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
-    const workspaceMenu = page.locator("aside details").first();
-    await expect(workspaceMenu.locator("summary")).toContainText(alphaName);
+    await expect(
+      page.getByRole("button", { name: `${alphaName} Workspace` }),
+    ).toBeVisible();
 
     await page.goto("/en/customers");
     await expect(
-      page.getByRole("heading", { name: "Customers" }),
+      page.getByRole("heading", { name: "Customers", exact: true }),
     ).toBeVisible();
     await expect(
       page.getByRole("link", { name: "E2E Customer" }),
@@ -131,16 +145,21 @@ test.describe("authentication and workspace smoke", () => {
 
     await page.goto("/ar/customers");
     await expect(page.locator("html")).toHaveAttribute("dir", "rtl");
-    await expect(page.getByRole("heading", { name: "العملاء" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "العملاء", exact: true }),
+    ).toBeVisible();
 
     await page.goto("/en/overview");
-    await workspaceMenu.locator("summary").click();
-    await workspaceMenu.getByRole("button", { name: betaName }).click();
-    await expect(workspaceMenu.locator("summary")).toContainText(betaName);
+    await page
+      .getByRole("button", { name: `${alphaName} Workspace` })
+      .click();
+    await page.getByRole("menuitem", { name: betaName }).click();
+    await expect(
+      page.getByRole("button", { name: `${betaName} Workspace` }),
+    ).toBeVisible();
 
-    const accountMenu = page.locator("header details").last();
-    await accountMenu.locator("summary").click();
-    await accountMenu.getByRole("button", { name: "Sign out" }).click();
+    await page.getByRole("button", { name: /E2E Admin/ }).click();
+    await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/en\/sign-in$/);
 
     await page.goto("/ar/sign-in");

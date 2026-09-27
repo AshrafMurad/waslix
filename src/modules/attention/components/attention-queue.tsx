@@ -49,7 +49,7 @@ function AttentionRow({
       <div>
         <Link
           href={`/customers/${item.customer.id}`}
-          className="font-semibold hover:underline"
+          className="rounded-sm font-semibold hover:underline"
           dir="auto"
         >
           {item.customer.name}
@@ -116,7 +116,7 @@ function AttentionRow({
                 </Button>
               </form>
             ) : null}
-            <form action={action} className="flex gap-2">
+            <form action={action} className="flex flex-col gap-2 sm:flex-row">
               <input type="hidden" name="locale" value={locale} />
               <input type="hidden" name="itemId" value={item.id} />
               <input type="hidden" name="status" value="DISMISSED" />
@@ -125,6 +125,7 @@ function AttentionRow({
                 required
                 maxLength={10000}
                 placeholder={t("actions.reason")}
+                aria-label={t("actions.reason")}
                 className="min-w-0"
               />
               <Button
@@ -132,6 +133,7 @@ function AttentionRow({
                 size="sm"
                 variant="ghost"
                 disabled={pending}
+                aria-busy={pending}
               >
                 {t("actions.dismiss")}
               </Button>

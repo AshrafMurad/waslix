@@ -11,5 +11,17 @@
     "chooseDateTime": "Choose a date and time",
     "time": "Time",
     "clear": "Clear date"
+  },
+  "error": {
+    "kicker": "Unexpected error",
+    "title": "Something went wrong",
+    "description": "The page could not be loaded safely. Try again or return later.",
+    "retry": "Try again"
+  },
+  "notFound": {
+    "kicker": "Not found",
+    "title": "Page not found",
+    "description": "This page does not exist or you do not have access to it.",
+    "home": "Go to home"
   }
 }

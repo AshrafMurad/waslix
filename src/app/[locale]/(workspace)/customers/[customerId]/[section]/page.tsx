@@ -303,6 +303,7 @@ export default async function CustomerSectionPage({
               <Link
                 key={item}
                 href={`/customers/${customerId}/timeline?filter=${item}`}
+                aria-current={timeline.filter === item ? "page" : undefined}
                 className={
                   timeline.filter === item
                     ? "bg-raised min-h-10 rounded-md px-3 py-2 text-sm font-medium"

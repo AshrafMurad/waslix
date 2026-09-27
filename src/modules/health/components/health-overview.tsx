@@ -80,10 +80,11 @@ export async function HealthOverview({
                 <Link
                   key={window}
                   href={`/customers/${customerId}/health?window=${window}`}
+                  aria-current={activeWindow === window ? "page" : undefined}
                   className={
                     activeWindow === window
                       ? "bg-raised rounded-md px-3 py-2 text-sm font-medium"
-                      : "text-muted-foreground rounded-md px-3 py-2 text-sm"
+                      : "text-muted-foreground hover:bg-raised rounded-md px-3 py-2 text-sm"
                   }
                 >
                   {t("comparison.days", { count: window })}

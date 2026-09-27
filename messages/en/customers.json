@@ -76,7 +76,8 @@
     "lifecycle": "Lifecycle",
     "owner": "Owner",
     "value": "Contract value",
-    "renewal": "Renewal"
+    "renewal": "Renewal",
+    "scrollHint": "This customer table may scroll horizontally on small screens."
   },
   "pagination": {
     "next": "Next page"
