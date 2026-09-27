@@ -48,6 +48,14 @@ function localDate(now: Date, timezone: string) {
   return `${part("year")}-${part("month")}-${part("day")}`;
 }
 
+function stringMetadataValue(metadata: Prisma.JsonValue, key: string) {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+  const value = (metadata as Record<string, unknown>)[key];
+  return typeof value === "string" ? value : null;
+}
+
 async function requireEligibleOwner(
   transaction: Prisma.TransactionClient,
   workspaceId: string,
@@ -314,6 +322,27 @@ export async function recordRenewedOutcome(
   if (access.role === "VIEWER")
     throw new RenewalDomainError("RENEWAL_NOT_FOUND");
   return prisma.$transaction(async (transaction) => {
+    const replay = await transaction.systemEvent.findUnique({
+      where: {
+        workspaceId_idempotencyKey: {
+          workspaceId: access.workspaceId,
+          idempotencyKey: input.operationKey,
+        },
+      },
+      select: { entityId: true, metadata: true, type: true },
+    });
+    if (
+      replay?.type === "RENEWAL_COMPLETED" &&
+      replay.entityId === input.renewalId
+    ) {
+      const nextRenewalId = stringMetadataValue(
+        replay.metadata,
+        "nextRenewalId",
+      );
+      if (!nextRenewalId) throw new RenewalDomainError("RENEWAL_NOT_FOUND");
+      return { id: replay.entityId, nextRenewalId };
+    }
+
     const renewal = await transaction.renewal.findFirst({
       where: {
         id: input.renewalId,
@@ -397,6 +426,22 @@ export async function recordChurnedOutcome(
   if (access.role === "VIEWER")
     throw new RenewalDomainError("RENEWAL_NOT_FOUND");
   return prisma.$transaction(async (transaction) => {
+    const replay = await transaction.systemEvent.findUnique({
+      where: {
+        workspaceId_idempotencyKey: {
+          workspaceId: access.workspaceId,
+          idempotencyKey: input.operationKey,
+        },
+      },
+      select: { entityId: true, type: true },
+    });
+    if (
+      replay?.type === "RENEWAL_COMPLETED" &&
+      replay.entityId === input.renewalId
+    ) {
+      return { id: replay.entityId };
+    }
+
     const renewal = await transaction.renewal.findFirst({
       where: {
         id: input.renewalId,
