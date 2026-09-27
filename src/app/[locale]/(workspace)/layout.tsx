@@ -33,6 +33,16 @@ export default async function WorkspaceLayout({
         menu: t("controls.menu"),
         account: t("account.label"),
         role: t("account.role"),
+        search: {
+          trigger: t("search.trigger"),
+          title: t("search.title"),
+          placeholder: t("search.placeholder"),
+          empty: t("search.empty"),
+          loading: t("search.loading"),
+          customer: t("search.customer"),
+          contact: t("search.contact"),
+          task: t("search.task"),
+        },
         nav: {
           overview: t("navigation.overview"),
           customers: t("navigation.customers"),

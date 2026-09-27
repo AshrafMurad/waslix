@@ -219,6 +219,29 @@ enum RenewalOutcome {
   CHURNED
 }
 
+enum ImportBatchStatus {
+  VALIDATING
+  READY
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum ImportValidationStatus {
+  VALIDATING
+  READY
+  INVALID
+  SUPERSEDED
+}
+
+enum ImportRowStatus {
+  PENDING
+  INVALID
+  IMPORTED
+  SKIPPED
+  FAILED
+}
+
 model User {
   id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name            String
@@ -288,72 +311,76 @@ model Verification {
 }
 
 model Workspace {
-  id               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name             String                @db.VarChar(200)
-  slug             String                @unique @db.VarChar(200)
-  logo             String?
-  metadata         String?
-  timezone         String                @default("UTC") @db.VarChar(100)
-  defaultCurrency  String                @default("USD") @db.Char(3)
-  createdAt        DateTime              @default(now()) @db.Timestamptz(3)
-  updatedAt        DateTime              @updatedAt @db.Timestamptz(3)
-  members          WorkspaceMember[]
-  invitations      Invitation[]
-  sessions         Session[]
-  lifecycleStages  LifecycleStage[]
-  tags             Tag[]
-  customerTags     CustomerTag[]
-  customers        Customer[]
-  contacts         Contact[]
-  tasks            Task[]
-  activities       Activity[]
-  systemEvents     SystemEvent[]
-  jobOutbox        JobOutbox[]
-  successGoals     SuccessGoal[]
-  healthInputs     HealthInput[]
-  healthRevisions  HealthInputRevision[]
-  customerHealth   CustomerHealth[]
-  healthSnapshots  HealthSnapshot[]
-  signals          Signal[]
-  attentionItems   AttentionItem[]
-  attentionSignals AttentionSignal[]
-  recommendations  Recommendation[]
-  risks            Risk[]
-  riskSignals      RiskSignal[]
-  onboardings      Onboarding[]
-  milestones       OnboardingMilestone[]
-  renewals         Renewal[]
-  playbookTemplates PlaybookTemplate[]
+  id                    String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                  String                 @db.VarChar(200)
+  slug                  String                 @unique @db.VarChar(200)
+  logo                  String?
+  metadata              String?
+  timezone              String                 @default("UTC") @db.VarChar(100)
+  defaultCurrency       String                 @default("USD") @db.Char(3)
+  createdAt             DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt             DateTime               @updatedAt @db.Timestamptz(3)
+  members               WorkspaceMember[]
+  invitations           Invitation[]
+  sessions              Session[]
+  lifecycleStages       LifecycleStage[]
+  tags                  Tag[]
+  customerTags          CustomerTag[]
+  customers             Customer[]
+  contacts              Contact[]
+  tasks                 Task[]
+  activities            Activity[]
+  systemEvents          SystemEvent[]
+  jobOutbox             JobOutbox[]
+  successGoals          SuccessGoal[]
+  healthInputs          HealthInput[]
+  healthRevisions       HealthInputRevision[]
+  customerHealth        CustomerHealth[]
+  healthSnapshots       HealthSnapshot[]
+  signals               Signal[]
+  attentionItems        AttentionItem[]
+  attentionSignals      AttentionSignal[]
+  recommendations       Recommendation[]
+  risks                 Risk[]
+  riskSignals           RiskSignal[]
+  onboardings           Onboarding[]
+  milestones            OnboardingMilestone[]
+  renewals              Renewal[]
+  playbookTemplates     PlaybookTemplate[]
   playbookTemplateSteps PlaybookTemplateStep[]
-  playbookRuns     PlaybookRun[]
-  playbookSteps    PlaybookStep[]
+  playbookRuns          PlaybookRun[]
+  playbookSteps         PlaybookStep[]
+  importBatches         ImportBatch[]
+  importValidations     ImportValidation[]
+  importRows            ImportRow[]
 
   @@map("workspace")
 }
 
 model WorkspaceMember {
-  id               String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId      String                @db.Uuid
-  userId           String                @db.Uuid
-  role             String                @db.VarChar(32)
-  status           MembershipStatus      @default(ACTIVE)
-  joinedAt         DateTime              @default(now()) @db.Timestamptz(3)
-  workspace        Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  customers        Customer[]
-  ownedTasks       Task[]                @relation("TaskOwner")
-  createdTasks     Task[]                @relation("TaskCreator")
-  completedTasks   Task[]                @relation("TaskCompleter")
-  activities       Activity[]            @relation("ActivityCreator")
-  systemEvents     SystemEvent[]         @relation("SystemEventActor")
-  ownedGoals       SuccessGoal[]         @relation("GoalOwner")
-  healthRevisions  HealthInputRevision[] @relation("HealthRevisionCreator")
-  ownedRisks       Risk[]                @relation("RiskOwner")
-  ownedOnboardings Onboarding[]          @relation("OnboardingOwner")
-  ownedMilestones  OnboardingMilestone[] @relation("MilestoneOwner")
-  ownedRenewals    Renewal[]             @relation("RenewalOwner")
-  attentionActions AttentionItem[]       @relation("AttentionActor")
-  ownedPlaybookRuns PlaybookRun[]        @relation("PlaybookRunOwner")
+  id                String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId       String                @db.Uuid
+  userId            String                @db.Uuid
+  role              String                @db.VarChar(32)
+  status            MembershipStatus      @default(ACTIVE)
+  joinedAt          DateTime              @default(now()) @db.Timestamptz(3)
+  workspace         Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user              User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customers         Customer[]
+  ownedTasks        Task[]                @relation("TaskOwner")
+  createdTasks      Task[]                @relation("TaskCreator")
+  completedTasks    Task[]                @relation("TaskCompleter")
+  activities        Activity[]            @relation("ActivityCreator")
+  systemEvents      SystemEvent[]         @relation("SystemEventActor")
+  ownedGoals        SuccessGoal[]         @relation("GoalOwner")
+  healthRevisions   HealthInputRevision[] @relation("HealthRevisionCreator")
+  ownedRisks        Risk[]                @relation("RiskOwner")
+  ownedOnboardings  Onboarding[]          @relation("OnboardingOwner")
+  ownedMilestones   OnboardingMilestone[] @relation("MilestoneOwner")
+  ownedRenewals     Renewal[]             @relation("RenewalOwner")
+  attentionActions  AttentionItem[]       @relation("AttentionActor")
+  ownedPlaybookRuns PlaybookRun[]         @relation("PlaybookRunOwner")
+  importBatches     ImportBatch[]         @relation("ImportBatchCreator")
 
   @@unique([workspaceId, userId])
   @@unique([workspaceId, id])
@@ -455,6 +482,7 @@ model Customer {
   renewals             Renewal[]
   playbookRuns         PlaybookRun[]
   playbookSteps        PlaybookStep[]
+  importRows           ImportRow[]
 
   @@unique([workspaceId, id])
   @@unique([workspaceId, externalKey])
@@ -488,36 +516,36 @@ model Contact {
 }
 
 model Task {
-  id            String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId   String               @db.Uuid
-  customerId    String?              @db.Uuid
-  title         String               @db.VarChar(200)
-  description   String?              @db.VarChar(10000)
-  ownerId       String               @db.Uuid
-  createdById   String               @db.Uuid
-  priority      TaskPriority         @default(MEDIUM)
-  status        TaskStatus           @default(OPEN)
-  dueDate       DateTime?            @db.Date
-  dueAt         DateTime?            @db.Timestamptz(3)
-  completedAt   DateTime?            @db.Timestamptz(3)
-  completedById String?              @db.Uuid
-  riskId        String?              @db.Uuid
-  renewalId     String?              @db.Uuid
-  milestoneId   String?              @db.Uuid
-  createdAt     DateTime             @default(now()) @db.Timestamptz(3)
-  updatedAt     DateTime             @updatedAt @db.Timestamptz(3)
-  workspace     Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  customer      Customer?            @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
-  owner         WorkspaceMember      @relation("TaskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
-  createdBy     WorkspaceMember      @relation("TaskCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
-  completedBy   WorkspaceMember?     @relation("TaskCompleter", fields: [workspaceId, completedById], references: [workspaceId, id], onDelete: Restrict)
-  risk          Risk?                @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
-  renewal       Renewal?             @relation(fields: [workspaceId, customerId, renewalId], references: [workspaceId, customerId, id], onDelete: Restrict)
-  milestone     OnboardingMilestone? @relation(fields: [workspaceId, customerId, milestoneId], references: [workspaceId, customerId, id], onDelete: Restrict)
-  playbookRunId String?              @db.Uuid
-  playbookRun   PlaybookRun?         @relation(fields: [workspaceId, customerId, playbookRunId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  id             String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId    String               @db.Uuid
+  customerId     String?              @db.Uuid
+  title          String               @db.VarChar(200)
+  description    String?              @db.VarChar(10000)
+  ownerId        String               @db.Uuid
+  createdById    String               @db.Uuid
+  priority       TaskPriority         @default(MEDIUM)
+  status         TaskStatus           @default(OPEN)
+  dueDate        DateTime?            @db.Date
+  dueAt          DateTime?            @db.Timestamptz(3)
+  completedAt    DateTime?            @db.Timestamptz(3)
+  completedById  String?              @db.Uuid
+  riskId         String?              @db.Uuid
+  renewalId      String?              @db.Uuid
+  milestoneId    String?              @db.Uuid
+  createdAt      DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime             @updatedAt @db.Timestamptz(3)
+  workspace      Workspace            @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer       Customer?            @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  owner          WorkspaceMember      @relation("TaskOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  createdBy      WorkspaceMember      @relation("TaskCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  completedBy    WorkspaceMember?     @relation("TaskCompleter", fields: [workspaceId, completedById], references: [workspaceId, id], onDelete: Restrict)
+  risk           Risk?                @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  renewal        Renewal?             @relation(fields: [workspaceId, customerId, renewalId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  milestone      OnboardingMilestone? @relation(fields: [workspaceId, customerId, milestoneId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  playbookRunId  String?              @db.Uuid
+  playbookRun    PlaybookRun?         @relation(fields: [workspaceId, customerId, playbookRunId], references: [workspaceId, customerId, id], onDelete: Restrict)
   recommendation Recommendation?
-  playbookStep  PlaybookStep?
+  playbookStep   PlaybookStep?
 
   @@unique([workspaceId, id])
   @@index([workspaceId, ownerId, status])
@@ -945,24 +973,24 @@ model PlaybookTemplateStep {
 }
 
 model PlaybookRun {
-  id              String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  workspaceId     String              @db.Uuid
-  customerId      String              @db.Uuid
-  templateId      String              @db.Uuid
+  id              String            @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId     String            @db.Uuid
+  customerId      String            @db.Uuid
+  templateId      String            @db.Uuid
   templateVersion Int
-  ownerId         String              @db.Uuid
-  riskId          String?             @db.Uuid
-  status          PlaybookRunStatus   @default(ACTIVE)
-  startedAt       DateTime            @default(now()) @db.Timestamptz(3)
-  completedAt     DateTime?           @db.Timestamptz(3)
-  dismissedReason String?             @db.VarChar(10000)
-  createdAt       DateTime            @default(now()) @db.Timestamptz(3)
-  updatedAt       DateTime            @updatedAt @db.Timestamptz(3)
-  workspace       Workspace           @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  customer        Customer            @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
-  template        PlaybookTemplate    @relation(fields: [workspaceId, templateId], references: [workspaceId, id], onDelete: Restrict)
-  owner           WorkspaceMember     @relation("PlaybookRunOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
-  risk            Risk?               @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
+  ownerId         String            @db.Uuid
+  riskId          String?           @db.Uuid
+  status          PlaybookRunStatus @default(ACTIVE)
+  startedAt       DateTime          @default(now()) @db.Timestamptz(3)
+  completedAt     DateTime?         @db.Timestamptz(3)
+  dismissedReason String?           @db.VarChar(10000)
+  createdAt       DateTime          @default(now()) @db.Timestamptz(3)
+  updatedAt       DateTime          @updatedAt @db.Timestamptz(3)
+  workspace       Workspace         @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  customer        Customer          @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+  template        PlaybookTemplate  @relation(fields: [workspaceId, templateId], references: [workspaceId, id], onDelete: Restrict)
+  owner           WorkspaceMember   @relation("PlaybookRunOwner", fields: [workspaceId, ownerId], references: [workspaceId, id], onDelete: Restrict)
+  risk            Risk?             @relation(fields: [workspaceId, customerId, riskId], references: [workspaceId, customerId, id], onDelete: Restrict)
   tasks           Task[]
   steps           PlaybookStep[]
   recommendation  Recommendation?
@@ -1037,6 +1065,72 @@ model JobOutbox {
   @@unique([workspaceId, eventKey])
   @@index([dispatchedAt, availableAt])
   @@map("job_outbox")
+}
+
+model ImportBatch {
+  id                  String             @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId         String             @db.Uuid
+  createdById         String             @db.Uuid
+  fileKey             String?            @db.VarChar(500)
+  currentValidationId String?            @db.Uuid
+  status              ImportBatchStatus  @default(VALIDATING)
+  totalRows           Int                @default(0)
+  succeededRows       Int                @default(0)
+  failedRows          Int                @default(0)
+  skippedRows         Int                @default(0)
+  startedAt           DateTime?          @db.Timestamptz(3)
+  completedAt         DateTime?          @db.Timestamptz(3)
+  createdAt           DateTime           @default(now()) @db.Timestamptz(3)
+  updatedAt           DateTime           @updatedAt @db.Timestamptz(3)
+  workspace           Workspace          @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  createdBy           WorkspaceMember    @relation("ImportBatchCreator", fields: [workspaceId, createdById], references: [workspaceId, id], onDelete: Restrict)
+  validations         ImportValidation[]
+  rows                ImportRow[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status, createdAt])
+  @@map("import_batch")
+}
+
+model ImportValidation {
+  id          String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId String                 @db.Uuid
+  batchId     String                 @db.Uuid
+  version     Int
+  mapping     Json
+  status      ImportValidationStatus @default(VALIDATING)
+  createdAt   DateTime               @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime               @updatedAt @db.Timestamptz(3)
+  workspace   Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  batch       ImportBatch            @relation(fields: [workspaceId, batchId], references: [workspaceId, id], onDelete: Cascade)
+  rows        ImportRow[]
+
+  @@unique([workspaceId, batchId, version])
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status])
+  @@map("import_validation")
+}
+
+model ImportRow {
+  id             String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId    String           @db.Uuid
+  batchId        String           @db.Uuid
+  validationId   String           @db.Uuid
+  rowNumber      Int
+  normalizedData Json
+  status         ImportRowStatus  @default(PENDING)
+  errors         Json?
+  customerId     String?          @db.Uuid
+  createdAt      DateTime         @default(now()) @db.Timestamptz(3)
+  updatedAt      DateTime         @updatedAt @db.Timestamptz(3)
+  workspace      Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  batch          ImportBatch      @relation(fields: [workspaceId, batchId], references: [workspaceId, id], onDelete: Cascade)
+  validation     ImportValidation @relation(fields: [workspaceId, validationId], references: [workspaceId, id], onDelete: Cascade)
+  customer       Customer?        @relation(fields: [workspaceId, customerId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, validationId, rowNumber])
+  @@index([workspaceId, batchId, status])
+  @@map("import_row")
 }
 
 model CustomerTag {

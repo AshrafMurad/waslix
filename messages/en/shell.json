@@ -31,6 +31,16 @@
     "label": "Account",
     "role": "Role"
   },
+  "search": {
+    "trigger": "Search",
+    "title": "Search workspace",
+    "placeholder": "Search customers, contacts, or tasks",
+    "empty": "No matching workspace records found.",
+    "loading": "Searching...",
+    "customer": "Customer",
+    "contact": "Contact",
+    "task": "Task"
+  },
   "roles": {
     "ADMIN": "Admin",
     "CS_MANAGER": "CS Manager",

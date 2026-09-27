@@ -13,6 +13,7 @@ import {
 import type { Locale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { GlobalSearch } from "@/modules/search/components/global-search";
 import {
   Sheet,
   SheetClose,
@@ -34,6 +35,16 @@ type ShellLabels = {
   menu: string;
   account: string;
   role: string;
+  search: {
+    trigger: string;
+    title: string;
+    placeholder: string;
+    empty: string;
+    loading: string;
+    customer: string;
+    contact: string;
+    task: string;
+  };
   nav: {
     overview: string;
     customers: string;
@@ -59,7 +70,13 @@ type ApplicationShellProps = {
 const primaryNavigation: Array<{
   key: keyof ShellLabels["nav"];
   icon: typeof LayoutDashboard;
-  href?: "/overview" | "/customers" | "/tasks" | "/risks" | "/renewals";
+  href?:
+    | "/overview"
+    | "/customers"
+    | "/tasks"
+    | "/risks"
+    | "/renewals"
+    | "/analytics";
 }> = [
   {
     key: "overview",
@@ -70,7 +87,7 @@ const primaryNavigation: Array<{
   { key: "tasks", href: "/tasks", icon: CheckSquare2 },
   { key: "risks", href: "/risks", icon: CircleAlert },
   { key: "renewals", href: "/renewals", icon: RefreshCw },
-  { key: "analytics", icon: BarChart3 },
+  { key: "analytics", href: "/analytics", icon: BarChart3 },
 ] as const;
 
 const secondaryNavigation = [
@@ -203,7 +220,13 @@ export function ApplicationShell({
             </span>
             <span className="font-semibold">Waslix</span>
           </Link>
+          <div className="hidden md:block">
+            <GlobalSearch labels={labels.search} />
+          </div>
           <div className="ms-auto flex items-center gap-1">
+            <div className="md:hidden">
+              <GlobalSearch labels={labels.search} />
+            </div>
             <LocaleSwitcher />
             <ThemeToggle />
             <AccountMenu

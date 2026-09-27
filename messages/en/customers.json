@@ -81,6 +81,15 @@
   "pagination": {
     "next": "Next page"
   },
+  "import": {
+    "title": "Import customers",
+    "description": "Upload the fixed V1 CSV columns to create customers, optional primary contacts, tags, and initial renewals.",
+    "file": "CSV file",
+    "submit": "Import CSV",
+    "pending": "Importing...",
+    "success": "Imported rows:",
+    "error": "Import failed:"
+  },
   "summary": {
     "health": "Health",
     "owner": "Owner",

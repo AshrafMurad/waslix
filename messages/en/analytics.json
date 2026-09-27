@@ -1,0 +1,51 @@
+{
+  "eyebrow": "Portfolio analytics",
+  "title": "Analytics",
+  "description": "Managerial reporting from operational source data, scoped to the active workspace.",
+  "na": "N/A",
+  "filters": {
+    "period": "Period",
+    "owner": "Owner",
+    "lifecycle": "Lifecycle",
+    "all": "All",
+    "days30": "Last 30 days",
+    "days90": "Last 90 days",
+    "days180": "Last 180 days"
+  },
+  "metrics": {
+    "customers": "Active customers",
+    "averageHealth": "Average known health",
+    "trend": "Average trend",
+    "renewalOutcome": "Renewal outcome rate"
+  },
+  "health": {
+    "title": "Health distribution",
+    "HEALTHY": "Healthy",
+    "NEEDS_ATTENTION": "Needs attention",
+    "AT_RISK": "At risk",
+    "UNKNOWN": "Not enough data",
+    "coverage": "Known health: {known} of {total} customers. Unknown health is excluded from averages."
+  },
+  "risks": {
+    "title": "Unresolved risks",
+    "CRITICAL": "Critical",
+    "HIGH": "High",
+    "MEDIUM": "Medium",
+    "LOW": "Low"
+  },
+  "renewals": {
+    "title": "Upcoming renewal value by currency",
+    "empty": "No upcoming nonterminal renewals in the selected view."
+  },
+  "onboarding": {
+    "title": "Onboarding completion",
+    "summary": "{completed} of {total} active-period onboardings completed. Median completion days: {medianCompletionDays}."
+  },
+  "workload": {
+    "title": "CSM workload",
+    "owner": "Owner",
+    "customers": "Customers",
+    "tasks": "Open tasks",
+    "risks": "Unresolved risks"
+  }
+}

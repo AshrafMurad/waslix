@@ -9,6 +9,7 @@ import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { CustomerFilters } from "@/modules/customers/components/customer-filters";
 import { CustomerFormDialog } from "@/modules/customers/components/customer-form-dialog";
 import { CustomerTable } from "@/modules/customers/components/customer-table";
+import { CustomerImportForm } from "@/modules/imports/components/customer-import-form";
 import { getCustomerOptions } from "@/modules/customers/queries/get-customer-options";
 import { getCustomerPortfolio } from "@/modules/customers/queries/get-customer-portfolio";
 import { canCreateCustomer } from "@/modules/customers/services/customer-permissions";
@@ -184,6 +185,25 @@ export default async function CustomersPage({
           </Empty>
         )}
       </Card>
+      {access.role === "ADMIN" ? (
+        <Card className="p-4">
+          <div className="mb-4 space-y-1">
+            <h2 className="text-lg font-semibold">{t("import.title")}</h2>
+            <p className="text-muted-foreground text-sm">
+              {t("import.description")}
+            </p>
+          </div>
+          <CustomerImportForm
+            labels={{
+              file: t("import.file"),
+              submit: t("import.submit"),
+              pending: t("import.pending"),
+              success: t("import.success"),
+              error: t("import.error"),
+            }}
+          />
+        </Card>
+      ) : null}
       {nextHref ? (
         <div className="flex justify-end">
           <Link

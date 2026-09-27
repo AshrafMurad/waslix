@@ -120,6 +120,220 @@ async function main() {
       });
     }
 
+    const demoOwners = [
+      fixture.memberships.alphaCsm.id,
+      fixture.memberships.alphaManager.id,
+      fixture.memberships.alphaAdmin.id,
+    ];
+    const stageKeys = [
+      ...Array.from({ length: 2 }, () => "new"),
+      ...Array.from({ length: 8 }, () => "onboarding"),
+      ...Array.from({ length: 6 }, () => "adoption"),
+      ...Array.from({ length: 30 }, () => "active"),
+      ...Array.from({ length: 12 }, () => "renewal"),
+      ...Array.from({ length: 2 }, () => "churned"),
+    ];
+    const healthStatuses = [
+      ...Array.from({ length: 32 }, () => ({
+        status: "HEALTHY" as const,
+        score: 86,
+      })),
+      ...Array.from({ length: 19 }, () => ({
+        status: "NEEDS_ATTENTION" as const,
+        score: 68,
+      })),
+      ...Array.from({ length: 9 }, () => ({
+        status: "AT_RISK" as const,
+        score: 52,
+      })),
+    ];
+    for (let index = customers.length; index < 60; index += 1) {
+      const externalKey = `demo-${String(index + 1).padStart(2, "0")}`;
+      const name = `Demo Customer ${String(index + 1).padStart(2, "0")}`;
+      const stageKey = stageKeys[index];
+      const ownerId = demoOwners[index % demoOwners.length];
+      const stage = fixture.alphaStages.find((item) => item.key === stageKey)!;
+      const customer = await prisma.customer.upsert({
+        where: {
+          workspaceId_externalKey: {
+            workspaceId: fixture.workspaceA.id,
+            externalKey,
+          },
+        },
+        update: {
+          name,
+          lifecycleStageId: stage.id,
+          ownerId,
+          status: "ACTIVE",
+          archivedAt: null,
+        },
+        create: {
+          workspaceId: fixture.workspaceA.id,
+          externalKey,
+          name,
+          website: `https://${externalKey}.example.test`,
+          industry: index % 2 ? "B2B SaaS" : "Operations",
+          companySize: 50 + index * 5,
+          contractValue: `${70000 + index * 2500}.00`,
+          currency: "SAR",
+          customerSince: new Date("2025-01-01T00:00:00.000Z"),
+          renewalDate:
+            stageKey === "renewal"
+              ? new Date(`2026-1${index % 2}-15T00:00:00.000Z`)
+              : null,
+          lifecycleStageId: stage.id,
+          ownerId,
+        },
+      });
+      seededCustomers.set(externalKey, { id: customer.id, ownerId });
+      await prisma.contact.deleteMany({
+        where: { workspaceId: fixture.workspaceA.id, customerId: customer.id },
+      });
+      await prisma.contact.create({
+        data: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: customer.id,
+          name: `${name} Champion`,
+          email: `${externalKey}@example.test`,
+          accountRole: "CHAMPION",
+          isPrimary: true,
+        },
+      });
+      const health = healthStatuses[index];
+      await prisma.customerHealth.upsert({
+        where: {
+          workspaceId_customerId: {
+            workspaceId: fixture.workspaceA.id,
+            customerId: customer.id,
+          },
+        },
+        update: {
+          overallScore: health.score,
+          rawScore: health.score,
+          status: health.status,
+          calculatedAt: new Date("2026-09-26T09:00:00.000Z"),
+          calculationKey: `seed-current:${customer.id}`,
+          evidence: { version: 1, simulated: true },
+        },
+        create: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: customer.id,
+          rawScore: health.score,
+          overallScore: health.score,
+          status: health.status,
+          confidence: "HIGH",
+          confidenceValue: "1.0000",
+          calculatedAt: new Date("2026-09-26T09:00:00.000Z"),
+          calculationKey: `seed-current:${customer.id}`,
+          ruleVersion: "health-v1",
+          evidence: { version: 1, simulated: true },
+        },
+      });
+      await prisma.healthSnapshot.upsert({
+        where: {
+          workspaceId_customerId_calculationKey: {
+            workspaceId: fixture.workspaceA.id,
+            customerId: customer.id,
+            calculationKey: `seed-baseline:${customer.id}`,
+          },
+        },
+        update: {},
+        create: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: customer.id,
+          rawScore: health.score - (index % 5),
+          overallScore: health.score - (index % 5),
+          status: health.status,
+          confidence: "HIGH",
+          confidenceValue: "1.0000",
+          snapshotAt: new Date("2026-08-26T09:00:00.000Z"),
+          calculationKey: `seed-baseline:${customer.id}`,
+          ruleVersion: "health-v1",
+          evidence: { version: 1, simulated: true },
+        },
+      });
+      if (stageKey === "onboarding") {
+        await prisma.onboarding.upsert({
+          where: {
+            workspaceId_customerId: {
+              workspaceId: fixture.workspaceA.id,
+              customerId: customer.id,
+            },
+          },
+          update: {
+            ownerId,
+            status: index % 4 === 0 ? "COMPLETED" : "IN_PROGRESS",
+          },
+          create: {
+            workspaceId: fixture.workspaceA.id,
+            customerId: customer.id,
+            ownerId,
+            status: index % 4 === 0 ? "COMPLETED" : "IN_PROGRESS",
+            startDate: new Date("2026-08-01T00:00:00.000Z"),
+            targetCompletionDate: new Date("2026-09-30T00:00:00.000Z"),
+            completedAt:
+              index % 4 === 0 ? new Date("2026-09-15T09:00:00.000Z") : null,
+          },
+        });
+      }
+    }
+
+    for (const [index, customer] of [...seededCustomers.values()].entries()) {
+      const health = healthStatuses[index];
+      await prisma.customerHealth.upsert({
+        where: {
+          workspaceId_customerId: {
+            workspaceId: fixture.workspaceA.id,
+            customerId: customer.id,
+          },
+        },
+        update: {
+          overallScore: health.score,
+          rawScore: health.score,
+          status: health.status,
+          calculatedAt: new Date("2026-09-26T09:00:00.000Z"),
+          calculationKey: `seed-current:${customer.id}`,
+          evidence: { version: 1, simulated: true },
+        },
+        create: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: customer.id,
+          rawScore: health.score,
+          overallScore: health.score,
+          status: health.status,
+          confidence: "HIGH",
+          confidenceValue: "1.0000",
+          calculatedAt: new Date("2026-09-26T09:00:00.000Z"),
+          calculationKey: `seed-current:${customer.id}`,
+          ruleVersion: "health-v1",
+          evidence: { version: 1, simulated: true },
+        },
+      });
+      await prisma.healthSnapshot.upsert({
+        where: {
+          workspaceId_customerId_calculationKey: {
+            workspaceId: fixture.workspaceA.id,
+            customerId: customer.id,
+            calculationKey: `seed-baseline:${customer.id}`,
+          },
+        },
+        update: {},
+        create: {
+          workspaceId: fixture.workspaceA.id,
+          customerId: customer.id,
+          rawScore: health.score - (index % 5),
+          overallScore: health.score - (index % 5),
+          status: health.status,
+          confidence: "HIGH",
+          confidenceValue: "1.0000",
+          snapshotAt: new Date("2026-08-26T09:00:00.000Z"),
+          calculationKey: `seed-baseline:${customer.id}`,
+          ruleVersion: "health-v1",
+          evidence: { version: 1, simulated: true },
+        },
+      });
+    }
+
     const northstar = seededCustomers.get("northstar")!;
     const atlas = seededCustomers.get("atlas")!;
     const cedar = seededCustomers.get("cedar")!;

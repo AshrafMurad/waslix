@@ -28,6 +28,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       ).default,
       attention: (await import(`../../messages/${locale}/attention.json`))
         .default,
+      analytics: (await import(`../../messages/${locale}/analytics.json`))
+        .default,
       tasks: (await import(`../../messages/${locale}/tasks.json`)).default,
       timeline: (await import(`../../messages/${locale}/timeline.json`))
         .default,
