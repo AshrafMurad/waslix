@@ -8,7 +8,7 @@ async function main() {
   const fixturePassword =
     process.env.NODE_ENV === "production"
       ? configuredFixturePassword
-      : (configuredFixturePassword ?? "admin123");
+      : (configuredFixturePassword ?? "123456");
 
   if (!fixturePassword) {
     throw new Error("SEED_FIXTURE_PASSWORD is required in production");
@@ -985,7 +985,7 @@ async function main() {
     });
     await seedTwoWorkspaceFixture(
       prisma,
-      process.env.NODE_ENV === "production" ? fixturePassword : "admin123",
+      process.env.NODE_ENV === "production" ? fixturePassword : "123456",
     );
   } finally {
     await prisma.$disconnect();

@@ -47,7 +47,7 @@ export default async function SignInPage({
               : undefined
           }
           defaultPassword={
-            process.env.NODE_ENV === "development" ? "admin123" : undefined
+            process.env.NODE_ENV === "development" ? "123456" : undefined
           }
         />
       </section>

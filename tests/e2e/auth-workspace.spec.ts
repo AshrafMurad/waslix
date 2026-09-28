@@ -29,7 +29,7 @@ test.describe("authentication and workspace smoke", () => {
     await page.goto("/en/overview");
     await expect(page).toHaveURL(/\/en\/sign-in$/);
     await expect(page.getByLabel("Email")).toHaveValue("admin@example.com");
-    await expect(page.getByLabel("Password")).toHaveValue("admin123");
+    await expect(page.getByLabel("Password")).toHaveValue("123456");
 
     await page.getByLabel("Email").fill("not-an-email");
     await page.getByLabel("Password").fill(" ");
@@ -150,9 +150,7 @@ test.describe("authentication and workspace smoke", () => {
     ).toBeVisible();
 
     await page.goto("/en/overview");
-    await page
-      .getByRole("button", { name: `${alphaName} Workspace` })
-      .click();
+    await page.getByRole("button", { name: `${alphaName} Workspace` }).click();
     await page.getByRole("menuitem", { name: betaName }).click();
     await expect(
       page.getByRole("button", { name: `${betaName} Workspace` }),

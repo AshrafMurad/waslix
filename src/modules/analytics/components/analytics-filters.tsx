@@ -1,7 +1,14 @@
 "use client";
 
-import { useTransition } from "react";
+import { type ReactNode, useTransition } from "react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useRouter } from "@/i18n/navigation";
 
 type AnalyticsFiltersProps = {
@@ -36,62 +43,74 @@ export function AnalyticsFilters({
     startTransition(() => router.replace(`/analytics?${params.toString()}`));
   }
 
-  const controlClass =
-    "bg-surface min-h-10 rounded-md border px-3 text-sm disabled:opacity-60";
-
   return (
     <div className="flex flex-wrap gap-3" aria-busy={isPending}>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="text-muted-foreground">{labels.period}</span>
-        <select
-          className={controlClass}
-          value={filters.period}
-          onChange={(event) =>
-            update({ ...filters, period: event.target.value })
-          }
-          disabled={isPending}
-        >
-          <option value="30">{labels.days30}</option>
-          <option value="90">{labels.days90}</option>
-          <option value="180">{labels.days180}</option>
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="text-muted-foreground">{labels.owner}</span>
-        <select
-          className={controlClass}
-          value={filters.owner ?? ""}
-          onChange={(event) =>
-            update({ ...filters, owner: event.target.value })
-          }
-          disabled={isPending}
-        >
-          <option value="">{labels.all}</option>
-          {owners.map((owner) => (
-            <option key={owner.id} value={owner.id}>
-              {owner.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="text-muted-foreground">{labels.lifecycle}</span>
-        <select
-          className={controlClass}
-          value={filters.lifecycle ?? ""}
-          onChange={(event) =>
-            update({ ...filters, lifecycle: event.target.value })
-          }
-          disabled={isPending}
-        >
-          <option value="">{labels.all}</option>
-          {lifecycleStages.map((stage) => (
-            <option key={stage.id} value={stage.id}>
-              {stage.name}
-            </option>
-          ))}
-        </select>
-      </label>
+      <FilterSelect
+        label={labels.period}
+        value={filters.period}
+        onValueChange={(value) => update({ ...filters, period: value })}
+        disabled={isPending}
+      >
+        <SelectItem value="30">{labels.days30}</SelectItem>
+        <SelectItem value="90">{labels.days90}</SelectItem>
+        <SelectItem value="180">{labels.days180}</SelectItem>
+      </FilterSelect>
+      <FilterSelect
+        label={labels.owner}
+        value={filters.owner ?? "all"}
+        onValueChange={(value) =>
+          update({ ...filters, owner: value === "all" ? "" : value })
+        }
+        disabled={isPending}
+      >
+        <SelectItem value="all">{labels.all}</SelectItem>
+        {owners.map((owner) => (
+          <SelectItem key={owner.id} value={owner.id}>
+            {owner.name}
+          </SelectItem>
+        ))}
+      </FilterSelect>
+      <FilterSelect
+        label={labels.lifecycle}
+        value={filters.lifecycle ?? "all"}
+        onValueChange={(value) =>
+          update({ ...filters, lifecycle: value === "all" ? "" : value })
+        }
+        disabled={isPending}
+      >
+        <SelectItem value="all">{labels.all}</SelectItem>
+        {lifecycleStages.map((stage) => (
+          <SelectItem key={stage.id} value={stage.id}>
+            {stage.name}
+          </SelectItem>
+        ))}
+      </FilterSelect>
     </div>
+  );
+}
+
+function FilterSelect({
+  label,
+  value,
+  children,
+  disabled,
+  onValueChange,
+}: {
+  label: string;
+  value: string;
+  children: ReactNode;
+  disabled: boolean;
+  onValueChange: (value: string) => void;
+}) {
+  return (
+    <label className="text-muted-foreground grid gap-1 text-xs">
+      {label}
+      <Select value={value} onValueChange={onValueChange} disabled={disabled}>
+        <SelectTrigger className="bg-surface min-w-36">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>{children}</SelectContent>
+      </Select>
+    </label>
   );
 }

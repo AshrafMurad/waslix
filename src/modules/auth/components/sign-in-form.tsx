@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,7 @@ export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
     password?: string;
   }>({});
   const [isPending, setIsPending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   function clearFormError() {
     setError(undefined);
@@ -91,20 +93,36 @@ export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
       </Field>
       <Field data-invalid={Boolean(fieldErrors.password)}>
         <FieldLabel htmlFor="sign-in-password">{t("password")}</FieldLabel>
-        <Input
-          id="sign-in-password"
-          name="password"
-          type="password"
-          defaultValue={defaultPassword}
-          autoComplete="current-password"
-          aria-required="true"
-          aria-invalid={Boolean(fieldErrors.password)}
-          onChange={clearFormError}
-          aria-describedby={
-            fieldErrors.password ? "sign-in-password-error" : undefined
-          }
-          dir="ltr"
-        />
+        <div className="relative">
+          <Input
+            id="sign-in-password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            defaultValue={defaultPassword}
+            autoComplete="current-password"
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.password)}
+            onChange={clearFormError}
+            aria-describedby={
+              fieldErrors.password ? "sign-in-password-error" : undefined
+            }
+            className="pe-10"
+            dir="ltr"
+          />
+          <button
+            type="button"
+            className="text-muted-foreground hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-1 end-1 inline-flex w-8 items-center justify-center rounded-md transition-colors outline-none focus-visible:ring-[3px]"
+            aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+            aria-pressed={showPassword}
+            onClick={() => setShowPassword((current) => !current)}
+          >
+            {showPassword ? (
+              <EyeOff className="size-4" aria-hidden="true" />
+            ) : (
+              <Eye className="size-4" aria-hidden="true" />
+            )}
+          </button>
+        </div>
         <FieldError id="sign-in-password-error">
           {fieldErrors.password}
         </FieldError>

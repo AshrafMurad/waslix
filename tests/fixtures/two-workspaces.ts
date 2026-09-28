@@ -9,11 +9,41 @@ const fixtureUsers = [
     legacyEmail: "shared@fixture.waslix.test",
     locale: "EN" as const,
   },
-  { key: "manager", name: "CS Manager", locale: "EN" as const },
-  { key: "csm", name: "Customer Success Manager", locale: "AR" as const },
-  { key: "viewer", name: "Viewer", locale: "EN" as const },
-  { key: "inactive", name: "Inactive Member", locale: "AR" as const },
-  { key: "tenantBAdmin", name: "Tenant B Admin", locale: "AR" as const },
+  {
+    key: "manager",
+    name: "CS Manager",
+    email: "manager@example.com",
+    legacyEmail: "manager@fixture.waslix.test",
+    locale: "EN" as const,
+  },
+  {
+    key: "csm",
+    name: "Customer Success Manager",
+    email: "csm@example.com",
+    legacyEmail: "csm@fixture.waslix.test",
+    locale: "AR" as const,
+  },
+  {
+    key: "viewer",
+    name: "Viewer",
+    email: "viewer@example.com",
+    legacyEmail: "viewer@fixture.waslix.test",
+    locale: "EN" as const,
+  },
+  {
+    key: "inactive",
+    name: "Inactive Member",
+    email: "inactive@example.com",
+    legacyEmail: "inactive@fixture.waslix.test",
+    locale: "AR" as const,
+  },
+  {
+    key: "tenantBAdmin",
+    name: "Tenant B Admin",
+    email: "tenant-b-admin@example.com",
+    legacyEmail: "tenantBAdmin@fixture.waslix.test",
+    locale: "AR" as const,
+  },
 ] as const;
 
 export async function seedTwoWorkspaceFixture(
@@ -23,15 +53,11 @@ export async function seedTwoWorkspaceFixture(
   const users = Object.fromEntries(
     await Promise.all(
       fixtureUsers.map(async (fixtureUser) => {
-        const email =
-          "email" in fixtureUser
-            ? fixtureUser.email
-            : `${fixtureUser.key}@fixture.waslix.test`;
         const existingUser = await prisma.user.findFirst({
           where: {
             email: {
               in: [
-                email,
+                fixtureUser.email,
                 ...("legacyEmail" in fixtureUser
                   ? [fixtureUser.legacyEmail]
                   : []),
@@ -44,7 +70,7 @@ export async function seedTwoWorkspaceFixture(
           ? await prisma.user.update({
               where: { id: existingUser.id },
               data: {
-                email,
+                email: fixtureUser.email,
                 name: fixtureUser.name,
                 preferredLocale: fixtureUser.locale,
               },
@@ -52,7 +78,7 @@ export async function seedTwoWorkspaceFixture(
           : await prisma.user.create({
               data: {
                 name: fixtureUser.name,
-                email,
+                email: fixtureUser.email,
                 emailVerified: true,
                 preferredLocale: fixtureUser.locale,
               },

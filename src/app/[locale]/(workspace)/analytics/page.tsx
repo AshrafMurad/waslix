@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
+import { AnalyticsBarChart } from "@/modules/analytics/components/analytics-bar-chart";
 import { getPortfolioAnalytics } from "@/modules/analytics/queries/get-portfolio-analytics";
 import { AnalyticsFilters } from "@/modules/analytics/components/analytics-filters";
 import { getCustomerOptions } from "@/modules/customers/queries/get-customer-options";
@@ -30,32 +31,6 @@ function Metric({ label, value }: { label: string; value: string | number }) {
         <p className="text-3xl font-semibold tabular-nums">{value}</p>
       </CardContent>
     </Card>
-  );
-}
-
-function Bar({
-  label,
-  value,
-  total,
-}: {
-  label: string;
-  value: number;
-  total: number;
-}) {
-  const width = total ? Math.round((value / total) * 100) : 0;
-  return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between gap-3 text-sm">
-        <span>{label}</span>
-        <span className="tabular-nums">{value}</span>
-      </div>
-      <div className="bg-raised h-2 rounded-full">
-        <div
-          className="bg-brand h-2 rounded-full"
-          style={{ width: `${width}%` }}
-        />
-      </div>
-    </div>
   );
 }
 
@@ -81,10 +56,6 @@ export default async function AnalyticsPage({
     getCustomerOptions(access),
     getTranslations({ locale, namespace: "analytics" }),
   ]);
-  const healthTotal = Object.values(analytics.healthDistribution).reduce(
-    (sum, value) => sum + value,
-    0,
-  );
 
   return (
     <div className="space-y-6">
@@ -150,16 +121,14 @@ export default async function AnalyticsPage({
             <CardTitle>{t("health.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {(
-              ["HEALTHY", "NEEDS_ATTENTION", "AT_RISK", "UNKNOWN"] as const
-            ).map((status) => (
-              <Bar
-                key={status}
-                label={t(`health.${status}`)}
-                value={analytics.healthDistribution[status]}
-                total={healthTotal}
-              />
-            ))}
+            <AnalyticsBarChart
+              data={(
+                ["HEALTHY", "NEEDS_ATTENTION", "AT_RISK", "UNKNOWN"] as const
+              ).map((status) => ({
+                label: t(`health.${status}`),
+                value: analytics.healthDistribution[status],
+              }))}
+            />
             <p className="text-muted-foreground text-sm">
               {t("health.coverage", analytics.healthCoverage)}
             </p>
@@ -171,19 +140,14 @@ export default async function AnalyticsPage({
             <CardTitle>{t("risks.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {(["CRITICAL", "HIGH", "MEDIUM", "LOW"] as const).map(
-              (severity) => (
-                <Bar
-                  key={severity}
-                  label={t(`risks.${severity}`)}
-                  value={analytics.riskSeverity[severity] ?? 0}
-                  total={Object.values(analytics.riskSeverity).reduce(
-                    (sum, value) => sum + value,
-                    0,
-                  )}
-                />
-              ),
-            )}
+            <AnalyticsBarChart
+              data={(["CRITICAL", "HIGH", "MEDIUM", "LOW"] as const).map(
+                (severity) => ({
+                  label: t(`risks.${severity}`),
+                  value: analytics.riskSeverity[severity] ?? 0,
+                }),
+              )}
+            />
           </CardContent>
         </Card>
 
