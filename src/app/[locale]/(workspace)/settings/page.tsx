@@ -8,6 +8,24 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { hasWorkspaceCapability } from "@/lib/permissions/roles";
@@ -60,39 +78,44 @@ export default async function SettingsPage({
             className="grid gap-4 md:grid-cols-3"
           >
             <input type="hidden" name="locale" value={locale} />
-            <label className="space-y-2 text-sm font-medium">
-              <span>{t("settings.profile.name")}</span>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="workspace-name">
+                {t("settings.profile.name")}
+              </Label>
+              <Input
+                id="workspace-name"
                 name="name"
                 defaultValue={settings.name}
                 required
-                className="border-input bg-background w-full rounded-md border px-3 py-2"
               />
-            </label>
-            <label className="space-y-2 text-sm font-medium">
-              <span>{t("settings.profile.timezone")}</span>
-              <input
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="workspace-timezone">
+                {t("settings.profile.timezone")}
+              </Label>
+              <Input
+                id="workspace-timezone"
                 name="timezone"
                 defaultValue={settings.timezone}
                 required
-                className="border-input bg-background w-full rounded-md border px-3 py-2"
               />
-            </label>
-            <label className="space-y-2 text-sm font-medium">
-              <span>{t("settings.profile.currency")}</span>
-              <input
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="workspace-currency">
+                {t("settings.profile.currency")}
+              </Label>
+              <Input
+                id="workspace-currency"
                 name="defaultCurrency"
                 defaultValue={settings.defaultCurrency}
                 required
                 minLength={3}
                 maxLength={3}
-                className="border-input bg-background w-full rounded-md border px-3 py-2 uppercase"
+                className="uppercase"
               />
-            </label>
+            </div>
             <div className="md:col-span-3">
-              <button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium">
-                {t("settings.profile.save")}
-              </button>
+              <Button>{t("settings.profile.save")}</Button>
             </div>
           </form>
         </CardContent>
@@ -105,62 +128,58 @@ export default async function SettingsPage({
             {t("settings.lifecycle.description")}
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full min-w-[36rem] text-sm">
-            <thead className="text-muted-foreground border-b text-start">
-              <tr>
-                <th className="py-2 text-start">
-                  {t("settings.lifecycle.name")}
-                </th>
-                <th className="py-2 text-start">
-                  {t("settings.lifecycle.key")}
-                </th>
-                <th className="py-2 text-start">
-                  {t("settings.lifecycle.status")}
-                </th>
-                <th className="py-2 text-start">
-                  {t("settings.lifecycle.actions")}
-                </th>
-              </tr>
-            </thead>
-            <tbody>
+        <CardContent>
+          <Table className="min-w-[36rem]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("settings.lifecycle.name")}</TableHead>
+                <TableHead>{t("settings.lifecycle.key")}</TableHead>
+                <TableHead>{t("settings.lifecycle.status")}</TableHead>
+                <TableHead>{t("settings.lifecycle.actions")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {settings.lifecycleStages.map((stage) => (
-                <tr key={stage.id} className="border-b last:border-0">
-                  <td className="py-3" colSpan={4}>
+                <TableRow key={stage.id}>
+                  <TableCell colSpan={4}>
                     <form
                       action={updateLifecycleStageSettingsAction}
                       className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto] md:items-center"
                     >
                       <input type="hidden" name="locale" value={locale} />
                       <input type="hidden" name="stageId" value={stage.id} />
-                      <input
+                      <Input
                         name="name"
                         defaultValue={stage.name}
                         required
-                        className="border-input bg-background rounded-md border px-3 py-2 font-medium"
+                        className="font-medium"
                       />
                       <code className="py-2">{stage.key}</code>
-                      <select
+                      <Select
                         name="isActive"
                         defaultValue={stage.isActive ? "true" : "false"}
-                        className="border-input bg-background rounded-md border px-3 py-2"
                       >
-                        <option value="true">
-                          {t("settings.lifecycle.active")}
-                        </option>
-                        <option value="false">
-                          {t("settings.lifecycle.inactive")}
-                        </option>
-                      </select>
-                      <button className="border-input hover:bg-accent rounded-md border px-3 py-2 text-sm font-medium">
+                        <SelectTrigger className="w-full md:w-40">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="true">
+                            {t("settings.lifecycle.active")}
+                          </SelectItem>
+                          <SelectItem value="false">
+                            {t("settings.lifecycle.inactive")}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Button variant="outline">
                         {t("settings.lifecycle.save")}
-                      </button>
+                      </Button>
                     </form>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>

@@ -10,6 +10,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import {
@@ -91,25 +108,26 @@ export default async function TeamPage({
             className="flex flex-col gap-3 sm:flex-row sm:items-end"
             method="get"
           >
-            <label className="space-y-2 text-sm font-medium">
-              <span>{t("team.transfer.from")}</span>
-              <select
+            <div className="space-y-2">
+              <Label>{t("team.transfer.from")}</Label>
+              <Select
                 name="fromMemberId"
                 defaultValue={fromMemberId ?? ""}
-                className="border-input bg-background min-w-64 rounded-md border px-3 py-2"
                 required
               >
-                <option value="">{t("team.transfer.chooseMember")}</option>
-                {members.map((member) => (
-                  <option key={member.id} value={member.id}>
-                    {member.user.name} ({member.user.email})
-                  </option>
-                ))}
-              </select>
-            </label>
-            <button className="border-input hover:bg-accent rounded-md border px-4 py-2 text-sm font-medium">
-              {t("team.transfer.preview")}
-            </button>
+                <SelectTrigger className="w-full sm:w-72">
+                  <SelectValue placeholder={t("team.transfer.chooseMember")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {members.map((member) => (
+                    <SelectItem key={member.id} value={member.id}>
+                      {member.user.name} ({member.user.email})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Button variant="outline">{t("team.transfer.preview")}</Button>
           </form>
 
           {preview && fromMemberId ? (
@@ -136,29 +154,28 @@ export default async function TeamPage({
                 <input type="hidden" name="locale" value={locale} />
                 <input type="hidden" name="fromMemberId" value={fromMemberId} />
                 <input type="hidden" name="operationKey" value={randomUUID()} />
-                <label className="space-y-2 text-sm font-medium">
-                  <span>{t("team.transfer.to")}</span>
-                  <select
-                    name="toMemberId"
-                    className="border-input bg-background min-w-64 rounded-md border px-3 py-2"
-                    required
-                  >
-                    <option value="">{t("team.transfer.chooseTarget")}</option>
-                    {eligibleTargets
-                      .filter((member) => member.id !== fromMemberId)
-                      .map((member) => (
-                        <option key={member.id} value={member.id}>
-                          {member.user.name} ({member.user.email})
-                        </option>
-                      ))}
-                  </select>
-                </label>
-                <button
-                  disabled={totalPreviewCount(preview) === 0}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
-                >
+                <div className="space-y-2">
+                  <Label>{t("team.transfer.to")}</Label>
+                  <Select name="toMemberId" required>
+                    <SelectTrigger className="w-full sm:w-72">
+                      <SelectValue
+                        placeholder={t("team.transfer.chooseTarget")}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {eligibleTargets
+                        .filter((member) => member.id !== fromMemberId)
+                        .map((member) => (
+                          <SelectItem key={member.id} value={member.id}>
+                            {member.user.name} ({member.user.email})
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button disabled={totalPreviewCount(preview) === 0}>
                   {t("team.transfer.apply")}
-                </button>
+                </Button>
               </form>
             </div>
           ) : null}
@@ -170,49 +187,42 @@ export default async function TeamPage({
           <CardTitle>{t("team.members.title")}</CardTitle>
           <CardDescription>{t("team.members.description")}</CardDescription>
         </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <table className="w-full min-w-[72rem] text-sm">
-            <thead className="text-muted-foreground border-b">
-              <tr>
-                <th className="py-2 text-start">{t("team.members.member")}</th>
-                <th className="py-2 text-start">{t("team.members.role")}</th>
-                <th className="py-2 text-start">{t("team.members.status")}</th>
-                <th className="py-2 text-start">
-                  {t("team.members.ownership")}
-                </th>
+        <CardContent>
+          <Table className="min-w-[72rem]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("team.members.member")}</TableHead>
+                <TableHead>{t("team.members.role")}</TableHead>
+                <TableHead>{t("team.members.status")}</TableHead>
+                <TableHead>{t("team.members.ownership")}</TableHead>
                 {canManageMembers ? (
-                  <th className="py-2 text-start">
-                    {t("team.members.actions")}
-                  </th>
+                  <TableHead>{t("team.members.actions")}</TableHead>
                 ) : null}
-              </tr>
-            </thead>
-            <tbody>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {members.map((member) => (
-                <tr
-                  key={member.id}
-                  className="border-b align-top last:border-0"
-                >
-                  <td className="py-3">
+                <TableRow key={member.id} className="align-top">
+                  <TableCell>
                     <p className="font-medium" dir="auto">
                       {member.user.name}
                     </p>
                     <p className="text-muted-foreground" dir="auto">
                       {member.user.email}
                     </p>
-                  </td>
-                  <td className="py-3">{t(`roles.${member.role}`)}</td>
-                  <td className="py-3">{t(`status.${member.status}`)}</td>
-                  <td className="py-3">
+                  </TableCell>
+                  <TableCell>{t(`roles.${member.role}`)}</TableCell>
+                  <TableCell>{t(`status.${member.status}`)}</TableCell>
+                  <TableCell>
                     {t("team.members.ownershipSummary", {
                       customers: member._count.customers,
                       tasks: member._count.ownedTasks,
                       risks: member._count.ownedRisks,
                       goals: member._count.ownedGoals,
                     })}
-                  </td>
+                  </TableCell>
                   {canManageMembers ? (
-                    <td className="space-y-2 py-3">
+                    <TableCell className="space-y-2">
                       <form
                         action={changeMemberRoleAction}
                         className="flex gap-2"
@@ -223,20 +233,21 @@ export default async function TeamPage({
                           name="memberId"
                           value={member.id}
                         />
-                        <select
-                          name="role"
-                          defaultValue={member.role}
-                          className="border-input bg-background rounded-md border px-2 py-1"
-                        >
-                          {workspaceRoles.map((role) => (
-                            <option key={role} value={role}>
-                              {t(`roles.${role}`)}
-                            </option>
-                          ))}
-                        </select>
-                        <button className="border-input hover:bg-accent rounded-md border px-3 py-1 font-medium">
+                        <Select name="role" defaultValue={member.role}>
+                          <SelectTrigger className="w-48">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {workspaceRoles.map((role) => (
+                              <SelectItem key={role} value={role}>
+                                {t(`roles.${role}`)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <Button variant="outline" size="sm">
                           {t("team.members.updateRole")}
-                        </button>
+                        </Button>
                       </form>
                       <form
                         action={changeMemberStatusAction}
@@ -248,26 +259,29 @@ export default async function TeamPage({
                           name="memberId"
                           value={member.id}
                         />
-                        <select
-                          name="status"
-                          defaultValue={member.status}
-                          className="border-input bg-background rounded-md border px-2 py-1"
-                        >
-                          <option value="ACTIVE">{t("status.ACTIVE")}</option>
-                          <option value="INACTIVE">
-                            {t("status.INACTIVE")}
-                          </option>
-                        </select>
-                        <button className="border-input hover:bg-accent rounded-md border px-3 py-1 font-medium">
+                        <Select name="status" defaultValue={member.status}>
+                          <SelectTrigger className="w-48">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ACTIVE">
+                              {t("status.ACTIVE")}
+                            </SelectItem>
+                            <SelectItem value="INACTIVE">
+                              {t("status.INACTIVE")}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button variant="outline" size="sm">
                           {t("team.members.updateStatus")}
-                        </button>
+                        </Button>
                       </form>
-                    </td>
+                    </TableCell>
                   ) : null}
-                </tr>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
