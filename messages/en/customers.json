@@ -102,7 +102,9 @@
     "pending": "Importing...",
     "success": "Imported rows:",
     "error": "Import failed:",
-    "counts": "Success: {success} · Failed: {failed} · Skipped: {skipped}",
+    "countSuccess": "Success",
+    "countFailed": "Failed",
+    "countSkipped": "Skipped",
     "row": "Row",
     "columns": {
       "customer_name": "Customer name",

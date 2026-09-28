@@ -13,6 +13,7 @@ import {
   retryCustomerImport,
 } from "@/modules/imports/services/import-customers";
 import { saveRisk } from "@/modules/risks/services/manage-risk";
+import { globalSearch } from "@/modules/search/services/global-search";
 import { createTask } from "@/modules/tasks/services/manage-task";
 import { seedTwoWorkspaceFixture } from "../fixtures/two-workspaces";
 
@@ -218,5 +219,42 @@ describe("Phase 2 import and Customer 360 actions", () => {
         operationKey: randomUUID(),
       }),
     ).rejects.toMatchObject({ code: "RISK_NOT_FOUND" });
+  });
+
+  it("keeps global search scoped to the active workspace", async () => {
+    const alpha = await createCustomer(adminAccess(), {
+      name: "Scoped Search Alpha",
+      website: "https://scoped-alpha.example.test",
+      industry: null,
+      companySize: null,
+      contractValue: null,
+      currency: "SAR",
+      customerSince: null,
+      renewalDate: null,
+      lifecycleStageId: fixture.alphaStages[0].id,
+      ownerId: fixture.memberships.alphaAdmin.id,
+      tags: [],
+    });
+    const beta = await createCustomer(betaAccess(), {
+      name: "Scoped Search Beta",
+      website: "https://scoped-beta.example.test",
+      industry: null,
+      companySize: null,
+      contractValue: null,
+      currency: "USD",
+      customerSince: null,
+      renewalDate: null,
+      lifecycleStageId: fixture.betaStages[0].id,
+      ownerId: fixture.memberships.betaAdmin.id,
+      tags: [],
+    });
+
+    const alphaResults = await globalSearch(adminAccess(), "Scoped Search");
+    expect(alphaResults.map((result) => result.href)).toContain(
+      `/customers/${alpha.id}`,
+    );
+    expect(alphaResults.map((result) => result.href)).not.toContain(
+      `/customers/${beta.id}`,
+    );
   });
 });

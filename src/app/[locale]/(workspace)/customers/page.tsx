@@ -206,7 +206,9 @@ export default async function CustomersPage({
               pending: t("import.pending"),
               success: t("import.success"),
               error: t("import.error"),
-              counts: t("import.counts"),
+              countSuccess: t("import.countSuccess"),
+              countFailed: t("import.countFailed"),
+              countSkipped: t("import.countSkipped"),
               row: t("import.row"),
               columns: {
                 customer_name: t("import.columns.customer_name"),

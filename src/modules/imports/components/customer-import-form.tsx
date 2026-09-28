@@ -28,7 +28,9 @@ type CustomerImportFormProps = {
     pending: string;
     success: string;
     error: string;
-    counts: string;
+    countSuccess: string;
+    countFailed: string;
+    countSkipped: string;
     row: string;
     columns: Record<string, string>;
     errors: Record<string, string>;
@@ -195,10 +197,8 @@ export function CustomerImportForm({ labels }: CustomerImportFormProps) {
                 {labels.success} {result.succeededRows}/{result.totalRows}
               </p>
               <p>
-                {labels.counts
-                  .replace("{success}", String(result.succeededRows))
-                  .replace("{failed}", String(result.failedRows))
-                  .replace("{skipped}", String(result.skippedRows))}
+                {labels.countSuccess}: {result.succeededRows} ·{" "}
+                {labels.countFailed}: {result.failedRows} · {labels.countSkipped}: {result.skippedRows}
               </p>
               {"errors" in result && result.errors.length ? (
                 <ul className="text-risk space-y-1">

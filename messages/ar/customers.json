@@ -102,7 +102,9 @@
     "pending": "جارٍ الاستيراد...",
     "success": "الصفوف المستوردة:",
     "error": "فشل الاستيراد:",
-    "counts": "نجح: {success} · فشل: {failed} · تم تخطيه: {skipped}",
+    "countSuccess": "نجح",
+    "countFailed": "فشل",
+    "countSkipped": "تم تخطيه",
     "row": "الصف",
     "columns": {
       "customer_name": "اسم العميل",
