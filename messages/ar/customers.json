@@ -25,6 +25,13 @@
     "archive": "أرشفة العميل",
     "archiving": "جارٍ الأرشفة..."
   },
+  "quickActions": {
+    "addActivity": "إضافة نشاط",
+    "addActivityDescription": "سجّل اجتماعًا أو مكالمة أو بريدًا أو ملاحظة للعميل.",
+    "createTask": "إنشاء مهمة",
+    "createTaskDescription": "أنشئ عمل متابعة مرتبطًا بهذا العميل.",
+    "addRisk": "إضافة خطر"
+  },
   "fields": {
     "name": "اسم العميل",
     "website": "الموقع الإلكتروني",
@@ -84,12 +91,50 @@
   },
   "import": {
     "title": "استيراد العملاء",
-    "description": "ارفع ملف CSV بأعمدة V1 الثابتة لإنشاء العملاء وجهات الاتصال الرئيسية الاختيارية والوسوم والتجديدات الأولية.",
+    "description": "ارفع ملف CSV واربط أعمدة V1 المدعومة ثم تحقق من الصفوف واستورد كل الصفوف أو الصفوف الصالحة فقط.",
     "file": "ملف CSV",
+    "mapping": "ربط الأعمدة",
+    "unmapped": "عدم الاستيراد",
+    "validate": "التحقق من الصفوف",
     "submit": "استيراد CSV",
+    "importValidRows": "استيراد الصفوف الصالحة",
+    "retry": "إعادة محاولة الصفوف غير النهائية",
     "pending": "جارٍ الاستيراد...",
     "success": "الصفوف المستوردة:",
-    "error": "فشل الاستيراد:"
+    "error": "فشل الاستيراد:",
+    "counts": "نجح: {success} · فشل: {failed} · تم تخطيه: {skipped}",
+    "row": "الصف",
+    "columns": {
+      "customer_name": "اسم العميل",
+      "external_key": "المفتاح الخارجي",
+      "website": "الموقع الإلكتروني",
+      "industry": "القطاع",
+      "company_size": "حجم الشركة",
+      "owner_email": "بريد المالك",
+      "lifecycle_stage_key": "مفتاح مرحلة دورة الحياة",
+      "contract_value": "قيمة العقد",
+      "currency": "العملة",
+      "customer_since": "عميل منذ",
+      "renewal_date": "تاريخ التجديد",
+      "primary_contact_name": "اسم جهة الاتصال الأساسية",
+      "primary_contact_email": "بريد جهة الاتصال الأساسية",
+      "primary_contact_role": "دور جهة الاتصال الأساسية",
+      "tags": "الوسوم"
+    },
+    "errors": {
+      "customer_name_required": "اسم العميل مطلوب.",
+      "owner_email_unknown": "يجب أن يطابق بريد المالك عضوًا نشطًا بدور مسؤول أو مدير نجاح العملاء أو مسؤول نجاح العملاء في مساحة العمل.",
+      "lifecycle_stage_unknown": "مفتاح مرحلة دورة الحياة غير موجود في مساحة العمل هذه.",
+      "external_key_duplicate": "المفتاح الخارجي مكرر في الملف أو مساحة العمل.",
+      "name_website_duplicate": "اسم العميل والموقع يطابقان عميلًا موجودًا.",
+      "company_size_invalid": "يجب أن يكون حجم الشركة رقمًا صحيحًا.",
+      "contract_value_invalid": "يجب أن تكون قيمة العقد مبلغًا موجبًا حتى منزلتين عشريتين.",
+      "currency_invalid": "يجب أن تكون العملة رمز ISO من ثلاثة أحرف.",
+      "date_invalid": "يجب أن تستخدم التواريخ الصيغة YYYY-MM-DD.",
+      "primary_contact_role_invalid": "دور جهة الاتصال الأساسية غير مدعوم.",
+      "initial_renewal_incomplete": "يتطلب التجديد الأولي تاريخ التجديد وقيمة العقد معًا.",
+      "row_import_failed": "تعذر استيراد هذا الصف. أعد المحاولة بعد مراجعة التعارضات."
+    }
   },
   "summary": {
     "health": "الصحة",

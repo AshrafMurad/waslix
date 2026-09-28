@@ -25,6 +25,13 @@
     "archive": "Archive customer",
     "archiving": "Archiving..."
   },
+  "quickActions": {
+    "addActivity": "Add activity",
+    "addActivityDescription": "Record a customer meeting, call, email, or note.",
+    "createTask": "Create task",
+    "createTaskDescription": "Create customer-specific follow-up work.",
+    "addRisk": "Add risk"
+  },
   "fields": {
     "name": "Customer name",
     "website": "Website",
@@ -84,12 +91,50 @@
   },
   "import": {
     "title": "Import customers",
-    "description": "Upload the fixed V1 CSV columns to create customers, optional primary contacts, tags, and initial renewals.",
+    "description": "Upload a CSV, map supported V1 columns, validate rows, then import all rows or only valid rows.",
     "file": "CSV file",
+    "mapping": "Column mapping",
+    "unmapped": "Do not import",
+    "validate": "Validate rows",
     "submit": "Import CSV",
+    "importValidRows": "Import valid rows",
+    "retry": "Retry nonterminal rows",
     "pending": "Importing...",
     "success": "Imported rows:",
-    "error": "Import failed:"
+    "error": "Import failed:",
+    "counts": "Success: {success} · Failed: {failed} · Skipped: {skipped}",
+    "row": "Row",
+    "columns": {
+      "customer_name": "Customer name",
+      "external_key": "External key",
+      "website": "Website",
+      "industry": "Industry",
+      "company_size": "Company size",
+      "owner_email": "Owner email",
+      "lifecycle_stage_key": "Lifecycle stage key",
+      "contract_value": "Contract value",
+      "currency": "Currency",
+      "customer_since": "Customer since",
+      "renewal_date": "Renewal date",
+      "primary_contact_name": "Primary contact name",
+      "primary_contact_email": "Primary contact email",
+      "primary_contact_role": "Primary contact role",
+      "tags": "Tags"
+    },
+    "errors": {
+      "customer_name_required": "Customer name is required.",
+      "owner_email_unknown": "Owner email must match an active workspace Admin, CS Manager, or CSM.",
+      "lifecycle_stage_unknown": "Lifecycle stage key does not exist in this workspace.",
+      "external_key_duplicate": "External key is duplicated in this file or workspace.",
+      "name_website_duplicate": "Customer name and website match an existing customer.",
+      "company_size_invalid": "Company size must be a whole number.",
+      "contract_value_invalid": "Contract value must be a positive amount with up to two decimals.",
+      "currency_invalid": "Currency must be a three-letter ISO code.",
+      "date_invalid": "Dates must use YYYY-MM-DD.",
+      "primary_contact_role_invalid": "Primary contact role is not supported.",
+      "initial_renewal_incomplete": "Initial renewal requires both renewal date and contract value.",
+      "row_import_failed": "This row could not be imported. Retry after reviewing conflicts."
+    }
   },
   "summary": {
     "health": "Health",

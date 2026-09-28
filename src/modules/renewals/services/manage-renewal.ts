@@ -155,7 +155,7 @@ async function readinessFacts(
   };
 }
 
-async function updateRenewalReadiness(
+export async function updateRenewalReadiness(
   transaction: Prisma.TransactionClient,
   workspaceId: string,
   customerId: string,

@@ -197,10 +197,64 @@ export default async function CustomersPage({
           <CustomerImportForm
             labels={{
               file: t("import.file"),
+              mapping: t("import.mapping"),
+              unmapped: t("import.unmapped"),
               submit: t("import.submit"),
+              validate: t("import.validate"),
+              importValidRows: t("import.importValidRows"),
+              retry: t("import.retry"),
               pending: t("import.pending"),
               success: t("import.success"),
               error: t("import.error"),
+              counts: t("import.counts"),
+              row: t("import.row"),
+              columns: {
+                customer_name: t("import.columns.customer_name"),
+                external_key: t("import.columns.external_key"),
+                website: t("import.columns.website"),
+                industry: t("import.columns.industry"),
+                company_size: t("import.columns.company_size"),
+                owner_email: t("import.columns.owner_email"),
+                lifecycle_stage_key: t("import.columns.lifecycle_stage_key"),
+                contract_value: t("import.columns.contract_value"),
+                currency: t("import.columns.currency"),
+                customer_since: t("import.columns.customer_since"),
+                renewal_date: t("import.columns.renewal_date"),
+                primary_contact_name: t("import.columns.primary_contact_name"),
+                primary_contact_email: t(
+                  "import.columns.primary_contact_email",
+                ),
+                primary_contact_role: t("import.columns.primary_contact_role"),
+                tags: t("import.columns.tags"),
+              },
+              errors: {
+                customer_name_required: t(
+                  "import.errors.customer_name_required",
+                ),
+                owner_email_unknown: t("import.errors.owner_email_unknown"),
+                lifecycle_stage_unknown: t(
+                  "import.errors.lifecycle_stage_unknown",
+                ),
+                external_key_duplicate: t(
+                  "import.errors.external_key_duplicate",
+                ),
+                name_website_duplicate: t(
+                  "import.errors.name_website_duplicate",
+                ),
+                company_size_invalid: t("import.errors.company_size_invalid"),
+                contract_value_invalid: t(
+                  "import.errors.contract_value_invalid",
+                ),
+                currency_invalid: t("import.errors.currency_invalid"),
+                date_invalid: t("import.errors.date_invalid"),
+                primary_contact_role_invalid: t(
+                  "import.errors.primary_contact_role_invalid",
+                ),
+                initial_renewal_incomplete: t(
+                  "import.errors.initial_renewal_incomplete",
+                ),
+                row_import_failed: t("import.errors.row_import_failed"),
+              },
             }}
           />
         </Card>

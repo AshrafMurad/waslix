@@ -5,7 +5,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { CustomerTabs } from "@/modules/customers/components/customer-tabs";
+import { CustomerHeaderActions } from "@/modules/customers/components/customer-header-actions";
 import { getCustomerOverview } from "@/modules/customers/queries/get-customer-overview";
+import { canEditCustomer } from "@/modules/customers/services/customer-permissions";
+import { getActivityOptions } from "@/modules/activities/queries/get-activity-options";
+import { getRiskOptions } from "@/modules/risks/queries/get-risks";
+import { getTaskOptions } from "@/modules/tasks/queries/get-task-options";
 
 export default async function CustomerLayout({
   children,
@@ -24,6 +29,18 @@ export default async function CustomerLayout({
     getTranslations({ locale, namespace: "health" }),
   ]);
   if (!customer) notFound();
+  const canManage =
+    customer.status === "ACTIVE" && canEditCustomer(access, customer.owner.id);
+  const [activityContacts, taskOptions, riskOptions] = canManage
+    ? await Promise.all([
+        getActivityOptions(access, customerId),
+        getTaskOptions(access),
+        getRiskOptions(access),
+      ])
+    : [[], { owners: [], customers: [] }, { owners: [], customers: [] }];
+  const visibleTaskOwners = canManage
+    ? taskOptions.owners
+    : taskOptions.owners.filter((owner) => owner.id === access.memberId);
   const primaryContact = customer.contacts.find(
     (contact) => contact.isPrimary && contact.status === "ACTIVE",
   );
@@ -94,6 +111,20 @@ export default async function CustomerLayout({
             </p>
           </div>
         </div>
+        <CustomerHeaderActions
+          locale={locale}
+          customerId={customerId}
+          canManage={canManage}
+          contacts={activityContacts}
+          taskOwners={visibleTaskOwners}
+          taskCustomers={taskOptions.customers}
+          riskOwners={riskOptions.owners}
+          riskCustomers={riskOptions.customers}
+          defaultOwnerId={access.memberId}
+          canAssignOwner={
+            access.role === "ADMIN" || access.role === "CS_MANAGER"
+          }
+        />
         <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {[
             [t("summary.owner"), customer.owner.user.name],
