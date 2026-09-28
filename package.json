@@ -19,8 +19,8 @@
     "db:migrate:dev": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
     "worker:dispatch": "tsx src/worker/dispatch-outbox.ts",
-    "worker:start": "tsx src/worker/health-engine.ts",
-    "worker:health": "tsx src/worker/health-engine.ts",
+    "worker:start": "node --conditions=react-server --import tsx src/worker/health-engine.ts",
+    "worker:health": "node --conditions=react-server --import tsx src/worker/health-engine.ts",
     "i18n:check": "node scripts/i18n-check.mjs",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm run i18n:check && npm run test",
     "postinstall": "prisma generate"
