@@ -12,6 +12,11 @@ import {
   type WorkspaceRole,
 } from "@/lib/permissions/roles";
 
+import {
+  getOwnershipTransferPreviewInTransaction,
+  totalPreviewCount,
+} from "./ownership-transfer";
+
 export class LastActiveAdminError extends Error {
   constructor() {
     super("The last active workspace admin cannot be changed");
@@ -104,14 +109,14 @@ export async function changeMembershipStatus(
     }
 
     if (target.status === "ACTIVE" && status === "INACTIVE") {
-      const ownedOpenWork = await transaction.risk.count({
-        where: {
-          workspaceId: access.workspaceId,
-          ownerId: target.id,
-          status: { in: ["OPEN", "MONITORING"] },
-        },
-      });
-      if (ownedOpenWork > 0) throw new WorkspaceAccessDeniedError();
+      const ownedOpenWork = await getOwnershipTransferPreviewInTransaction(
+        transaction,
+        access.workspaceId,
+        target.id,
+      );
+      if (totalPreviewCount(ownedOpenWork) > 0) {
+        throw new WorkspaceAccessDeniedError();
+      }
     }
 
     return transaction.workspaceMember.update({

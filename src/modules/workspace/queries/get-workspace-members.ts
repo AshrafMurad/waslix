@@ -21,6 +21,38 @@ export function getWorkspaceMembers(access: WorkspaceAccessContext) {
           email: true,
         },
       },
+      _count: {
+        select: {
+          customers: { where: { status: "ACTIVE" } },
+          ownedTasks: { where: { status: { in: ["OPEN", "IN_PROGRESS"] } } },
+          ownedRisks: { where: { status: { in: ["OPEN", "MONITORING"] } } },
+          ownedGoals: {
+            where: {
+              status: { in: ["NOT_STARTED", "IN_PROGRESS", "AT_RISK"] },
+            },
+          },
+          ownedOnboardings: {
+            where: { status: { in: ["NOT_STARTED", "IN_PROGRESS"] } },
+          },
+          ownedMilestones: {
+            where: { status: { in: ["NOT_STARTED", "IN_PROGRESS"] } },
+          },
+          ownedRenewals: {
+            where: {
+              stage: {
+                in: [
+                  "UPCOMING",
+                  "PREPARING",
+                  "DISCUSSION",
+                  "NEGOTIATION",
+                  "COMMITTED",
+                ],
+              },
+            },
+          },
+          ownedPlaybookRuns: { where: { status: "ACTIVE" } },
+        },
+      },
     },
   });
 }

@@ -26,6 +26,7 @@ export default async function WorkspaceLayout({
       workspace={shell.workspace}
       workspaces={shell.workspaces}
       user={shell.user}
+      role={access.role}
       roleLabel={t(`roles.${access.role}`)}
       labels={{
         navigation: t("navigation.label"),

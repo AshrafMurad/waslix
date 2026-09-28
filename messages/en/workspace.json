@@ -1,0 +1,73 @@
+{
+  "roles": {
+    "ADMIN": "Admin",
+    "CS_MANAGER": "CS Manager",
+    "CSM": "Customer Success Manager",
+    "VIEWER": "Viewer"
+  },
+  "status": {
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive"
+  },
+  "settings": {
+    "eyebrow": "Workspace administration",
+    "title": "Settings",
+    "description": "Manage the workspace profile and lifecycle configuration. Settings changes are Admin-only.",
+    "profile": {
+      "title": "Workspace profile",
+      "description": "These values control workspace-wide display defaults and scheduling context.",
+      "name": "Workspace name",
+      "timezone": "Time zone",
+      "currency": "Default currency",
+      "save": "Save settings"
+    },
+    "lifecycle": {
+      "title": "Lifecycle configuration",
+      "description": "Lifecycle stages are shown for visibility. Reserved stages keep their behavior keys.",
+      "name": "Stage",
+      "key": "Key",
+      "status": "Status",
+      "actions": "Actions",
+      "active": "Active",
+      "inactive": "Inactive",
+      "save": "Save stage"
+    }
+  },
+  "team": {
+    "eyebrow": "Workspace administration",
+    "title": "Team",
+    "description": "Review members, roles, status and ownership. Admins manage roles and status; CS Managers can transfer ownership and open work.",
+    "transfer": {
+      "title": "Ownership transfer preview",
+      "description": "Preview active customers and BR-01 open work before applying an ownership transfer.",
+      "from": "Transfer from",
+      "to": "Transfer to",
+      "chooseMember": "Choose a member",
+      "chooseTarget": "Choose an active owner",
+      "preview": "Preview transfer",
+      "apply": "Apply transfer"
+    },
+    "work": {
+      "customers": "Active customers",
+      "tasks": "Open tasks",
+      "risks": "Open risks",
+      "onboardings": "Active onboarding",
+      "milestones": "Incomplete milestones",
+      "renewals": "Nonterminal renewals",
+      "goals": "Open goals",
+      "playbookRuns": "Active playbook runs"
+    },
+    "members": {
+      "title": "Members",
+      "description": "All reads are scoped to the active workspace membership.",
+      "member": "Member",
+      "role": "Role",
+      "status": "Status",
+      "ownership": "Ownership",
+      "actions": "Admin actions",
+      "ownershipSummary": "{customers} customers · {tasks} tasks · {risks} risks · {goals} goals",
+      "updateRole": "Update role",
+      "updateStatus": "Update status"
+    }
+  }
+}

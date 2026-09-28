@@ -33,6 +33,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       tasks: (await import(`../../messages/${locale}/tasks.json`)).default,
       timeline: (await import(`../../messages/${locale}/timeline.json`))
         .default,
+      workspace: (await import(`../../messages/${locale}/workspace.json`))
+        .default,
       shell: (await import(`../../messages/${locale}/shell.json`)).default,
     },
   };

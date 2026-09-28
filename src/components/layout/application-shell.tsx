@@ -12,6 +12,7 @@ import {
 
 import type { Locale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
+import type { WorkspaceRole } from "@/lib/permissions/roles";
 import { Button } from "@/components/ui/button";
 import { GlobalSearch } from "@/modules/search/components/global-search";
 import {
@@ -63,6 +64,7 @@ type ApplicationShellProps = {
   locale: Locale;
   labels: ShellLabels;
   roleLabel: string;
+  role: WorkspaceRole;
   workspace: { id: string; name: string };
   workspaces: Array<{ id: string; name: string }>;
   user: { name: string; email: string };
@@ -91,16 +93,28 @@ const primaryNavigation: Array<{
   { key: "analytics", href: "/analytics", icon: BarChart3 },
 ] as const;
 
-const secondaryNavigation = [
-  { key: "team", icon: Users },
-  { key: "settings", icon: Settings },
+const secondaryNavigation: Array<{
+  key: "team" | "settings";
+  icon: typeof Users;
+  href: "/settings/team" | "/settings";
+  roles: WorkspaceRole[];
+}> = [
+  {
+    key: "team",
+    href: "/settings/team",
+    icon: Users,
+    roles: ["ADMIN", "CS_MANAGER"],
+  },
+  { key: "settings", href: "/settings", icon: Settings, roles: ["ADMIN"] },
 ] as const;
 
 function Navigation({
   labels,
+  role,
   closeOnNavigate = false,
 }: {
   labels: ShellLabels;
+  role: WorkspaceRole;
   closeOnNavigate?: boolean;
 }) {
   return (
@@ -142,16 +156,23 @@ function Navigation({
       <div className="my-3 border-t" />
       {secondaryNavigation.map((item) => {
         const Icon = item.icon;
-        return (
-          <span
+        if (!item.roles.includes(role)) return null;
+        const link = (
+          <Link
             key={item.key}
-            aria-disabled="true"
-            title={labels.unavailable}
-            className="text-muted-foreground flex min-h-10 items-center gap-3 rounded-md px-3 opacity-60"
+            href={item.href}
+            className="hover:bg-raised flex min-h-10 items-center gap-3 rounded-md px-3 font-medium"
           >
             <Icon aria-hidden="true" className="size-4" />
             <span>{labels.nav[item.key]}</span>
-          </span>
+          </Link>
+        );
+        return closeOnNavigate ? (
+          <SheetClose key={item.key} asChild>
+            {link}
+          </SheetClose>
+        ) : (
+          link
         );
       })}
     </nav>
@@ -162,6 +183,7 @@ export function ApplicationShell({
   children,
   labels,
   locale,
+  role,
   roleLabel,
   user,
   workspace,
@@ -190,7 +212,7 @@ export function ApplicationShell({
           workspaces={workspaces}
         />
         <div className="mt-6 flex-1 overflow-y-auto">
-          <Navigation labels={labels} />
+          <Navigation labels={labels} role={role} />
         </div>
       </aside>
 
@@ -217,7 +239,7 @@ export function ApplicationShell({
                 workspaces={workspaces}
               />
               <div className="mt-4">
-                <Navigation labels={labels} closeOnNavigate />
+                <Navigation labels={labels} role={role} closeOnNavigate />
               </div>
             </SheetContent>
           </Sheet>
