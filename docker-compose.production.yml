@@ -12,7 +12,7 @@ services:
       timeout: 5s
       retries: 10
     volumes:
-      - waslix-postgres:/var/lib/postgresql/data
+      - waslix-postgres:/var/lib/postgresql
 
   migrate:
     build: .
