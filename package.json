@@ -17,7 +17,7 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate deploy",
     "db:migrate:dev": "prisma migrate dev",
-    "db:seed": "tsx prisma/seed.ts",
+    "db:seed": "node --conditions=react-server --import tsx prisma/seed.ts",
     "worker:dispatch": "tsx src/worker/dispatch-outbox.ts",
     "worker:start": "node --conditions=react-server --import tsx src/worker/health-engine.ts",
     "worker:health": "node --conditions=react-server --import tsx src/worker/health-engine.ts",

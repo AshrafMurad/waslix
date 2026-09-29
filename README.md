@@ -19,6 +19,8 @@ Open [http://localhost:3000/en](http://localhost:3000/en) or [http://localhost:3
 
 The local seed provisions the fixture users below as Better Auth credential accounts. They use `SEED_FIXTURE_PASSWORD`; when it is omitted outside production, the local-only fallback is `123456`. The development sign-in form defaults to the admin credentials.
 
+It also rebuilds a deterministic 120-customer portfolio in Fixture Alpha while preserving those users. `SEED_NOW` controls relative dates and `SEED_RANDOM_SEED` controls stable distributions; see `prisma/seeds/README.md` and `docs/14-SEED-DATA-PLAN.md`.
+
 | Role                                           | Email                        |
 | ---------------------------------------------- | ---------------------------- |
 | Admin in Fixture Alpha, Viewer in Fixture Beta | `admin@example.com`          |
@@ -44,7 +46,7 @@ npm run build
 
 ## Environment
 
-Copy `.env.example` and replace its safe placeholders. Required server variables are `DATABASE_URL`, `BETTER_AUTH_URL`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. `TEST_DATABASE_URL` is required only for database integration and browser tests. `NEXT_PUBLIC_APP_URL` documents the browser origin. `SEED_FIXTURE_PASSWORD` controls local fixture credentials and must be explicitly set when seeding with `NODE_ENV=production`.
+Copy `.env.example` and replace its safe placeholders. Required server variables are `DATABASE_URL`, `BETTER_AUTH_URL`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. `TEST_DATABASE_URL` is required only for database integration and browser tests. `NEXT_PUBLIC_APP_URL` documents the browser origin. `SEED_FIXTURE_PASSWORD` controls local fixture credentials and must be explicitly set when seeding with `NODE_ENV=production`. `SEED_NOW` and `SEED_RANDOM_SEED` make the portfolio reproducible.
 
 The optional `docker-compose.yml` provides PostgreSQL 18 and creates the `waslix` and `waslix_test` databases when its volume is initialized. If the volume predates M1.4, create the test database once with `docker compose exec postgres createdb -U waslix waslix_test`. The pinned foundation includes Better Auth `1.7.5`, Prisma/Prisma Client `6.19.3`, Next.js `16.3.5`, next-intl `4.14.6`, Zod `4.1.11`, Vitest `4.0.4`, and Playwright `1.55.0`.
 
@@ -58,6 +60,4 @@ The optional `docker-compose.yml` provides PostgreSQL 18 and creates the `waslix
 - `src/lib` owns infrastructure-level helpers such as `cn`.
 - `src/lib/auth`, `src/lib/db`, and `src/lib/permissions` own session validation, Prisma, and fixed-role policy.
 - `src/modules/workspace` owns tenant-scoped membership queries and mutations.
-- `prisma` owns the reviewed schema, migration, and two-workspace fixture seed.
-
-Customers, contacts, tasks, health, risks, and all other product-domain models remain intentionally out of scope for M1.
+- `prisma` owns the reviewed schema, migrations, two-workspace fixture and deterministic demo portfolio seed.
