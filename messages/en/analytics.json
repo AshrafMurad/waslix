@@ -16,7 +16,13 @@
     "customers": "Active customers",
     "averageHealth": "Average known health",
     "trend": "Average trend",
-    "renewalOutcome": "Renewal outcome rate"
+    "renewalOutcome": "Renewal outcome rate",
+    "customerGrowth": "{delta} new vs previous period ({current} now, {previous} prior)",
+    "healthTrend": "{delta} points over the selected period",
+    "noTrend": "No comparable health baseline yet",
+    "trendCoverage": "Trend coverage: {known} of {total} customers",
+    "renewalDelta": "{delta} points vs previous period",
+    "noRenewalDelta": "No previous-period renewal baseline"
   },
   "health": {
     "title": "Health distribution",
@@ -40,6 +46,13 @@
   "onboarding": {
     "title": "Onboarding completion",
     "summary": "{completed} of {total} active-period onboardings completed. Median completion days: {medianCompletionDays}."
+  },
+  "lifecycle": {
+    "title": "Lifecycle mix"
+  },
+  "capacity": {
+    "title": "Capacity concentration",
+    "description": "Top owners by combined customers, open tasks and unresolved risks."
   },
   "workload": {
     "title": "CSM workload",

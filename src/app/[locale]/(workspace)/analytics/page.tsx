@@ -13,6 +13,8 @@ import {
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { AnalyticsBarChart } from "@/modules/analytics/components/analytics-bar-chart";
+import { AnalyticsColumnChart } from "@/modules/analytics/components/analytics-column-chart";
+import { AnalyticsDonutChart } from "@/modules/analytics/components/analytics-donut-chart";
 import { getPortfolioAnalytics } from "@/modules/analytics/queries/get-portfolio-analytics";
 import { AnalyticsFilters } from "@/modules/analytics/components/analytics-filters";
 import { getCustomerOptions } from "@/modules/customers/queries/get-customer-options";
@@ -23,12 +25,35 @@ function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-function Metric({ label, value }: { label: string; value: string | number }) {
+function signed(value: number) {
+  return `${value > 0 ? "+" : ""}${value}`;
+}
+
+function Metric({
+  label,
+  value,
+  insight,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string | number;
+  insight: string;
+  tone?: "positive" | "negative" | "neutral";
+}) {
+  const toneClass =
+    tone === "positive"
+      ? "text-healthy"
+      : tone === "negative"
+        ? "text-risk"
+        : "text-muted-foreground";
+
   return (
-    <Card className="p-5">
-      <CardContent className="space-y-2 p-0">
+    <Card className="min-w-0 p-5">
+      <CardContent className="space-y-3 p-0">
         <p className="text-muted-foreground text-sm">{label}</p>
         <p className="text-3xl font-semibold tabular-nums">{value}</p>
+        <div className="bg-border h-px" />
+        <p className={`text-sm tabular-nums ${toneClass}`}>{insight}</p>
       </CardContent>
     </Card>
   );
@@ -56,6 +81,41 @@ export default async function AnalyticsPage({
     getCustomerOptions(access),
     getTranslations({ locale, namespace: "analytics" }),
   ]);
+  const dir = locale === "ar" ? "rtl" : "ltr";
+  const numberFormat = new Intl.NumberFormat(locale);
+  const percentFormat = new Intl.NumberFormat(locale, {
+    maximumFractionDigits: 0,
+  });
+  const renewalValueChart = analytics.renewalValue.map((item) => ({
+    label: item.currency,
+    value: item.value,
+  }));
+  const healthDistributionChart = (
+    ["HEALTHY", "NEEDS_ATTENTION", "AT_RISK", "UNKNOWN"] as const
+  ).map((status) => ({
+    label: t(`health.${status}`),
+    value: analytics.healthDistribution[status],
+    color:
+      status === "HEALTHY"
+        ? "var(--healthy)"
+        : status === "NEEDS_ATTENTION"
+          ? "var(--attention)"
+          : status === "AT_RISK"
+            ? "var(--risk)"
+            : "var(--muted-foreground)",
+  }));
+  const riskSeverityChart = (
+    ["CRITICAL", "HIGH", "MEDIUM", "LOW"] as const
+  ).map((severity) => ({
+    label: t(`risks.${severity}`),
+    value: analytics.riskSeverity[severity] ?? 0,
+  }));
+  const ownerWorkloadChart = analytics.ownerWorkload
+    .slice(0, 8)
+    .map((owner) => ({
+      label: owner.ownerName,
+      value: owner.customers + owner.tasks + owner.risks,
+    }));
 
   return (
     <div className="space-y-6">
@@ -92,10 +152,34 @@ export default async function AnalyticsPage({
         <Metric
           label={t("metrics.customers")}
           value={analytics.customerCount}
+          insight={t("metrics.customerGrowth", {
+            current: analytics.customerGrowthCurrent,
+            previous: analytics.customerGrowthPrevious,
+            delta: signed(analytics.customerGrowth),
+          })}
+          tone={
+            analytics.customerGrowth > 0
+              ? "positive"
+              : analytics.customerGrowth < 0
+                ? "negative"
+                : "neutral"
+          }
         />
         <Metric
           label={t("metrics.averageHealth")}
           value={analytics.averageHealth ?? t("na")}
+          insight={
+            analytics.trend == null
+              ? t("metrics.noTrend")
+              : t("metrics.healthTrend", { delta: signed(analytics.trend) })
+          }
+          tone={
+            analytics.trend == null || analytics.trend === 0
+              ? "neutral"
+              : analytics.trend > 0
+                ? "positive"
+                : "negative"
+          }
         />
         <Metric
           label={t("metrics.trend")}
@@ -103,6 +187,14 @@ export default async function AnalyticsPage({
             analytics.trend == null
               ? t("na")
               : `${analytics.trend > 0 ? "+" : ""}${analytics.trend}`
+          }
+          insight={t("metrics.trendCoverage", analytics.trendCoverage)}
+          tone={
+            analytics.trend == null || analytics.trend === 0
+              ? "neutral"
+              : analytics.trend > 0
+                ? "positive"
+                : "negative"
           }
         />
         <Metric
@@ -112,22 +204,33 @@ export default async function AnalyticsPage({
               ? t("na")
               : `${analytics.renewalOutcomeRate}%`
           }
+          insight={
+            analytics.renewalOutcomeDelta == null
+              ? t("metrics.noRenewalDelta")
+              : t("metrics.renewalDelta", {
+                  delta: signed(analytics.renewalOutcomeDelta),
+                })
+          }
+          tone={
+            analytics.renewalOutcomeDelta == null ||
+            analytics.renewalOutcomeDelta === 0
+              ? "neutral"
+              : analytics.renewalOutcomeDelta > 0
+                ? "positive"
+                : "negative"
+          }
         />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <Card>
+        <Card className="min-w-0 overflow-hidden">
           <CardHeader>
             <CardTitle>{t("health.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <AnalyticsBarChart
-              data={(
-                ["HEALTHY", "NEEDS_ATTENTION", "AT_RISK", "UNKNOWN"] as const
-              ).map((status) => ({
-                label: t(`health.${status}`),
-                value: analytics.healthDistribution[status],
-              }))}
+            <AnalyticsDonutChart
+              data={healthDistributionChart}
+              locale={locale}
             />
             <p className="text-muted-foreground text-sm">
               {t("health.coverage", analytics.healthCoverage)}
@@ -135,42 +238,42 @@ export default async function AnalyticsPage({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="min-w-0 overflow-hidden">
           <CardHeader>
             <CardTitle>{t("risks.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <AnalyticsBarChart
-              data={(["CRITICAL", "HIGH", "MEDIUM", "LOW"] as const).map(
-                (severity) => ({
-                  label: t(`risks.${severity}`),
-                  value: analytics.riskSeverity[severity] ?? 0,
-                }),
-              )}
-            />
+            <AnalyticsColumnChart dir={dir} data={riskSeverityChart} />
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="min-w-0 overflow-hidden">
           <CardHeader>
             <CardTitle>{t("renewals.title")}</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-4">
             {analytics.renewalValue.length ? (
-              analytics.renewalValue.map((item) => (
-                <div
-                  key={item.currency}
-                  className="flex items-center justify-between gap-3"
-                >
-                  <span>{item.currency}</span>
-                  <span className="font-medium tabular-nums">
-                    {new Intl.NumberFormat(locale, {
-                      style: "currency",
-                      currency: item.currency,
-                    }).format(item.value)}
-                  </span>
+              <>
+                <AnalyticsBarChart
+                  dir={dir}
+                  data={renewalValueChart}
+                  locale={locale}
+                  valueFormat="number"
+                />
+                <div className="grid gap-2 text-sm">
+                  {analytics.renewalValue.map((item) => (
+                    <div
+                      key={item.currency}
+                      className="flex items-center justify-between gap-3"
+                    >
+                      <span>{item.currency}</span>
+                      <span className="font-medium tabular-nums">
+                        {numberFormat.format(item.value)}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))
+              </>
             ) : (
               <p className="text-muted-foreground text-sm">
                 {t("renewals.empty")}
@@ -179,14 +282,14 @@ export default async function AnalyticsPage({
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="min-w-0 overflow-hidden">
           <CardHeader>
             <CardTitle>{t("onboarding.title")}</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             <p className="text-3xl font-semibold tabular-nums">
               {analytics.onboarding.total
-                ? `${Math.round((analytics.onboarding.completed / analytics.onboarding.total) * 100)}%`
+                ? `${percentFormat.format(Math.round((analytics.onboarding.completed / analytics.onboarding.total) * 100))}%`
                 : t("na")}
             </p>
             <p className="text-muted-foreground text-sm">
@@ -198,14 +301,42 @@ export default async function AnalyticsPage({
             </p>
           </CardContent>
         </Card>
+
+        <Card className="min-w-0 overflow-hidden">
+          <CardHeader>
+            <CardTitle>{t("lifecycle.title")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AnalyticsDonutChart
+              data={analytics.lifecycleDistribution}
+              locale={locale}
+            />
+          </CardContent>
+        </Card>
+
+        <Card className="min-w-0 overflow-hidden">
+          <CardHeader>
+            <CardTitle>{t("capacity.title")}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <AnalyticsBarChart
+              dir={dir}
+              data={ownerWorkloadChart}
+              height="sm"
+            />
+            <p className="text-muted-foreground text-sm">
+              {t("capacity.description")}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
-      <Card>
+      <Card className="overflow-hidden">
         <CardHeader>
           <CardTitle>{t("workload.title")}</CardTitle>
         </CardHeader>
-        <CardContent className="px-0 pb-0">
-          <Table className="min-w-2xl" dir={locale === "ar" ? "rtl" : "ltr"}>
+        <CardContent className="overflow-x-auto px-0 pb-0">
+          <Table className="min-w-2xl" dir={dir}>
             <TableHeader>
               <TableRow className="bg-raised hover:bg-raised">
                 <TableHead className="px-6">{t("workload.owner")}</TableHead>

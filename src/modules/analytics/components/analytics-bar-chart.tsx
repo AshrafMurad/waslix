@@ -11,6 +11,10 @@ import {
 
 type AnalyticsBarChartProps = {
   data: Array<{ label: string; value: number }>;
+  dir?: "ltr" | "rtl";
+  height?: "sm" | "md";
+  locale?: string;
+  valueFormat?: "number";
 };
 
 const chartConfig = {
@@ -19,10 +23,26 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function AnalyticsBarChart({ data }: AnalyticsBarChartProps) {
+export function AnalyticsBarChart({
+  data,
+  dir = "ltr",
+  height = "md",
+  locale,
+  valueFormat,
+}: AnalyticsBarChartProps) {
+  const rtl = dir === "rtl";
+
   return (
-    <ChartContainer config={chartConfig} className="h-56 w-full">
-      <BarChart accessibilityLayer data={data} layout="vertical">
+    <ChartContainer
+      config={chartConfig}
+      className={height === "sm" ? "h-44 min-w-0" : "h-56 min-w-0"}
+    >
+      <BarChart
+        accessibilityLayer
+        data={data}
+        layout="vertical"
+        margin={{ top: 4, right: rtl ? 4 : 12, bottom: 4, left: rtl ? 12 : 4 }}
+      >
         <CartesianGrid horizontal={false} />
         <XAxis type="number" hide />
         <YAxis
@@ -30,9 +50,29 @@ export function AnalyticsBarChart({ data }: AnalyticsBarChartProps) {
           type="category"
           tickLine={false}
           axisLine={false}
-          width={120}
+          orientation={rtl ? "right" : "left"}
+          tick={{ textAnchor: rtl ? "end" : "end" }}
+          width={96}
         />
-        <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              hideLabel
+              formatter={(value, _name, _item, _index, payload) => (
+                <>
+                  <span className="text-muted-foreground">
+                    {(payload as { label?: string } | undefined)?.label}
+                  </span>
+                  <span className="text-foreground ms-auto font-mono font-medium tabular-nums">
+                    {valueFormat === "number" && typeof value === "number"
+                      ? new Intl.NumberFormat(locale).format(value)
+                      : value}
+                  </span>
+                </>
+              )}
+            />
+          }
+        />
         <Bar dataKey="value" fill="var(--color-value)" radius={4} />
       </BarChart>
     </ChartContainer>

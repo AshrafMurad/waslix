@@ -41,6 +41,7 @@ export async function getPortfolioAnalytics(
   const filters = analyticsFilterSchema.parse(input);
   const periodDays = Number(filters.period);
   const since = daysAgo(periodDays);
+  const previousSince = daysAgo(periodDays * 2);
   const customerWhere = {
     workspaceId: access.workspaceId,
     status: "ACTIVE" as const,
@@ -48,76 +49,103 @@ export async function getPortfolioAnalytics(
     ...(filters.lifecycle ? { lifecycleStageId: filters.lifecycle } : {}),
   };
 
-  const [customers, risks, renewals, closedRenewals, onboardings, tasks] =
-    await Promise.all([
-      prisma.customer.findMany({
-        where: customerWhere,
-        select: {
-          id: true,
-          ownerId: true,
-          lifecycleStage: { select: { id: true, key: true, name: true } },
-          owner: { select: { id: true, user: { select: { name: true } } } },
-          currentHealth: { select: { overallScore: true, status: true } },
-          healthSnapshots: {
-            where: { snapshotAt: { lte: since } },
-            orderBy: { snapshotAt: "desc" },
-            take: 1,
-            select: { overallScore: true },
-          },
+  const [
+    customers,
+    currentNewCustomers,
+    previousNewCustomers,
+    risks,
+    renewals,
+    closedRenewals,
+    previousClosedRenewals,
+    onboardings,
+    tasks,
+  ] = await Promise.all([
+    prisma.customer.findMany({
+      where: customerWhere,
+      select: {
+        id: true,
+        ownerId: true,
+        lifecycleStage: { select: { id: true, key: true, name: true } },
+        owner: { select: { id: true, user: { select: { name: true } } } },
+        currentHealth: { select: { overallScore: true, status: true } },
+        healthSnapshots: {
+          where: { snapshotAt: { lte: since } },
+          orderBy: { snapshotAt: "desc" },
+          take: 1,
+          select: { overallScore: true },
         },
-      }),
-      prisma.risk.findMany({
-        where: {
-          workspaceId: access.workspaceId,
-          status: { in: ["OPEN", "MONITORING"] },
-          customer: customerWhere,
-        },
-        select: { severity: true, ownerId: true },
-      }),
-      prisma.renewal.findMany({
-        where: {
-          workspaceId: access.workspaceId,
-          stage: { notIn: terminalRenewalStages },
-          renewalAt: { gte: new Date(), lte: daysAgo(-90) },
-          customer: customerWhere,
-        },
-        select: { contractValue: true, currency: true },
-      }),
-      prisma.renewal.findMany({
-        where: {
-          workspaceId: access.workspaceId,
-          stage: { in: terminalRenewalStages },
-          completedAt: { gte: since },
-          customer: customerWhere,
-        },
-        select: { stage: true },
-      }),
-      prisma.onboarding.findMany({
-        where: {
-          workspaceId: access.workspaceId,
-          customer: customerWhere,
-          OR: [
-            { completedAt: { gte: since } },
-            { completedAt: null },
-            { createdAt: { gte: since } },
-          ],
-        },
-        select: {
-          status: true,
-          startDate: true,
-          completedAt: true,
-          ownerId: true,
-        },
-      }),
-      prisma.task.findMany({
-        where: {
-          workspaceId: access.workspaceId,
-          status: { in: ["OPEN", "IN_PROGRESS"] },
-          OR: [{ customer: customerWhere }, { customerId: null }],
-        },
-        select: { ownerId: true, status: true },
-      }),
-    ]);
+      },
+    }),
+    prisma.customer.count({
+      where: { ...customerWhere, createdAt: { gte: since } },
+    }),
+    prisma.customer.count({
+      where: {
+        ...customerWhere,
+        createdAt: { gte: previousSince, lt: since },
+      },
+    }),
+    prisma.risk.findMany({
+      where: {
+        workspaceId: access.workspaceId,
+        status: { in: ["OPEN", "MONITORING"] },
+        customer: customerWhere,
+      },
+      select: { severity: true, ownerId: true },
+    }),
+    prisma.renewal.findMany({
+      where: {
+        workspaceId: access.workspaceId,
+        stage: { notIn: terminalRenewalStages },
+        renewalAt: { gte: new Date(), lte: daysAgo(-90) },
+        customer: customerWhere,
+      },
+      select: { contractValue: true, currency: true },
+    }),
+    prisma.renewal.findMany({
+      where: {
+        workspaceId: access.workspaceId,
+        stage: { in: terminalRenewalStages },
+        completedAt: { gte: since },
+        customer: customerWhere,
+      },
+      select: { stage: true },
+    }),
+    prisma.renewal.findMany({
+      where: {
+        workspaceId: access.workspaceId,
+        stage: { in: terminalRenewalStages },
+        completedAt: { gte: previousSince, lt: since },
+        customer: customerWhere,
+      },
+      select: { stage: true },
+    }),
+    prisma.onboarding.findMany({
+      where: {
+        workspaceId: access.workspaceId,
+        customer: customerWhere,
+        OR: [
+          { completedAt: { gte: since } },
+          { completedAt: null },
+          { createdAt: { gte: since } },
+        ],
+      },
+      select: {
+        status: true,
+        startDate: true,
+        completedAt: true,
+        ownerId: true,
+      },
+    }),
+    prisma.task.findMany({
+      where: {
+        workspaceId: access.workspaceId,
+        status: { in: ["OPEN", "IN_PROGRESS"] },
+        OR: [{ customer: customerWhere }, { customerId: null }],
+      },
+      select: { ownerId: true, status: true },
+    }),
+  ]);
 
   const healthDistribution = {
     HEALTHY: 0,
@@ -150,6 +178,12 @@ export async function getPortfolioAnalytics(
       (renewalValueByCurrency.get(renewal.currency) ?? 0) +
         Number(renewal.contractValue),
     );
+  }
+
+  const lifecycleDistribution = new Map<string, number>();
+  for (const customer of customers) {
+    const name = customer.lifecycleStage.name;
+    lifecycleDistribution.set(name, (lifecycleDistribution.get(name) ?? 0) + 1);
   }
 
   const ownerWorkload = new Map<
@@ -188,6 +222,22 @@ export async function getPortfolioAnalytics(
   const churned = closedRenewals.filter(
     (renewal) => renewal.stage === "CHURNED",
   ).length;
+  const previousRenewed = previousClosedRenewals.filter(
+    (renewal) => renewal.stage === "RENEWED",
+  ).length;
+  const previousChurned = previousClosedRenewals.filter(
+    (renewal) => renewal.stage === "CHURNED",
+  ).length;
+  const renewalOutcomeRate =
+    renewed + churned
+      ? Math.round((renewed / (renewed + churned)) * 100)
+      : null;
+  const previousRenewalOutcomeRate =
+    previousRenewed + previousChurned
+      ? Math.round(
+          (previousRenewed / (previousRenewed + previousChurned)) * 100,
+        )
+      : null;
   const completionDurations = onboardings
     .filter((item) => item.startDate && item.completedAt)
     .map((item) =>
@@ -203,6 +253,9 @@ export async function getPortfolioAnalytics(
   return {
     filters,
     customerCount: customers.length,
+    customerGrowth: currentNewCustomers - previousNewCustomers,
+    customerGrowthCurrent: currentNewCustomers,
+    customerGrowthPrevious: previousNewCustomers,
     averageHealth: scoreCount ? Math.round(scoreTotal / scoreCount) : null,
     healthCoverage: { known: scoreCount, total: customers.length },
     healthDistribution,
@@ -218,9 +271,13 @@ export async function getPortfolioAnalytics(
         value,
       }),
     ),
-    renewalOutcomeRate:
-      renewed + churned
-        ? Math.round((renewed / (renewed + churned)) * 100)
+    lifecycleDistribution: [...lifecycleDistribution.entries()].map(
+      ([label, value]) => ({ label, value }),
+    ),
+    renewalOutcomeRate,
+    renewalOutcomeDelta:
+      renewalOutcomeRate != null && previousRenewalOutcomeRate != null
+        ? renewalOutcomeRate - previousRenewalOutcomeRate
         : null,
     onboarding: {
       completed: onboardings.filter((item) => item.status === "COMPLETED")

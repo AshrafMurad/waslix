@@ -16,7 +16,13 @@
     "customers": "العملاء النشطون",
     "averageHealth": "متوسط الصحة المعروفة",
     "trend": "متوسط الاتجاه",
-    "renewalOutcome": "معدل نتائج التجديد"
+    "renewalOutcome": "معدل نتائج التجديد",
+    "customerGrowth": "{delta} عملاء جدد مقارنة بالفترة السابقة ({current} الآن، {previous} سابقًا)",
+    "healthTrend": "{delta} نقطة خلال الفترة المحددة",
+    "noTrend": "لا يوجد خط أساس صحي قابل للمقارنة بعد",
+    "trendCoverage": "تغطية الاتجاه: {known} من {total} عميل",
+    "renewalDelta": "{delta} نقطة مقارنة بالفترة السابقة",
+    "noRenewalDelta": "لا يوجد خط أساس للتجديدات في الفترة السابقة"
   },
   "health": {
     "title": "توزيع الصحة",
@@ -40,6 +46,13 @@
   "onboarding": {
     "title": "اكتمال التهيئة",
     "summary": "اكتملت {completed} من {total} عمليات تهيئة ضمن الفترة النشطة. متوسط أيام الاكتمال: {medianCompletionDays}."
+  },
+  "lifecycle": {
+    "title": "مزيج دورة الحياة"
+  },
+  "capacity": {
+    "title": "تركيز السعة",
+    "description": "أعلى المالكين حسب مجموع العملاء والمهام المفتوحة والمخاطر غير المحلولة."
   },
   "workload": {
     "title": "عبء عمل مسؤولي نجاح العملاء",
