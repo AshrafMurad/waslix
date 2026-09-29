@@ -80,12 +80,16 @@ export async function GoalSection(props: GoalSectionProps) {
                     {t(`status.${goal.status}`)}
                   </span>
                 </div>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  {t("meta", {
-                    owner: goal.owner.user.name,
-                    target: goal.targetDate
-                      ? date.format(goal.targetDate)
-                      : t("noTarget"),
+                <p className="text-muted-foreground mt-1 text-sm" dir="auto">
+                  {t.rich("meta", {
+                    owner: () => <bdi>{goal.owner.user.name}</bdi>,
+                    target: () => (
+                      <bdi>
+                        {goal.targetDate
+                          ? date.format(goal.targetDate)
+                          : t("noTarget")}
+                      </bdi>
+                    ),
                   })}
                 </p>
                 <div className="mt-3 flex items-center gap-3">

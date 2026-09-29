@@ -62,16 +62,39 @@ export default async function OverviewPage({
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {metrics.map(([key, value]) => (
-          <Card key={key} className="p-5">
-            <p className="text-muted-foreground text-sm">
-              {attentionT(`metrics.${key}`)}
-            </p>
-            <p className="mt-2 text-3xl font-semibold tabular-nums">
-              {format.number(value)}
-            </p>
-          </Card>
-        ))}
+        {metrics.map(([key, value]) => {
+          const hasActiveWork = value > 0;
+
+          return (
+            <Card key={key} className="p-5">
+              <p className="text-muted-foreground text-sm">
+                {attentionT(`metrics.${key}`)}
+              </p>
+              <div className="mt-3 flex items-end gap-3">
+                <p className="text-3xl font-semibold tabular-nums">
+                  {format.number(value)}
+                </p>
+                <div className="min-w-0 pb-1">
+                  <span
+                    aria-hidden="true"
+                    className={
+                      hasActiveWork
+                        ? "bg-attention block h-1 w-14 rounded-full"
+                        : "bg-border block h-1 w-14 rounded-full"
+                    }
+                  />
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    {attentionT(
+                      hasActiveWork
+                        ? "metricsTrend.active"
+                        : "metricsTrend.constant",
+                    )}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
       </div>
       <Card className="gap-0 py-0">
         <div className="border-b p-5">

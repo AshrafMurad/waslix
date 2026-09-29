@@ -74,7 +74,7 @@ export default async function CustomerLayout({
               {customer.name.trim().charAt(0).toLocaleUpperCase(locale)}
             </AvatarFallback>
           </Avatar>
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 text-start">
             <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
               {t("customer360")}
             </p>
@@ -82,10 +82,10 @@ export default async function CustomerLayout({
               className="truncate text-2xl font-semibold tracking-tight"
               dir="auto"
             >
-              {customer.name}
+              <bdi>{customer.name}</bdi>
             </h1>
             <p className="text-muted-foreground mt-1" dir="auto">
-              {customer.industry ?? t("missing")}
+              <bdi>{customer.industry ?? t("missing")}</bdi>
             </p>
           </div>
           <div className="w-full rounded-md border px-4 py-3 sm:w-auto">
@@ -135,8 +135,8 @@ export default async function CustomerLayout({
           ].map(([label, value]) => (
             <div key={label} className="bg-surface rounded-md border p-4">
               <dt className="text-muted-foreground text-xs">{label}</dt>
-              <dd className="mt-1 truncate font-medium" dir="auto">
-                {value}
+              <dd className="mt-1 truncate text-start font-medium" dir="auto">
+                <bdi>{value}</bdi>
               </dd>
             </div>
           ))}

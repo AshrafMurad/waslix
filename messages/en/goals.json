@@ -3,7 +3,7 @@
   "description": "Track the outcomes this customer is working toward. Active goal progress contributes to health.",
   "empty": "No success goals have been added. Health treats the goals dimension as missing, not zero.",
   "noTarget": "No target date",
-  "meta": "{owner} · {target}",
+  "meta": "<owner></owner> · <target></target>",
   "actions": {
     "add": "Add goal",
     "edit": "Edit goal",

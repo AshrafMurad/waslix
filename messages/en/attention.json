@@ -8,6 +8,10 @@
     "atRisk": "At-risk health",
     "overdue": "Overdue tasks"
   },
+  "metricsTrend": {
+    "active": "Active load",
+    "constant": "No active load"
+  },
   "priority": {
     "LOW": "Low",
     "MEDIUM": "Medium",
@@ -32,8 +36,12 @@
   "health": "Health {score}",
   "healthUnknown": "Health unavailable",
   "trend": "{delta, number, ::sign-always} points · 30 days",
+  "moreReasons": "+{count} more",
   "renewal": "Renewal {date}",
+  "showMore": "Show {count} more",
+  "showLess": "Show less",
   "actions": {
+    "label": "Actions",
     "acknowledge": "Acknowledge",
     "viewNextAction": "View next action",
     "dismiss": "Dismiss",

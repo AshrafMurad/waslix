@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 
+import { DatePicker } from "@/components/shared/date-picker";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -70,14 +71,13 @@ export function HealthInputForm({
           <FieldLabel htmlFor={`health-observed-${dimension}`}>
             {t("inputs.observedAt")}
           </FieldLabel>
-          <Input
+          <DatePicker
             id={`health-observed-${dimension}`}
             name="observedAt"
-            type="date"
             defaultValue={(latest?.observedAt ?? new Date())
               .toISOString()
               .slice(0, 10)}
-            aria-invalid={Boolean(error)}
+            invalid={Boolean(error)}
           />
         </Field>
         <label className="flex items-center gap-2 text-sm font-medium sm:col-span-2">

@@ -375,19 +375,21 @@ export default async function CustomerSectionPage({
                     {contact.name.trim().charAt(0).toLocaleUpperCase(locale)}
                   </AvatarFallback>
                 </Avatar>
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 text-start">
                   <p className="font-medium" dir="auto">
-                    {contact.name}
+                    <bdi>{contact.name}</bdi>
                   </p>
                   <p
                     className="text-muted-foreground truncate text-sm"
                     dir="ltr"
                   >
-                    {contact.email ?? t("missing")}
+                    <bdi>{contact.email ?? t("missing")}</bdi>
                   </p>
                   <p className="text-muted-foreground text-xs" dir="auto">
-                    {contact.jobTitle ??
-                      t(`contacts.roles.${contact.accountRole}`)}
+                    <bdi>
+                      {contact.jobTitle ??
+                        t(`contacts.roles.${contact.accountRole}`)}
+                    </bdi>
                   </p>
                 </div>
                 {contact.isPrimary ? (

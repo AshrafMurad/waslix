@@ -29,6 +29,7 @@ function serializeDate(date: Date) {
 }
 
 export function DatePicker({
+  id,
   name,
   value,
   defaultValue = "",
@@ -36,6 +37,7 @@ export function DatePicker({
   invalid,
   describedBy,
 }: {
+  id?: string;
   name: string;
   value?: string;
   defaultValue?: string;
@@ -59,6 +61,7 @@ export function DatePicker({
       <input type="hidden" name={name} value={selectedValue} />
       <PopoverTrigger asChild>
         <Button
+          id={id}
           type="button"
           variant="outline"
           aria-invalid={invalid || undefined}
@@ -105,11 +108,13 @@ export function DatePicker({
 }
 
 export function DateTimePicker({
+  id,
   name,
   defaultValue = "",
   invalid,
   describedBy,
 }: {
+  id?: string;
   name: string;
   defaultValue?: string;
   invalid?: boolean;
@@ -132,6 +137,7 @@ export function DateTimePicker({
       <input type="hidden" name={name} value={selectedValue} />
       <PopoverTrigger asChild>
         <Button
+          id={id}
           type="button"
           variant="outline"
           aria-invalid={invalid || undefined}

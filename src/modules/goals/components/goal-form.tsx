@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 
+import { DatePicker } from "@/components/shared/date-picker";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -155,10 +156,9 @@ export function GoalForm(props: GoalFormProps) {
         <FieldLabel htmlFor={`goal-target-${props.goal?.id ?? "new"}`}>
           {t("fields.targetDate")}
         </FieldLabel>
-        <Input
+        <DatePicker
           id={`goal-target-${props.goal?.id ?? "new"}`}
           name="targetDate"
-          type="date"
           defaultValue={
             props.goal?.targetDate?.toISOString().slice(0, 10) ?? ""
           }

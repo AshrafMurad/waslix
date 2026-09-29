@@ -8,6 +8,10 @@
     "atRisk": "صحة معرضة للخطر",
     "overdue": "مهام متأخرة"
   },
+  "metricsTrend": {
+    "active": "عبء نشط",
+    "constant": "لا يوجد عبء نشط"
+  },
   "priority": {
     "LOW": "منخفضة",
     "MEDIUM": "متوسطة",
@@ -32,8 +36,12 @@
   "health": "الصحة {score}",
   "healthUnknown": "بيانات الصحة غير متاحة",
   "trend": "{delta, number, ::sign-always} نقطة · 30 يوماً",
+  "moreReasons": "+{count} إضافية",
   "renewal": "التجديد {date}",
+  "showMore": "عرض {count} إضافية",
+  "showLess": "عرض أقل",
   "actions": {
+    "label": "الإجراءات",
     "acknowledge": "تأكيد الاطلاع",
     "viewNextAction": "عرض الإجراء التالي",
     "dismiss": "استبعاد",
