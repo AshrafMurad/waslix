@@ -56,7 +56,7 @@ function AttentionRow({
     initial,
   );
   return (
-    <li className="grid gap-4 px-5 py-4 lg:grid-cols-[minmax(12rem,1.1fr)_minmax(14rem,1.7fr)_minmax(8rem,.7fr)_auto] lg:items-center">
+    <li className="grid gap-4 px-5 py-4 lg:grid-cols-[minmax(12rem,1.05fr)_minmax(18rem,1.55fr)_minmax(8rem,.55fr)_minmax(13rem,13rem)] lg:items-start">
       <div className="min-w-0">
         <Link
           href={`/customers/${item.customer.id}`}
@@ -69,7 +69,7 @@ function AttentionRow({
           {item.customer.ownerName}
         </p>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex min-w-0 flex-wrap gap-2">
         {item.reasonKeys.slice(0, 3).map((reason) => (
           <span key={reason} className="bg-raised rounded-md px-2 py-1 text-xs">
             {t(`reasons.${reason}`)}
@@ -81,7 +81,7 @@ function AttentionRow({
           </span>
         ) : null}
       </div>
-      <div className="text-sm tabular-nums">
+      <div className="min-w-0 text-sm tabular-nums">
         <p
           className={
             item.priority === "CRITICAL" || item.priority === "HIGH"
@@ -102,9 +102,9 @@ function AttentionRow({
           </p>
         ) : null}
       </div>
-      <div className="flex items-center justify-end gap-3">
+      <div className="flex min-w-0 items-start justify-between gap-3">
         {item.customer.renewalDate ? (
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground min-w-0 text-xs tabular-nums">
             {t("renewal", { date: item.customer.renewalDate })}
           </p>
         ) : null}
@@ -114,7 +114,7 @@ function AttentionRow({
               type="button"
               size="icon"
               variant="ghost"
-              className="size-9 shrink-0"
+              className="ms-auto size-9 shrink-0"
               aria-label={t("actions.label")}
             >
               <EllipsisIcon className="size-4" aria-hidden="true" />
