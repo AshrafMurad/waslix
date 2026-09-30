@@ -51,7 +51,6 @@ export default async function SignInPage({
             W
           </span>
           <div>
-            <p className="waslix-eyebrow">Waslix</p>
             <h1 className="text-2xl font-semibold tracking-tight">
               {t("title")}
             </h1>

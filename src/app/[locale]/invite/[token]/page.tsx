@@ -40,7 +40,6 @@ export default async function InvitationPage({
     <main className="bg-background flex min-h-screen items-center justify-center px-6 py-16">
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <p className="waslix-eyebrow">Waslix</p>
           <CardTitle className="text-2xl">{t("invite.title")}</CardTitle>
           <CardDescription>
             {invitation

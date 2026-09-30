@@ -104,7 +104,6 @@ export default async function TeamPage({
   return (
     <div className="waslix-page">
       <div className="space-y-1">
-        <p className="waslix-eyebrow">{t("team.eyebrow")}</p>
         <h1 className="waslix-page-title">{t("team.title")}</h1>
         <p className="waslix-page-description">{t("team.description")}</p>
       </div>

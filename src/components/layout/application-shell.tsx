@@ -168,7 +168,7 @@ export function ApplicationShell({
       >
         {labels.skipToContent}
       </a>
-      <aside className="waslix-sidebar bg-surface/95 sticky top-0 hidden h-screen border-e p-4 shadow-[12px_0_40px_-34px_rgb(15_23_42_/_0.75)] md:flex md:flex-col dark:shadow-[14px_0_52px_-36px_rgb(0_0_0_/_0.95)]">
+      <aside className="waslix-sidebar bg-surface/95 sticky top-0 hidden h-screen border-e p-4 shadow-[var(--sidebar-shadow)] md:flex md:flex-col">
         <Link
           href="/overview"
           className="waslix-brand-link mb-4 flex items-center gap-3 px-2 py-1"

@@ -75,7 +75,6 @@ export default async function CustomerLayout({
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1 text-start">
-            <p className="waslix-eyebrow">{t("customer360")}</p>
             <h1 className="waslix-page-title truncate text-start">
               <bdi dir="auto">{customer.name}</bdi>
             </h1>

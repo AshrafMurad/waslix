@@ -38,7 +38,6 @@ export default async function RenewalsPage({
   return (
     <div className="waslix-page">
       <div className="space-y-1">
-        <p className="waslix-eyebrow">{t("portfolio.eyebrow")}</p>
         <h1 className="waslix-page-title">{t("portfolio.title")}</h1>
         <p className="waslix-page-description max-w-2xl">
           {t("portfolio.description")}

@@ -105,6 +105,7 @@ export function GlobalSearch({ className, labels }: GlobalSearchProps) {
             <DialogTitle>{labels.title}</DialogTitle>
           </DialogHeader>
           <Input
+            aria-label={labels.placeholder}
             value={query}
             onChange={(event) => {
               const nextQuery = event.target.value;

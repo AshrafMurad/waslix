@@ -197,6 +197,19 @@ html[lang="ar"] body {
 @layer components {
   .waslix-app-shell {
     isolation: isolate;
+    --sidebar-shadow: 12px 0 40px -34px rgb(15 23 42 / 0.75);
+  }
+
+  .dark .waslix-app-shell {
+    --sidebar-shadow: 14px 0 52px -36px rgb(0 0 0 / 0.95);
+  }
+
+  :dir(rtl) .waslix-app-shell {
+    --sidebar-shadow: -12px 0 40px -34px rgb(15 23 42 / 0.75);
+  }
+
+  :dir(rtl).dark .waslix-app-shell {
+    --sidebar-shadow: -14px 0 52px -36px rgb(0 0 0 / 0.95);
   }
 
   .waslix-content,
@@ -268,10 +281,6 @@ html[lang="ar"] body {
 
   .waslix-page-header > :first-child {
     @apply min-w-0 space-y-2;
-  }
-
-  .waslix-eyebrow {
-    @apply text-brand-accent text-sm leading-6 font-bold tracking-[-0.005em];
   }
 
   .waslix-page-title {
@@ -355,6 +364,10 @@ html[lang="ar"] body {
   .dark [data-slot="card"]:has(button:hover),
   .dark [data-slot="card"]:focus-within {
     box-shadow: 0 24px 70px -42px rgb(0 0 0 / 0.95);
+  }
+
+  [data-slot="table-container"] {
+    scrollbar-gutter: stable both-edges;
   }
 
   [data-slot="button"] {
@@ -570,9 +583,6 @@ html[lang="ar"] body {
   *::before,
   *::after {
     scroll-behavior: auto !important;
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
   }
 
   .waslix-sidebar,
@@ -581,6 +591,7 @@ html[lang="ar"] body {
   .waslix-page,
   .waslix-section-grid > *,
   .waslix-two-column > *,
+  [class*="animate-"],
   [data-slot="empty"]::after {
     animation: none !important;
   }

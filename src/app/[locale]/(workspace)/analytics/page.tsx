@@ -123,7 +123,6 @@ export default async function AnalyticsPage({
     <div className="waslix-page">
       <div className="waslix-page-header lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-1">
-          <p className="waslix-eyebrow">{t("eyebrow")}</p>
           <h1 className="waslix-page-title">{t("title")}</h1>
           <p className="waslix-page-description">{t("description")}</p>
         </div>

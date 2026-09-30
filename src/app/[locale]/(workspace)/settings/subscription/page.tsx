@@ -31,7 +31,6 @@ export default async function SubscriptionPage({
   return (
     <div className="waslix-page">
       <div className="space-y-1">
-        <p className="waslix-eyebrow">{t("subscription.eyebrow")}</p>
         <h1 className="waslix-page-title">{t("subscription.title")}</h1>
         <p className="waslix-page-description">
           {t("subscription.description")}

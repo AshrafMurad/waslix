@@ -36,7 +36,6 @@ export default async function SignUpPage({
               W
             </span>
             <div>
-              <p className="waslix-eyebrow">Waslix</p>
               <h1 className="text-2xl font-semibold tracking-tight">
                 {t("signUpTitle")}
               </h1>

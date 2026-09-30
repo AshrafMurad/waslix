@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
@@ -42,7 +43,6 @@ export default async function TasksPage({
     <div className="waslix-page">
       <div className="waslix-page-header">
         <div className="space-y-1">
-          <p className="waslix-eyebrow">{t("eyebrow")}</p>
           <h1 className="waslix-page-title">{t("title")}</h1>
           <p className="waslix-page-description max-w-2xl">
             {t("description")}
@@ -85,12 +85,13 @@ export default async function TasksPage({
       </Card>
       {result.nextCursor ? (
         <div className="flex justify-end">
-          <Link
-            href={`/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
-            className="bg-surface hover:bg-raised border-border/80 rounded-md border px-4 py-2 font-medium transition-colors"
-          >
-            {t("pagination.next")}
-          </Link>
+          <Button asChild variant="outline">
+            <Link
+              href={`/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
+            >
+              {t("pagination.next")}
+            </Link>
+          </Button>
         </div>
       ) : null}
     </div>

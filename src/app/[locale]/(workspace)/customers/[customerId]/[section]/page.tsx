@@ -132,12 +132,13 @@ export default async function CustomerSectionPage({
           />
           {result.nextCursor ? (
             <div className="flex justify-end border-t p-4">
-              <Link
-                href={`/customers/${customerId}/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
-                className="hover:bg-raised rounded-md border px-4 py-2 font-medium"
-              >
-                {taskT("pagination.next")}
-              </Link>
+              <Button asChild variant="outline">
+                <Link
+                  href={`/customers/${customerId}/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
+                >
+                  {taskT("pagination.next")}
+                </Link>
+              </Button>
             </div>
           ) : null}
         </Card>
@@ -320,12 +321,13 @@ export default async function CustomerSectionPage({
           <TimelineList locale={locale} entries={timeline.entries} />
           {timeline.nextCursor ? (
             <div className="flex justify-end border-t p-4">
-              <Link
-                href={`/customers/${customerId}/timeline?filter=${timeline.filter}&cursor=${timeline.nextCursor}`}
-                className="hover:bg-raised rounded-md border px-4 py-2 font-medium"
-              >
-                {timelineT("actions.next")}
-              </Link>
+              <Button asChild variant="outline">
+                <Link
+                  href={`/customers/${customerId}/timeline?filter=${timeline.filter}&cursor=${timeline.nextCursor}`}
+                >
+                  {timelineT("actions.next")}
+                </Link>
+              </Button>
             </div>
           ) : null}
         </Card>

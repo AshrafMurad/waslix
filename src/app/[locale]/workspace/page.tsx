@@ -62,7 +62,6 @@ export default async function WorkspacePage({
           className="bg-brand pointer-events-none absolute inset-x-6 top-0 h-px opacity-40"
         />
         <CardHeader>
-          <p className="waslix-eyebrow">{t("onboarding.eyebrow")}</p>
           <CardTitle className="text-2xl">{t("onboarding.title")}</CardTitle>
           <CardDescription>{t("onboarding.description")}</CardDescription>
         </CardHeader>

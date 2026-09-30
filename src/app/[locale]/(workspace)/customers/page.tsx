@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
@@ -65,7 +66,6 @@ export default async function CustomersPage({
     <div className="waslix-page">
       <div className="waslix-page-header">
         <div className="space-y-1">
-          <p className="waslix-eyebrow">{t("eyebrow")}</p>
           <h1 className="waslix-page-title">{t("title")}</h1>
           <p className="waslix-page-description max-w-2xl">
             {t("description")}
@@ -262,12 +262,9 @@ export default async function CustomersPage({
       ) : null}
       {nextHref ? (
         <div className="flex justify-end pt-1">
-          <Link
-            href={nextHref}
-            className="hover:bg-raised rounded-md border px-4 py-2 font-medium"
-          >
-            {t("pagination.next")}
-          </Link>
+          <Button asChild variant="outline">
+            <Link href={nextHref}>{t("pagination.next")}</Link>
+          </Button>
         </div>
       ) : null}
     </div>

@@ -74,7 +74,6 @@ export default async function OverviewPage({
   return (
     <div className="waslix-page">
       <div className="space-y-2">
-        <p className="waslix-eyebrow">{t("eyebrow")}</p>
         <h1 className="waslix-page-title">{t("title")}</h1>
         <p className="waslix-page-description max-w-2xl">{t("description")}</p>
       </div>
