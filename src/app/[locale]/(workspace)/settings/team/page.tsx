@@ -11,6 +11,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -38,6 +46,7 @@ import {
   changeMemberStatusAction,
   transferOwnershipAction,
 } from "@/modules/workspace/actions/team-settings-actions";
+import { OwnershipTransferFromSelect } from "@/modules/workspace/components/ownership-transfer-from-select";
 import { getWorkspaceMembers } from "@/modules/workspace/queries/get-workspace-members";
 import {
   getOwnershipTransferPreview,
@@ -104,34 +113,89 @@ export default async function TeamPage({
           <CardDescription>{t("team.transfer.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <form
-            className="flex flex-col gap-3 sm:flex-row sm:items-end"
-            method="get"
-          >
-            <div className="space-y-2">
-              <Label>{t("team.transfer.from")}</Label>
-              <Select
-                name="fromMemberId"
-                defaultValue={fromMemberId ?? ""}
-                required
-              >
-                <SelectTrigger className="w-full sm:w-72">
-                  <SelectValue placeholder={t("team.transfer.chooseMember")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {members.map((member) => (
-                    <SelectItem key={member.id} value={member.id}>
-                      {member.user.name} ({member.user.email})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Button variant="outline">{t("team.transfer.preview")}</Button>
-          </form>
+          <div className="bg-raised rounded-md border p-4">
+            <OwnershipTransferFromSelect
+              members={members}
+              selectedMemberId={fromMemberId ?? ""}
+              label={t("team.transfer.from")}
+              placeholder={t("team.transfer.chooseMember")}
+              helper={t("team.transfer.autoPreview")}
+            />
+          </div>
 
           {preview && fromMemberId ? (
-            <div className="bg-muted/40 space-y-4 rounded-lg border p-4">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button className="w-full md:hidden" variant="outline">
+                  {t("team.transfer.viewDetails")}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>{t("team.transfer.title")}</DialogTitle>
+                  <DialogDescription>
+                    {t("team.transfer.description")}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-3">
+                  {Object.entries(preview).map(([key, value]) => (
+                    <div
+                      key={key}
+                      className="bg-background rounded-md border p-3"
+                    >
+                      <p className="text-muted-foreground text-xs">
+                        {t(`team.work.${key}`)}
+                      </p>
+                      <p className="text-2xl font-semibold tabular-nums">
+                        {value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+                <form action={transferOwnershipAction} className="grid gap-4">
+                  <input type="hidden" name="locale" value={locale} />
+                  <input
+                    type="hidden"
+                    name="fromMemberId"
+                    value={fromMemberId}
+                  />
+                  <input
+                    type="hidden"
+                    name="operationKey"
+                    value={randomUUID()}
+                  />
+                  <div className="min-w-0 space-y-2">
+                    <Label>{t("team.transfer.to")}</Label>
+                    <Select name="toMemberId" required>
+                      <SelectTrigger className="w-full min-w-0">
+                        <SelectValue
+                          placeholder={t("team.transfer.chooseTarget")}
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {eligibleTargets
+                          .filter((member) => member.id !== fromMemberId)
+                          .map((member) => (
+                            <SelectItem key={member.id} value={member.id}>
+                              {member.user.name} ({member.user.email})
+                            </SelectItem>
+                          ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button
+                    className="w-full"
+                    disabled={totalPreviewCount(preview) === 0}
+                  >
+                    {t("team.transfer.apply")}
+                  </Button>
+                </form>
+              </DialogContent>
+            </Dialog>
+          ) : null}
+
+          {preview && fromMemberId ? (
+            <div className="bg-raised hidden space-y-4 rounded-md border p-4 md:block">
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 {Object.entries(preview).map(([key, value]) => (
                   <div
@@ -149,15 +213,15 @@ export default async function TeamPage({
               </div>
               <form
                 action={transferOwnershipAction}
-                className="flex flex-col gap-3 sm:flex-row sm:items-end"
+                className="grid gap-4 border-t pt-4 md:grid-cols-[minmax(18rem,auto)_auto_1fr] md:items-end"
               >
                 <input type="hidden" name="locale" value={locale} />
                 <input type="hidden" name="fromMemberId" value={fromMemberId} />
                 <input type="hidden" name="operationKey" value={randomUUID()} />
-                <div className="space-y-2">
+                <div className="min-w-0 space-y-2">
                   <Label>{t("team.transfer.to")}</Label>
                   <Select name="toMemberId" required>
-                    <SelectTrigger className="w-full sm:w-72">
+                    <SelectTrigger className="w-full min-w-0 md:w-80">
                       <SelectValue
                         placeholder={t("team.transfer.chooseTarget")}
                       />
@@ -173,7 +237,10 @@ export default async function TeamPage({
                     </SelectContent>
                   </Select>
                 </div>
-                <Button disabled={totalPreviewCount(preview) === 0}>
+                <Button
+                  className="md:-translate-y-2 md:justify-self-start"
+                  disabled={totalPreviewCount(preview) === 0}
+                >
                   {t("team.transfer.apply")}
                 </Button>
               </form>

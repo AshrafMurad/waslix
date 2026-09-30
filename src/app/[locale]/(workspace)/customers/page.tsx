@@ -82,6 +82,7 @@ export default async function CustomersPage({
             locale={locale}
             lifecycleStages={options.lifecycleStages}
             owners={options.owners}
+            currencies={options.currencies}
             canAssignOwner={
               access.role === "ADMIN" || access.role === "CS_MANAGER"
             }

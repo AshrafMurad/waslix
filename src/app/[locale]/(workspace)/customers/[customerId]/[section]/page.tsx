@@ -41,6 +41,7 @@ import { getTasks } from "@/modules/tasks/queries/get-tasks";
 import { TimelineList } from "@/modules/timeline/components/timeline-list";
 import { getCustomerTimeline } from "@/modules/timeline/queries/get-customer-timeline";
 import { getWorkspaceMembers } from "@/modules/workspace/queries/get-workspace-members";
+import { getActiveWorkspaceCurrencies } from "@/modules/workspace/queries/get-workspace-currencies";
 
 const sections = [
   "health",
@@ -189,9 +190,10 @@ export default async function CustomerSectionPage({
   }
 
   if (section === "renewal") {
-    const [renewalCustomer, members] = await Promise.all([
+    const [renewalCustomer, members, currencies] = await Promise.all([
       getCustomerRenewals(access, customerId),
       getWorkspaceMembers(access),
+      getActiveWorkspaceCurrencies(access),
     ]);
     if (!renewalCustomer) notFound();
     const owners = members
@@ -213,6 +215,7 @@ export default async function CustomerSectionPage({
           contractValue: renewal.contractValue.toString(),
         }))}
         owners={owners}
+        currencies={currencies}
         defaultOwnerId={customer.owner.id}
         defaultCurrency={customer.currency}
         canManage={canManage}
@@ -376,25 +379,26 @@ export default async function CustomerSectionPage({
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1 text-start">
-                  <p className="font-medium" dir="auto">
-                    <bdi>{contact.name}</bdi>
+                  <p className="text-start font-medium">
+                    <bdi dir="auto">{contact.name}</bdi>
                   </p>
-                  <p
-                    className="text-muted-foreground truncate text-sm"
-                    dir="ltr"
-                  >
-                    <bdi>{contact.email ?? t("missing")}</bdi>
+                  <p className="text-muted-foreground truncate text-start text-sm">
+                    <bdi dir="auto">{contact.email ?? t("missing")}</bdi>
                   </p>
-                  <p className="text-muted-foreground text-xs" dir="auto">
-                    <bdi>
+                  <p className="text-muted-foreground text-start text-xs">
+                    <bdi dir="auto">
                       {contact.jobTitle ??
                         t(`contacts.roles.${contact.accountRole}`)}
                     </bdi>
                   </p>
                 </div>
                 {contact.isPrimary ? (
-                  <span className="text-healthy text-sm font-medium">
+                  <span className="bg-healthy/10 text-healthy rounded-md px-2 py-1 text-sm font-medium">
                     {t("contacts.primary")}
+                  </span>
+                ) : contact.status === "INACTIVE" ? (
+                  <span className="bg-raised text-muted-foreground rounded-md px-2 py-1 text-sm font-medium">
+                    {t("contacts.statuses.INACTIVE")}
                   </span>
                 ) : canEdit && contact.status === "ACTIVE" ? (
                   <SetPrimaryContactButton

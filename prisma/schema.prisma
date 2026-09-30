@@ -324,6 +324,7 @@ model Workspace {
   invitations           Invitation[]
   sessions              Session[]
   lifecycleStages       LifecycleStage[]
+  currencies            WorkspaceCurrency[]
   tags                  Tag[]
   customerTags          CustomerTag[]
   customers             Customer[]
@@ -355,6 +356,25 @@ model Workspace {
   importRows            ImportRow[]
 
   @@map("workspace")
+}
+
+model WorkspaceCurrency {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId   String    @db.Uuid
+  code          String    @db.Char(3)
+  name          String    @db.VarChar(100)
+  symbol        String    @db.VarChar(20)
+  decimalPlaces Int       @default(2)
+  isActive      Boolean   @default(true)
+  isDefault     Boolean   @default(false)
+  createdAt     DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt     DateTime  @updatedAt @db.Timestamptz(3)
+  workspace     Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, code])
+  @@unique([workspaceId, id])
+  @@index([workspaceId, isActive, code])
+  @@map("workspace_currency")
 }
 
 model WorkspaceMember {

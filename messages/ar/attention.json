@@ -9,8 +9,9 @@
     "overdue": "مهام متأخرة"
   },
   "metricsTrend": {
-    "active": "عبء نشط",
-    "constant": "لا يوجد عبء نشط"
+    "increase": "زيادة {count}",
+    "decrease": "انخفاض {count}",
+    "constant": "ثابت"
   },
   "priority": {
     "LOW": "منخفضة",

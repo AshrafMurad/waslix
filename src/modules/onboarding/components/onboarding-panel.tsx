@@ -30,6 +30,12 @@ import {
 
 const initialState: OnboardingActionState = { status: "idle" };
 
+function milestoneStatusClass(status: Milestone["status"]) {
+  if (status === "COMPLETED") return "bg-healthy/10 text-healthy";
+  if (status === "IN_PROGRESS") return "bg-attention/10 text-attention";
+  return "bg-raised text-muted-foreground";
+}
+
 function operationKey() {
   return crypto.randomUUID();
 }
@@ -293,32 +299,45 @@ function MilestoneItem({
   return (
     <li className="p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
+        <div className="min-w-0 text-start">
           <div className="flex flex-wrap items-center gap-2">
-            <p className="font-medium" dir="auto">
-              {milestone.position}. {milestone.title}
+            <p className="font-medium">
+              {milestone.position}. <bdi dir="auto">{milestone.title}</bdi>
             </p>
             {milestone.isCritical ? (
               <span className="text-attention text-xs font-medium">
                 {t("critical")}
               </span>
             ) : null}
+            <span
+              className={`${milestoneStatusClass(milestone.status)} rounded-md px-2 py-1 text-xs font-medium`}
+            >
+              {t(`status.${milestone.status}`)}
+            </span>
             {isDelayed ? (
               <span className="text-risk text-xs font-medium">
                 {t("state.delayed")}
               </span>
             ) : null}
           </div>
-          <p className="text-muted-foreground mt-1 text-sm" dir="auto">
-            {milestone.description ?? t("noDescription")}
+          <p className="text-muted-foreground mt-1 text-start text-sm">
+            <bdi dir="auto">{milestone.description ?? t("noDescription")}</bdi>
           </p>
-          <p className="text-muted-foreground mt-1 text-xs">
-            {t("milestoneMeta", {
-              owner: milestone.owner.user.name,
-              due: milestone.dueDate
-                ? format.dateTime(milestone.dueDate, { dateStyle: "medium" })
-                : t("missing"),
-              status: t(`status.${milestone.status}`),
+          <p className="text-muted-foreground mt-1 text-start text-xs">
+            {t.rich("milestoneMeta", {
+              owner: () => <bdi dir="auto">{milestone.owner.user.name}</bdi>,
+              due: () => (
+                <bdi dir="auto">
+                  {milestone.dueDate
+                    ? format.dateTime(milestone.dueDate, {
+                        dateStyle: "medium",
+                      })
+                    : t("missing")}
+                </bdi>
+              ),
+              status: () => (
+                <bdi dir="auto">{t(`status.${milestone.status}`)}</bdi>
+              ),
             })}
           </p>
         </div>
@@ -485,8 +504,8 @@ function Summary({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-3">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-medium" dir="auto">
-        {value}
+      <dd className="text-start font-medium">
+        <bdi dir="auto">{value}</bdi>
       </dd>
     </div>
   );

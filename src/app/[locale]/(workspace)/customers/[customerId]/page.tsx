@@ -79,6 +79,7 @@ export default async function CustomerOverviewPage({
               customerId={customerId}
               lifecycleStages={options.lifecycleStages}
               owners={options.owners}
+              currencies={options.currencies}
               canAssignOwner={canAssignCustomerOwner(access)}
               defaultValues={{
                 name: customer.name,

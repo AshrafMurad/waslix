@@ -9,7 +9,7 @@ import { hasWorkspaceCapability } from "@/lib/permissions/roles";
 
 export async function updateWorkspaceSettings(
   access: WorkspaceAccessContext,
-  input: { name: string; timezone: string; defaultCurrency: string },
+  input: { name: string; timezone: string },
 ) {
   if (!hasWorkspaceCapability(access.role, "manageWorkspaceMembership")) {
     throw new WorkspaceAccessDeniedError();
@@ -20,7 +20,6 @@ export async function updateWorkspaceSettings(
     data: {
       name: input.name.trim(),
       timezone: input.timezone.trim(),
-      defaultCurrency: input.defaultCurrency.trim().toUpperCase(),
     },
     select: { id: true },
   });

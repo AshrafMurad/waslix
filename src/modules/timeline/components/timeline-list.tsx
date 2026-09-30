@@ -57,10 +57,10 @@ export async function TimelineList({
             >
               <Icon aria-hidden="true" className="size-5" />
             </span>
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0 flex-1 text-start">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-                <p className="font-medium" dir="auto">
-                  {title}
+                <p className="font-medium">
+                  <bdi dir="auto">{title}</bdi>
                 </p>
                 <time
                   className="text-muted-foreground text-xs"
@@ -72,12 +72,12 @@ export async function TimelineList({
                   })}
                 </time>
               </div>
-              <p className="text-muted-foreground mt-1 text-sm" dir="auto">
-                {entry.actor ?? t("system")}
+              <p className="text-muted-foreground mt-1 text-start text-sm">
+                <bdi dir="auto">{entry.actor ?? t("system")}</bdi>
               </p>
               {entry.description ? (
-                <p className="mt-2 text-sm" dir="auto">
-                  {entry.description}
+                <p className="mt-2 text-start text-sm">
+                  <bdi dir="auto">{entry.description}</bdi>
                 </p>
               ) : null}
             </div>

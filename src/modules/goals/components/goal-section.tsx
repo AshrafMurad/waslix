@@ -33,6 +33,13 @@ type GoalSectionProps = {
   }>;
 };
 
+function goalStatusClass(status: string) {
+  if (status === "ACHIEVED") return "bg-healthy/10 text-healthy";
+  if (status === "AT_RISK") return "bg-risk/10 text-risk";
+  if (status === "IN_PROGRESS") return "bg-attention/10 text-attention";
+  return "bg-raised text-muted-foreground";
+}
+
 export async function GoalSection(props: GoalSectionProps) {
   const t = await getTranslations({ locale: props.locale, namespace: "goals" });
   const direction = props.locale === "ar" ? "rtl" : "ltr";
@@ -73,18 +80,20 @@ export async function GoalSection(props: GoalSectionProps) {
             >
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-medium" dir="auto">
-                    {goal.title}
+                  <h3 className="font-medium">
+                    <bdi dir="auto">{goal.title}</bdi>
                   </h3>
-                  <span className="bg-raised rounded-md px-2 py-1 text-xs">
+                  <span
+                    className={`${goalStatusClass(goal.status)} rounded-md px-2 py-1 text-xs font-medium`}
+                  >
                     {t(`status.${goal.status}`)}
                   </span>
                 </div>
-                <p className="text-muted-foreground mt-1 text-sm" dir="auto">
+                <p className="text-muted-foreground mt-1 text-start text-sm">
                   {t.rich("meta", {
-                    owner: () => <bdi>{goal.owner.user.name}</bdi>,
+                    owner: () => <bdi dir="auto">{goal.owner.user.name}</bdi>,
                     target: () => (
-                      <bdi>
+                      <bdi dir="auto">
                         {goal.targetDate
                           ? date.format(goal.targetDate)
                           : t("noTarget")}

@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
+import { requireActiveWorkspaceCurrency } from "@/modules/workspace/services/workspace-currencies";
 
 import type {
   ContactInput,
@@ -113,6 +114,11 @@ export async function createCustomer(
   ]);
 
   return prisma.$transaction(async (transaction) => {
+    await requireActiveWorkspaceCurrency(
+      transaction,
+      access.workspaceId,
+      input.currency,
+    );
     const customer = await transaction.customer.create({
       data: {
         ...customerData({ ...input, ownerId }),
@@ -149,6 +155,11 @@ export async function updateCustomer(
   ]);
 
   return prisma.$transaction(async (transaction) => {
+    await requireActiveWorkspaceCurrency(
+      transaction,
+      access.workspaceId,
+      input.currency,
+    );
     const updated = await transaction.customer.updateMany({
       where: {
         id: customerId,

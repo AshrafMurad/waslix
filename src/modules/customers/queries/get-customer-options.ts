@@ -21,12 +21,29 @@ export async function getCustomerOptions(access: WorkspaceAccessContext) {
     }),
     prisma.workspace.findUniqueOrThrow({
       where: { id: access.workspaceId },
-      select: { defaultCurrency: true },
+      select: {
+        defaultCurrency: true,
+        currencies: {
+          where: { isActive: true },
+          orderBy: [{ isDefault: "desc" }, { code: "asc" }],
+          select: { code: true, name: true, symbol: true },
+        },
+      },
     }),
   ]);
+  const currencies = workspace.currencies.length
+    ? workspace.currencies
+    : [
+        {
+          code: workspace.defaultCurrency,
+          name: workspace.defaultCurrency,
+          symbol: workspace.defaultCurrency,
+        },
+      ];
   return {
     lifecycleStages,
     owners,
     defaultCurrency: workspace.defaultCurrency,
+    currencies,
   };
 }

@@ -78,14 +78,11 @@ export default async function CustomerLayout({
             <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
               {t("customer360")}
             </p>
-            <h1
-              className="truncate text-2xl font-semibold tracking-tight"
-              dir="auto"
-            >
-              <bdi>{customer.name}</bdi>
+            <h1 className="truncate text-start text-2xl font-semibold tracking-tight">
+              <bdi dir="auto">{customer.name}</bdi>
             </h1>
-            <p className="text-muted-foreground mt-1" dir="auto">
-              <bdi>{customer.industry ?? t("missing")}</bdi>
+            <p className="text-muted-foreground mt-1 text-start">
+              <bdi dir="auto">{customer.industry ?? t("missing")}</bdi>
             </p>
           </div>
           <div className="w-full rounded-md border px-4 py-3 sm:w-auto">
@@ -135,8 +132,8 @@ export default async function CustomerLayout({
           ].map(([label, value]) => (
             <div key={label} className="bg-surface rounded-md border p-4">
               <dt className="text-muted-foreground text-xs">{label}</dt>
-              <dd className="mt-1 truncate text-start font-medium" dir="auto">
-                <bdi>{value}</bdi>
+              <dd className="mt-1 truncate text-start font-medium">
+                <bdi dir="auto">{value}</bdi>
               </dd>
             </div>
           ))}

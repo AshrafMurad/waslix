@@ -20,8 +20,8 @@ export const renewalInputSchema = z.object({
   currency: z
     .string()
     .trim()
-    .length(3)
-    .transform((value) => value.toUpperCase()),
+    .toUpperCase()
+    .regex(/^[A-Z]{3}$/),
   startAt: optionalDate,
   renewalAt: requiredDate,
   expectedOutcome: z
@@ -53,8 +53,8 @@ export const renewedInputSchema = z.object({
   nextCurrency: z
     .string()
     .trim()
-    .length(3)
-    .transform((value) => value.toUpperCase()),
+    .toUpperCase()
+    .regex(/^[A-Z]{3}$/),
   operationKey: z.string().uuid(),
 });
 

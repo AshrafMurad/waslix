@@ -6,6 +6,7 @@ import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
 import { canEditCustomer } from "@/modules/customers/services/customer-permissions";
 import { calculateOnboardingProgress } from "@/modules/onboarding/engine/calculate-onboarding";
+import { requireActiveWorkspaceCurrency } from "@/modules/workspace/services/workspace-currencies";
 import { writeWorkEvent } from "@/modules/work-events/services/write-work-event";
 
 import { calculateRenewalReadiness } from "../engine/calculate-renewal-readiness";
@@ -205,6 +206,11 @@ export async function saveRenewal(
       input.customerId,
     );
     await requireEligibleOwner(transaction, access.workspaceId, input.ownerId);
+    await requireActiveWorkspaceCurrency(
+      transaction,
+      access.workspaceId,
+      input.currency,
+    );
     const localToday = localDate(now, customer.workspace.timezone);
     const data = {
       ownerId: input.ownerId,
@@ -376,6 +382,11 @@ export async function recordRenewedOutcome(
     ) {
       throw new RenewalDomainError("RENEWAL_NOT_FOUND");
     }
+    await requireActiveWorkspaceCurrency(
+      transaction,
+      access.workspaceId,
+      input.nextCurrency,
+    );
     await transaction.renewal.update({
       where: { id: renewal.id },
       data: { stage: "RENEWED", outcome: input.outcome, completedAt: now },

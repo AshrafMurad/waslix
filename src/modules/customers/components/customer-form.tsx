@@ -44,6 +44,7 @@ type CustomerFormProps = {
   defaultValues: CustomerFormValues;
   lifecycleStages: Array<{ id: string; name: string }>;
   owners: Array<{ id: string; user: { name: string } }>;
+  currencies: Array<{ code: string; name: string; symbol: string }>;
   canAssignOwner: boolean;
   onSuccess?: () => void;
 };
@@ -56,6 +57,7 @@ export function CustomerForm({
   defaultValues,
   lifecycleStages,
   owners,
+  currencies,
   canAssignOwner,
   onSuccess,
 }: CustomerFormProps) {
@@ -174,18 +176,37 @@ export function CustomerForm({
                 : undefined
             }
           />
-          <Input
-            {...register("currency", { required: true })}
-            maxLength={3}
-            className="w-20 uppercase"
-            dir="ltr"
-            aria-label={t("fields.currency")}
-            aria-invalid={Boolean(fieldError("currency"))}
-            aria-describedby={
-              fieldError("currency")
-                ? "customer-contract-value-error"
-                : undefined
-            }
+          <Controller
+            name="currency"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <Select
+                name={field.name}
+                value={field.value}
+                onValueChange={field.onChange}
+              >
+                <SelectTrigger
+                  className="w-40"
+                  aria-label={t("fields.currency")}
+                  aria-invalid={Boolean(fieldError("currency"))}
+                  aria-describedby={
+                    fieldError("currency")
+                      ? "customer-contract-value-error"
+                      : undefined
+                  }
+                >
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {currencies.map((currency) => (
+                    <SelectItem key={currency.code} value={currency.code}>
+                      {currency.code} · {currency.symbol} {currency.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           />
         </div>
       </FormField>

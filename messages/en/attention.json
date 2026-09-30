@@ -9,8 +9,9 @@
     "overdue": "Overdue tasks"
   },
   "metricsTrend": {
-    "active": "Active load",
-    "constant": "No active load"
+    "increase": "Increase {count}",
+    "decrease": "Decrease {count}",
+    "constant": "Constant"
   },
   "priority": {
     "LOW": "Low",

@@ -29,6 +29,13 @@ type TaskRow = {
   owner: { user: { name: string } };
 };
 
+function taskStatusClass(status: TaskRow["status"]) {
+  if (status === "COMPLETED") return "bg-healthy/10 text-healthy";
+  if (status === "IN_PROGRESS") return "bg-attention/10 text-attention";
+  if (status === "OPEN") return "bg-information/10 text-information";
+  return "bg-raised text-muted-foreground";
+}
+
 export async function TaskList({
   access,
   locale,
@@ -88,7 +95,7 @@ export async function TaskList({
               <TableCell className="px-4 py-3 whitespace-normal">
                 <div className="flex flex-wrap items-center gap-2">
                   <p className="font-medium">
-                    <bdi>{task.title}</bdi>
+                    <bdi dir="auto">{task.title}</bdi>
                   </p>
                   <span
                     className={
@@ -101,16 +108,18 @@ export async function TaskList({
                   >
                     {t(`priority.${task.priority}`)}
                   </span>
-                  <span className="text-muted-foreground text-xs sm:hidden">
+                  <span
+                    className={`${taskStatusClass(task.status)} rounded-md px-2 py-1 text-xs font-medium sm:hidden`}
+                  >
                     {t(`status.${task.status}`)}
                   </span>
                 </div>
                 <p className="text-muted-foreground mt-1 text-sm">
-                  <bdi>{task.customer?.name ?? t("standalone")}</bdi>
+                  <bdi dir="auto">{task.customer?.name ?? t("standalone")}</bdi>
                 </p>
                 {task.description ? (
                   <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
-                    <bdi>{task.description}</bdi>
+                    <bdi dir="auto">{task.description}</bdi>
                   </p>
                 ) : null}
                 {task.dueDate || task.dueAt ? (
@@ -129,11 +138,15 @@ export async function TaskList({
                   </p>
                 ) : null}
                 <p className="text-muted-foreground mt-1 text-xs lg:hidden">
-                  <bdi>{task.owner.user.name}</bdi>
+                  <bdi dir="auto">{task.owner.user.name}</bdi>
                 </p>
               </TableCell>
               <TableCell className="hidden px-4 sm:table-cell">
-                {t(`status.${task.status}`)}
+                <span
+                  className={`${taskStatusClass(task.status)} rounded-md px-2 py-1 text-xs font-medium`}
+                >
+                  {t(`status.${task.status}`)}
+                </span>
               </TableCell>
               <TableCell className="text-muted-foreground hidden px-4 md:table-cell">
                 {task.dueDate || task.dueAt
@@ -149,7 +162,7 @@ export async function TaskList({
                   : t("notSet")}
               </TableCell>
               <TableCell className="hidden px-4 lg:table-cell">
-                <bdi>{task.owner.user.name}</bdi>
+                <bdi dir="auto">{task.owner.user.name}</bdi>
               </TableCell>
               {canEdit ? (
                 <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 pt-3 text-center align-top transition-colors">

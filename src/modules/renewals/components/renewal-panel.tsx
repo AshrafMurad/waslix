@@ -42,6 +42,7 @@ function operationKey() {
 }
 
 type Owner = { id: string; name: string };
+type Currency = { code: string; name: string; symbol: string };
 type Renewal = {
   id: string;
   ownerId: string;
@@ -66,6 +67,7 @@ export function RenewalPanel({
   customerId,
   renewals,
   owners,
+  currencies,
   defaultOwnerId,
   defaultCurrency,
   canManage,
@@ -74,6 +76,7 @@ export function RenewalPanel({
   customerId: string;
   renewals: Renewal[];
   owners: Owner[];
+  currencies: Currency[];
   defaultOwnerId: string;
   defaultCurrency: string;
   canManage: boolean;
@@ -99,6 +102,7 @@ export function RenewalPanel({
             locale={locale}
             customerId={customerId}
             renewal={active}
+            currencies={currencies}
             canManage={canManage || active.ownerId === defaultOwnerId}
           />
         ) : (
@@ -114,6 +118,7 @@ export function RenewalPanel({
             customerId={customerId}
             renewal={active ?? null}
             owners={owners}
+            currencies={currencies}
             defaultOwnerId={active?.ownerId ?? defaultOwnerId}
             defaultCurrency={active?.currency ?? defaultCurrency}
           />
@@ -141,11 +146,13 @@ function RenewalDetails({
   locale,
   customerId,
   renewal,
+  currencies,
   canManage,
 }: {
   locale: string;
   customerId: string;
   renewal: Renewal;
+  currencies: Currency[];
   canManage: boolean;
 }) {
   const t = useTranslations("renewals");
@@ -215,6 +222,7 @@ function RenewalDetails({
           locale={locale}
           customerId={customerId}
           renewal={renewal}
+          currencies={currencies}
         />
       ) : null}
     </div>
@@ -225,10 +233,12 @@ function RenewalWorkflow({
   locale,
   customerId,
   renewal,
+  currencies,
 }: {
   locale: string;
   customerId: string;
   renewal: Renewal;
+  currencies: Currency[];
 }) {
   const t = useTranslations("renewals");
   const [stageState, stageAction, stagePending] = useActionState(
@@ -326,11 +336,10 @@ function RenewalWorkflow({
         </Field>
         <Field>
           <FieldLabel>{t("fields.currency")}</FieldLabel>
-          <Input
+          <CurrencySelect
             name="nextCurrency"
-            maxLength={3}
-            defaultValue={renewal.currency}
-            dir="ltr"
+            value={renewal.currency}
+            currencies={currencies}
           />
         </Field>
         <Button type="submit" disabled={renewedPending}>
@@ -373,6 +382,7 @@ function RenewalForm({
   customerId,
   renewal,
   owners,
+  currencies,
   defaultOwnerId,
   defaultCurrency,
 }: {
@@ -380,6 +390,7 @@ function RenewalForm({
   customerId: string;
   renewal: Renewal | null;
   owners: Owner[];
+  currencies: Currency[];
   defaultOwnerId: string;
   defaultCurrency: string;
 }) {
@@ -443,11 +454,10 @@ function RenewalForm({
         </Field>
         <Field>
           <FieldLabel>{t("fields.currency")}</FieldLabel>
-          <Input
+          <CurrencySelect
             name="currency"
-            maxLength={3}
-            defaultValue={renewal?.currency ?? defaultCurrency}
-            dir="ltr"
+            value={renewal?.currency ?? defaultCurrency}
+            currencies={currencies}
           />
         </Field>
         <ActionFeedback
@@ -483,6 +493,31 @@ function Hidden({
   );
 }
 
+function CurrencySelect({
+  name,
+  value,
+  currencies,
+}: {
+  name: string;
+  value: string;
+  currencies: Currency[];
+}) {
+  return (
+    <Select name={name} defaultValue={value}>
+      <SelectTrigger className="w-full">
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {currencies.map((currency) => (
+          <SelectItem key={currency.code} value={currency.code}>
+            {currency.code} · {currency.symbol} {currency.name}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
+
 function DateField({
   name,
   label,
@@ -504,8 +539,8 @@ function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="bg-raised rounded-md p-3">
       <p className="text-muted-foreground text-xs">{label}</p>
-      <p className="mt-1 font-medium" dir="auto">
-        {value}
+      <p className="mt-1 text-start font-medium">
+        <bdi dir="auto">{value}</bdi>
       </p>
     </div>
   );

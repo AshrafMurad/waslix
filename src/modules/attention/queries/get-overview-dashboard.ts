@@ -9,6 +9,10 @@ export async function getOverviewDashboard(
   access: WorkspaceAccessContext,
   now = new Date(),
 ) {
+  const baselineTarget = new Date(now.getTime() - 30 * 86_400_000);
+  const baselineDay = new Date(
+    baselineTarget.toISOString().slice(0, 10) + "T00:00:00Z",
+  );
   const customerScope: Prisma.CustomerWhereInput =
     access.role === "CSM" ? { ownerId: access.memberId } : {};
   const attentionWhere: Prisma.AttentionItemWhereInput = {
@@ -22,6 +26,10 @@ export async function getOverviewDashboard(
     criticalCount,
     atRiskCount,
     overdueCount,
+    baselineAttentionCount,
+    baselineCriticalCount,
+    baselineOverdueCount,
+    baselineAtRiskSnapshots,
     healthGroups,
     tasks,
   ] = await Promise.all([
@@ -83,6 +91,52 @@ export async function getOverviewDashboard(
         ],
       },
     }),
+    prisma.attentionItem.count({
+      where: {
+        workspaceId: access.workspaceId,
+        createdAt: { lte: baselineTarget },
+        OR: [{ resolvedAt: null }, { resolvedAt: { gt: baselineTarget } }],
+        customer: customerScope,
+      },
+    }),
+    prisma.attentionItem.count({
+      where: {
+        workspaceId: access.workspaceId,
+        priority: "CRITICAL",
+        createdAt: { lte: baselineTarget },
+        OR: [{ resolvedAt: null }, { resolvedAt: { gt: baselineTarget } }],
+        customer: customerScope,
+      },
+    }),
+    prisma.task.count({
+      where: {
+        workspaceId: access.workspaceId,
+        ownerId: access.role === "CSM" ? access.memberId : undefined,
+        createdAt: { lte: baselineTarget },
+        status: { not: "CANCELLED" },
+        OR: [{ completedAt: null }, { completedAt: { gt: baselineTarget } }],
+        AND: [
+          {
+            OR: [
+              { dueAt: { lt: baselineTarget } },
+              { dueDate: { lt: baselineDay } },
+            ],
+          },
+        ],
+      },
+    }),
+    prisma.healthSnapshot.findMany({
+      where: {
+        workspaceId: access.workspaceId,
+        snapshotAt: {
+          lte: baselineTarget,
+          gte: new Date(baselineTarget.getTime() - 7 * 86_400_000),
+        },
+        customer: customerScope,
+      },
+      orderBy: [{ snapshotAt: "desc" }, { id: "desc" }],
+      select: { customerId: true, status: true },
+    }),
     prisma.customerHealth.groupBy({
       by: ["status"],
       where: { workspaceId: access.workspaceId, customer: customerScope },
@@ -109,7 +163,6 @@ export async function getOverviewDashboard(
       },
     }),
   ]);
-  const baselineTarget = new Date(now.getTime() - 30 * 86_400_000);
   const baselines = items.length
     ? await prisma.healthSnapshot.findMany({
         where: {
@@ -128,8 +181,20 @@ export async function getOverviewDashboard(
   for (const baseline of baselines)
     if (!baselineByCustomer.has(baseline.customerId))
       baselineByCustomer.set(baseline.customerId, baseline.overallScore);
+  const baselineHealthByCustomer = new Map<string, string | null>();
+  for (const baseline of baselineAtRiskSnapshots)
+    if (!baselineHealthByCustomer.has(baseline.customerId))
+      baselineHealthByCustomer.set(baseline.customerId, baseline.status);
   return {
     metrics: { attentionCount, criticalCount, atRiskCount, overdueCount },
+    metricBaselines: {
+      attentionCount: baselineAttentionCount,
+      criticalCount: baselineCriticalCount,
+      atRiskCount: Array.from(baselineHealthByCustomer.values()).filter(
+        (status) => status === "AT_RISK",
+      ).length,
+      overdueCount: baselineOverdueCount,
+    },
     items: items.map((item) => ({
       ...item,
       healthDelta:

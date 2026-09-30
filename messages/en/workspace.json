@@ -18,8 +18,26 @@
       "description": "These values control workspace-wide display defaults and scheduling context.",
       "name": "Workspace name",
       "timezone": "Time zone",
-      "currency": "Default currency",
       "save": "Save settings"
+    },
+    "currencies": {
+      "title": "Currency management",
+      "description": "Add currencies once, choose the default, and keep customer and renewal forms on a controlled list.",
+      "choose": "Choose currency",
+      "code": "Code",
+      "name": "Name",
+      "symbol": "Symbol",
+      "decimals": "Decimals",
+      "status": "Status",
+      "default": "Default",
+      "actions": "Actions",
+      "active": "Active",
+      "inactive": "Inactive",
+      "add": "Add currency",
+      "activate": "Activate",
+      "deactivate": "Deactivate",
+      "makeDefault": "Make default",
+      "currentDefault": "Current default"
     },
     "lifecycle": {
       "title": "Lifecycle configuration",
@@ -44,7 +62,9 @@
       "to": "Transfer to",
       "chooseMember": "Choose a member",
       "chooseTarget": "Choose an active owner",
+      "autoPreview": "Choose a member to load transfer details automatically.",
       "preview": "Preview transfer",
+      "viewDetails": "View transfer details",
       "apply": "Apply transfer"
     },
     "work": {

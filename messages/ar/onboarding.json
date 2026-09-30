@@ -5,7 +5,7 @@
   "noDescription": "لا يوجد وصف.",
   "emptyMilestones": "لم يتم إنشاء مراحل التهيئة بعد.",
   "progress": "اكتملت {completed} من {total} مراحل · {percent}%",
-  "milestoneMeta": "المالك: {owner} · الاستحقاق: {due} · الحالة: {status}",
+  "milestoneMeta": "المالك: <owner></owner> · الاستحقاق: <due></due> · الحالة: <status></status>",
   "start": {
     "title": "بدء التهيئة",
     "description": "أنشئ مراحل التهيئة الافتراضية مرة واحدة وابدأ متابعة الوصول إلى القيمة الأولى."

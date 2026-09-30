@@ -41,6 +41,12 @@ import { RiskFormDialog } from "./risk-form-dialog";
 
 const initial: RiskActionState = { status: "idle" };
 
+function riskStatusClass(status: RiskRowValue["status"]) {
+  if (status === "RESOLVED") return "bg-healthy/10 text-healthy";
+  if (status === "MONITORING") return "bg-attention/10 text-attention";
+  return "bg-risk/10 text-risk";
+}
+
 type RiskRowValue = {
   id: string;
   customerId: string;
@@ -111,10 +117,10 @@ function RiskRow({
             href={`/customers/${risk.customerId}/risks`}
             className="font-semibold hover:underline"
           >
-            <bdi>{risk.title}</bdi>
+            <bdi dir="auto">{risk.title}</bdi>
           </Link>
           <p className="text-muted-foreground mt-1 text-xs">
-            <bdi>{risk.customerName}</bdi>
+            <bdi dir="auto">{risk.customerName}</bdi>
           </p>
         </div>
         <div className="mt-2 flex flex-wrap gap-2 sm:hidden">
@@ -127,19 +133,21 @@ function RiskRow({
           >
             {t(`severity.${risk.severity}`)}
           </span>
-          <span className="bg-raised rounded-md px-2 py-1 text-xs font-medium">
+          <span
+            className={`${riskStatusClass(risk.status)} rounded-md px-2 py-1 text-xs font-medium`}
+          >
             {t(`status.${risk.status}`)}
           </span>
         </div>
         {risk.description ? (
           <p className="mt-2 line-clamp-2 text-start text-sm">
-            <bdi>{risk.description}</bdi>
+            <bdi dir="auto">{risk.description}</bdi>
           </p>
         ) : null}
         {risk.resolutionNote ? (
           <p className="text-muted-foreground mt-2 text-start text-xs">
             {t.rich("resolution", {
-              note: () => <bdi>{risk.resolutionNote}</bdi>,
+              note: () => <bdi dir="auto">{risk.resolutionNote}</bdi>,
             })}
           </p>
         ) : null}
@@ -159,12 +167,14 @@ function RiskRow({
         </span>
       </TableCell>
       <TableCell className="hidden sm:table-cell">
-        <span className="bg-raised rounded-md px-2 py-1 text-xs font-medium">
+        <span
+          className={`${riskStatusClass(risk.status)} rounded-md px-2 py-1 text-xs font-medium`}
+        >
           {t(`status.${risk.status}`)}
         </span>
       </TableCell>
       <TableCell className="hidden text-start lg:table-cell">
-        <bdi>{risk.ownerName}</bdi>
+        <bdi dir="auto">{risk.ownerName}</bdi>
       </TableCell>
       <TableCell className="text-muted-foreground hidden text-xs whitespace-normal xl:table-cell">
         {risk.mitigationCount ? t("mitigation.active") : t("mitigation.none")}
@@ -222,7 +232,9 @@ function RiskRow({
             <Dialog open={manageOpen} onOpenChange={setManageOpen}>
               <DialogContent className="sm:max-w-lg" dir={direction}>
                 <DialogHeader>
-                  <DialogTitle dir="auto">{risk.title}</DialogTitle>
+                  <DialogTitle className="text-start">
+                    <bdi dir="auto">{risk.title}</bdi>
+                  </DialogTitle>
                   <DialogDescription>
                     {t("dialog.manageDescription")}
                   </DialogDescription>
@@ -232,8 +244,8 @@ function RiskRow({
                     <p className="text-muted-foreground text-xs">
                       {t("fields.owner")}
                     </p>
-                    <p className="mt-1 font-medium" dir="auto">
-                      {risk.ownerName}
+                    <p className="mt-1 text-start font-medium">
+                      <bdi dir="auto">{risk.ownerName}</bdi>
                     </p>
                   </div>
                   <div>

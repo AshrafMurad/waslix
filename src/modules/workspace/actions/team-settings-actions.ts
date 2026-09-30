@@ -10,6 +10,7 @@ import { isLocale } from "@/i18n/config";
 import { requireWorkspaceAccess } from "@/lib/auth/access-context";
 import { isWorkspaceRole, type WorkspaceRole } from "@/lib/permissions/roles";
 
+import commonCurrencies from "../data/common-currencies.json";
 import {
   changeMembershipRole,
   changeMembershipStatus,
@@ -19,11 +20,29 @@ import {
   updateLifecycleStageSettings,
   updateWorkspaceSettings,
 } from "../services/update-workspace-settings";
+import {
+  addWorkspaceCurrency,
+  updateWorkspaceCurrency,
+} from "../services/workspace-currencies";
 
 const workspaceSettingsSchema = z.object({
   name: z.string().trim().min(1).max(200),
   timezone: z.string().trim().min(1).max(100),
-  defaultCurrency: z.string().trim().length(3),
+});
+
+const workspaceCurrencySchema = z.object({
+  currencyCode: z
+    .string()
+    .trim()
+    .toUpperCase()
+    .regex(/^[A-Z]{3}$/),
+  isDefault: z.preprocess((value) => value === "on", z.boolean()),
+});
+
+const workspaceCurrencyUpdateSchema = z.object({
+  currencyId: z.uuid(),
+  isActive: z.enum(["true", "false"]).transform((value) => value === "true"),
+  isDefault: z.preprocess((value) => value === "on", z.boolean()),
 });
 
 const lifecycleStageSettingsSchema = z.object({
@@ -50,6 +69,30 @@ export async function updateLifecycleStageSettingsAction(formData: FormData) {
   );
   const access = await requireWorkspaceAccess();
   await updateLifecycleStageSettings(access, parsed);
+  revalidatePath(`/${localeFrom(formData)}/settings`);
+}
+
+export async function addWorkspaceCurrencyAction(formData: FormData) {
+  const parsed = workspaceCurrencySchema.parse(Object.fromEntries(formData));
+  const currency = commonCurrencies.find(
+    (item) => item.code === parsed.currencyCode,
+  );
+  if (!currency) throw new Error("Invalid currency");
+  const access = await requireWorkspaceAccess();
+  await addWorkspaceCurrency(access, {
+    ...currency,
+    isActive: true,
+    isDefault: parsed.isDefault,
+  });
+  revalidatePath(`/${localeFrom(formData)}/settings`);
+}
+
+export async function updateWorkspaceCurrencyAction(formData: FormData) {
+  const parsed = workspaceCurrencyUpdateSchema.parse(
+    Object.fromEntries(formData),
+  );
+  const access = await requireWorkspaceAccess();
+  await updateWorkspaceCurrency(access, parsed);
   revalidatePath(`/${localeFrom(formData)}/settings`);
 }
 

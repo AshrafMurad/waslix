@@ -3,9 +3,15 @@ import {
   getTranslations,
   setRequestLocale,
 } from "next-intl/server";
+import { MinusIcon, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
@@ -28,10 +34,26 @@ export default async function OverviewPage({
     getFormatter({ locale }),
   ]);
   const metrics = [
-    ["attention", dashboard.metrics.attentionCount],
-    ["critical", dashboard.metrics.criticalCount],
-    ["atRisk", dashboard.metrics.atRiskCount],
-    ["overdue", dashboard.metrics.overdueCount],
+    [
+      "attention",
+      dashboard.metrics.attentionCount,
+      dashboard.metricBaselines.attentionCount,
+    ],
+    [
+      "critical",
+      dashboard.metrics.criticalCount,
+      dashboard.metricBaselines.criticalCount,
+    ],
+    [
+      "atRisk",
+      dashboard.metrics.atRiskCount,
+      dashboard.metricBaselines.atRiskCount,
+    ],
+    [
+      "overdue",
+      dashboard.metrics.overdueCount,
+      dashboard.metricBaselines.overdueCount,
+    ],
   ] as const;
   const items = dashboard.items.map((item) => ({
     id: item.id,
@@ -62,36 +84,61 @@ export default async function OverviewPage({
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {metrics.map(([key, value]) => {
-          const hasActiveWork = value > 0;
+        {metrics.map(([key, value, baseline]) => {
+          const delta = value - baseline;
+          const trend =
+            delta > 0 ? "increase" : delta < 0 ? "decrease" : "constant";
+          const trendClass =
+            trend === "increase"
+              ? "text-risk"
+              : trend === "decrease"
+                ? "text-healthy"
+                : "text-muted-foreground";
+          const trendPanelClass =
+            trend === "increase"
+              ? "border-risk/20 bg-risk/5"
+              : trend === "decrease"
+                ? "border-healthy/20 bg-healthy/5"
+                : "border-border bg-raised/40";
+          const TrendIcon =
+            trend === "increase"
+              ? TrendingUpIcon
+              : trend === "decrease"
+                ? TrendingDownIcon
+                : MinusIcon;
+          const sparklinePath =
+            trend === "increase"
+              ? "M4 42 L20 36 L34 38 L49 24 L62 27 L76 12"
+              : trend === "decrease"
+                ? "M4 14 L20 20 L34 18 L49 32 L62 29 L76 44"
+                : "M4 29 L18 26 L32 31 L46 27 L60 30 L76 28";
+          const sparklineFillPath = `${sparklinePath} L76 56 L4 56 Z`;
 
           return (
-            <Card key={key} className="p-5">
-              <p className="text-muted-foreground text-sm">
-                {attentionT(`metrics.${key}`)}
-              </p>
-              <div className="mt-3 flex items-end gap-3">
-                <p className="text-3xl font-semibold tabular-nums">
+            <Card key={key} className="gap-4 overflow-hidden py-0">
+              <CardHeader className="px-5 pt-5 pb-0">
+                <p className="text-muted-foreground text-sm">
+                  {attentionT(`metrics.${key}`)}
+                </p>
+              </CardHeader>
+              <CardContent className="flex items-start justify-between gap-4 px-5">
+                <p className="text-4xl leading-none font-semibold tabular-nums">
                   {format.number(value)}
                 </p>
-                <div className="min-w-0 pb-1">
-                  <span
-                    aria-hidden="true"
-                    className={
-                      hasActiveWork
-                        ? "bg-attention block h-1 w-14 rounded-full"
-                        : "bg-border block h-1 w-14 rounded-full"
-                    }
-                  />
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    {attentionT(
-                      hasActiveWork
-                        ? "metricsTrend.active"
-                        : "metricsTrend.constant",
-                    )}
-                  </p>
-                </div>
-              </div>
+                <span
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium tabular-nums ${trendClass} ${trendPanelClass}`}
+                >
+                  <TrendIcon className="size-3.5" aria-hidden="true" />
+                  {attentionT(`metricsTrend.${trend}`, {
+                    count: format.number(Math.abs(delta)),
+                  })}
+                </span>
+              </CardContent>
+              <CardFooter
+                className={`mx-5 mb-5  ${trendPanelClass}`}
+              >
+
+              </CardFooter>
             </Card>
           );
         })}
