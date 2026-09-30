@@ -107,7 +107,7 @@ export function OnboardingPanel({
 
   if (!onboarding) {
     return (
-      <Card className="p-5" dir={direction}>
+      <Card className="waslix-panel-body" dir={direction}>
         <h2 className="text-lg font-semibold">{t("start.title")}</h2>
         <p className="text-muted-foreground mt-1 text-sm">
           {t("start.description")}
@@ -148,12 +148,9 @@ export function OnboardingPanel({
   }
 
   return (
-    <div
-      className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]"
-      dir={direction}
-    >
+    <div className="waslix-two-column" dir={direction}>
       <Card className="gap-0 overflow-hidden py-0">
-        <div className="border-b p-5">
+        <div className="waslix-panel-header">
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold">{t("title")}</h2>
@@ -198,8 +195,8 @@ export function OnboardingPanel({
           </Empty>
         )}
       </Card>
-      <div className="space-y-6">
-        <Card className="p-5">
+      <div className="waslix-section-grid">
+        <Card className="waslix-panel-body">
           <h3 className="font-semibold">{t("summary.title")}</h3>
           <dl className="mt-4 grid gap-3 text-sm">
             <Summary
@@ -235,7 +232,7 @@ export function OnboardingPanel({
           </dl>
         </Card>
         {shouldSuggestAdoption ? (
-          <Card className="border-information/40 p-5">
+          <Card className="waslix-panel-body border-information/40">
             <h3 className="font-semibold">{t("adoption.title")}</h3>
             <p className="text-muted-foreground mt-1 text-sm">
               {t("adoption.description")}
@@ -297,7 +294,7 @@ function MilestoneItem({
   const nextStatus =
     milestone.status === "COMPLETED" ? "IN_PROGRESS" : "COMPLETED";
   return (
-    <li className="p-5">
+    <li className="waslix-panel-body">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 text-start">
           <div className="flex flex-wrap items-center gap-2">

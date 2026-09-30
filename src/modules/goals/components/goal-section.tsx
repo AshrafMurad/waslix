@@ -51,7 +51,7 @@ export async function GoalSection(props: GoalSectionProps) {
   });
   return (
     <Card dir={direction}>
-      <div className="flex items-start justify-between gap-4 border-b p-5">
+      <div className="waslix-panel-header flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold">{t("title")}</h2>
           <p className="text-muted-foreground mt-1">{t("description")}</p>
@@ -76,7 +76,7 @@ export async function GoalSection(props: GoalSectionProps) {
           {props.goals.map((goal) => (
             <li
               key={goal.id}
-              className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center"
+              className="waslix-panel-body flex flex-col gap-4 sm:flex-row sm:items-center"
             >
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">

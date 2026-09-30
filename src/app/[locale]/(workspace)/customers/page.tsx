@@ -186,7 +186,7 @@ export default async function CustomersPage({
         )}
       </Card>
       {access.role === "ADMIN" ? (
-        <Card className="p-5">
+        <Card className="waslix-panel-body">
           <div className="mb-4 space-y-1">
             <h2 className="waslix-panel-title">{t("import.title")}</h2>
             <p className="waslix-panel-description">
@@ -261,7 +261,7 @@ export default async function CustomersPage({
         </Card>
       ) : null}
       {nextHref ? (
-        <div className="flex justify-end">
+        <div className="flex justify-end pt-1">
           <Link
             href={nextHref}
             className="hover:bg-raised rounded-md border px-4 py-2 font-medium"

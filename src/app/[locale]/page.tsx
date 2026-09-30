@@ -4,12 +4,6 @@ import { notFound } from "next/navigation";
 
 import { MarketingPage } from "@/components/marketing/marketing-page";
 import { isLocale } from "@/i18n/config";
-import { redirect } from "@/i18n/navigation";
-import {
-  AuthenticationRequiredError,
-  requireWorkspaceAccess,
-  WorkspaceAccessDeniedError,
-} from "@/lib/auth/access-context";
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -56,22 +50,6 @@ export default async function HomePage({ params }: HomePageProps) {
   }
 
   setRequestLocale(locale);
-
-  try {
-    await requireWorkspaceAccess();
-    redirect({ href: "/overview", locale });
-  } catch (error) {
-    if (error instanceof WorkspaceAccessDeniedError) {
-      redirect({ href: "/workspace", locale });
-    }
-
-    if (
-      !(error instanceof AuthenticationRequiredError) &&
-      !(error instanceof WorkspaceAccessDeniedError)
-    ) {
-      throw error;
-    }
-  }
 
   return <MarketingPage locale={locale} />;
 }

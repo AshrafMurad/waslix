@@ -73,12 +73,12 @@ export default async function OverviewPage({
   }));
   return (
     <div className="waslix-page">
-      <div className="space-y-1">
+      <div className="space-y-2">
         <p className="waslix-eyebrow">{t("eyebrow")}</p>
         <h1 className="waslix-page-title">{t("title")}</h1>
         <p className="waslix-page-description max-w-2xl">{t("description")}</p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-3 sm:grid-cols-2 lg:gap-4 xl:grid-cols-4">
         {metrics.map(([key, value, baseline]) => {
           const delta = value - baseline;
           const trend =
@@ -102,13 +102,13 @@ export default async function OverviewPage({
                 ? TrendingDownIcon
                 : MinusIcon;
           return (
-            <Card key={key} className="gap-4 overflow-hidden py-0">
+            <Card key={key} className="min-h-36 gap-4 overflow-hidden py-0">
               <CardHeader className="px-5 pt-5 pb-0">
                 <p className="waslix-label text-sm">
                   {attentionT(`metrics.${key}`)}
                 </p>
               </CardHeader>
-              <CardContent className="flex items-end justify-between gap-4 px-5 pb-5">
+              <CardContent className="flex min-h-16 items-end justify-between gap-4 px-5 pb-5">
                 <p className="waslix-data-value text-3xl md:text-4xl">
                   {format.number(value)}
                 </p>
@@ -138,8 +138,8 @@ export default async function OverviewPage({
           canAct={access.role !== "VIEWER"}
         />
       </Card>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card className="p-5">
+      <div className="grid gap-5 lg:grid-cols-2 lg:gap-6">
+        <Card className="waslix-panel-body">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="waslix-panel-title">{attentionT("myTasks")}</h2>
             <Link
@@ -168,7 +168,7 @@ export default async function OverviewPage({
             </p>
           )}
         </Card>
-        <Card className="p-5">
+        <Card className="waslix-panel-body">
           <h2 className="waslix-panel-title mb-4">
             {attentionT("portfolioHealth")}
           </h2>

@@ -58,7 +58,7 @@ function AttentionRow({
     initial,
   );
   return (
-    <li className="grid gap-4 px-5 py-4 lg:grid-cols-[minmax(12rem,1fr)_minmax(18rem,1.45fr)_minmax(12rem,.8fr)_minmax(14rem,14rem)] lg:items-start">
+    <li className="grid gap-4 px-4 py-4 sm:px-5 lg:grid-cols-[minmax(12rem,1fr)_minmax(18rem,1.45fr)_minmax(10rem,.75fr)_minmax(13rem,14rem)] lg:items-start xl:gap-5">
       <div className="min-w-0">
         <div className="truncate text-start">
           <Link
@@ -127,11 +127,11 @@ function AttentionRow({
           </p>
         ) : null}
       </div>
-      <div className="flex min-w-0 items-start justify-between gap-3">
+      <div className="flex min-w-0 items-start justify-between gap-3 lg:justify-end">
         <div className="min-w-0 space-y-2">
           <p className="waslix-label">{t("actionLabel")}</p>
           {item.customer.recommendations?.length ? (
-            <Button asChild size="sm" variant="outline" className="h-8">
+            <Button asChild size="sm" variant="outline" className="min-h-9">
               <Link href={`/customers/${item.customer.id}`}>
                 {t("actions.viewNextAction")}
               </Link>

@@ -91,11 +91,8 @@ export function RenewalPanel({
     ["RENEWED", "CHURNED"].includes(renewal.stage),
   );
   return (
-    <div
-      className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]"
-      dir={direction}
-    >
-      <Card className="p-5">
+    <div className="waslix-two-column" dir={direction}>
+      <Card className="waslix-panel-body">
         <h2 className="text-lg font-semibold">{t("title")}</h2>
         <p className="text-muted-foreground mt-1 text-sm">{t("description")}</p>
         {active ? (
@@ -112,7 +109,7 @@ export function RenewalPanel({
           </Empty>
         )}
       </Card>
-      <div className="space-y-6">
+      <div className="waslix-section-grid">
         {canManage ? (
           <RenewalForm
             locale={locale}
@@ -124,7 +121,7 @@ export function RenewalPanel({
             defaultCurrency={active?.currency ?? defaultCurrency}
           />
         ) : null}
-        <Card className="p-5">
+        <Card className="waslix-panel-body">
           <h3 className="font-semibold">{t("history.title")}</h3>
           {history.length ? (
             <ul className="mt-3 divide-y">
@@ -428,7 +425,7 @@ function RenewalForm({
     initialState,
   );
   return (
-    <Card className="p-5">
+    <Card className="waslix-panel-body">
       <h3 className="font-semibold">
         {renewal ? t("form.edit") : t("form.create")}
       </h3>

@@ -45,8 +45,8 @@ export default async function CustomerOverviewPage({
 
   return (
     <div className="waslix-page">
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-        <Card className="p-5">
+      <div className="waslix-two-column">
+        <Card className="waslix-panel-body">
           <h2 className="waslix-panel-title">{t("overview.title")}</h2>
           <p className="waslix-panel-description">
             {t("overview.description")}
@@ -131,7 +131,7 @@ export default async function CustomerOverviewPage({
             />
           ) : null}
           {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
-            <Card className="p-5">
+            <Card className="waslix-panel-body">
               <h2 className="waslix-panel-title">{t("archive.title")}</h2>
               <p className="waslix-panel-description my-2">
                 {t("archive.description")}

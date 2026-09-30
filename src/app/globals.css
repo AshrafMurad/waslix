@@ -159,11 +159,15 @@ html[lang="ar"] body {
 
 @layer components {
   .waslix-page {
-    @apply space-y-6;
+    @apply space-y-6 md:space-y-8;
   }
 
   .waslix-page-header {
-    @apply flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between;
+    @apply flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .waslix-page-header > :first-child {
+    @apply min-w-0 space-y-2;
   }
 
   .waslix-eyebrow {
@@ -178,8 +182,16 @@ html[lang="ar"] body {
     @apply text-muted-foreground max-w-[70ch] text-base leading-7;
   }
 
+  .waslix-section-grid {
+    @apply grid gap-5 lg:gap-6;
+  }
+
+  .waslix-two-column {
+    @apply grid gap-5 lg:gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)];
+  }
+
   .waslix-panel-header {
-    @apply border-b px-5 py-4;
+    @apply border-b px-4 py-4 sm:px-5;
   }
 
   .waslix-panel-title {
@@ -188,6 +200,10 @@ html[lang="ar"] body {
 
   .waslix-panel-description {
     @apply text-muted-foreground mt-1 max-w-[68ch] text-sm leading-6;
+  }
+
+  .waslix-panel-body {
+    @apply p-4 sm:p-5;
   }
 
   .waslix-label {

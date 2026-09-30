@@ -159,7 +159,7 @@ export function NextBestActionCard({
   const t = useTranslations("recommendations");
   const direction = locale === "ar" ? "rtl" : "ltr";
   return (
-    <Card className="p-5" dir={direction}>
+    <Card className="waslix-panel-body" dir={direction}>
       <h2 className="text-lg font-semibold">{t("title")}</h2>
       <p className="text-muted-foreground mt-1 text-sm">{t("description")}</p>
       {recommendations.length ? (

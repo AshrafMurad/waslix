@@ -51,9 +51,9 @@ export async function HealthOverview({
           : "text-muted-foreground";
 
   return (
-    <div className="space-y-6" dir={direction}>
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
-        <Card className="p-5">
+    <div className="waslix-page" dir={direction}>
+      <div className="waslix-two-column">
+        <Card className="waslix-panel-body">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p className="text-muted-foreground text-sm">{t("overall")}</p>
@@ -125,7 +125,7 @@ export async function HealthOverview({
             ) : null}
           </div>
         </Card>
-        <Card className="p-5">
+        <Card className="waslix-panel-body">
           <h2 className="font-semibold">{t("explanation.title")}</h2>
           {data.reasons.length ? (
             <ul className="mt-3 space-y-2">
@@ -189,7 +189,7 @@ export async function HealthOverview({
         </div>
       </section>
 
-      <Card className="p-5">
+      <Card className="waslix-panel-body">
         <h2 className="text-lg font-semibold">{t("history.title")}</h2>
         <p className="text-muted-foreground mt-1">{t("history.description")}</p>
         {data.history.some((point) => point.overallScore !== null) ? (
@@ -217,7 +217,7 @@ export async function HealthOverview({
       </Card>
 
       {canEdit ? (
-        <Card className="p-5">
+        <Card className="waslix-panel-body">
           <h2 className="text-lg font-semibold">{t("inputs.title")}</h2>
           <p className="text-muted-foreground mt-1">
             {t("inputs.description")}

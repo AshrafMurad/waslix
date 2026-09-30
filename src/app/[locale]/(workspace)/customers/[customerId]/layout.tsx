@@ -83,7 +83,7 @@ export default async function CustomerLayout({
               <bdi dir="auto">{customer.industry ?? t("missing")}</bdi>
             </p>
           </div>
-          <div className="w-full rounded-md border px-4 py-3 sm:w-auto">
+          <div className="bg-surface w-full rounded-md border px-4 py-3 sm:w-auto sm:min-w-48">
             <p className="text-muted-foreground text-xs">
               {t("summary.health")}
             </p>
@@ -120,7 +120,7 @@ export default async function CustomerLayout({
             access.role === "ADMIN" || access.role === "CS_MANAGER"
           }
         />
-        <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+        <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {[
             [t("summary.owner"), customer.owner.user.name],
             [t("summary.lifecycle"), customer.lifecycleStage.name],

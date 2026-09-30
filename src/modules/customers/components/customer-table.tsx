@@ -153,7 +153,7 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
       <p id="customer-table-scroll-hint" className="sr-only">
         {labels.scrollHint}
       </p>
-      <div className="overflow-x-auto">
+      <div className="border-border/60 overflow-x-auto border-t">
         <Table
           aria-describedby="customer-table-scroll-hint"
           className="min-w-4xl border-collapse"
@@ -166,7 +166,10 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
                 className="bg-raised hover:bg-raised text-start"
               >
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="px-4 text-start">
+                  <TableHead
+                    key={header.id}
+                    className="px-4 text-start first:ps-5 last:pe-5"
+                  >
                     {flexRender(
                       header.column.columnDef.header,
                       header.getContext(),
@@ -180,7 +183,10 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
             {table.getRowModel().rows.map((row) => (
               <TableRow key={row.id}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id} className="px-4 text-start">
+                  <TableCell
+                    key={cell.id}
+                    className="px-4 text-start first:ps-5 last:pe-5"
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}

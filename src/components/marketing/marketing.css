@@ -482,7 +482,7 @@
 
   .portfolio-body {
     display: block;
-    padding: 1rem;
+    padding: clamp(0.8rem, 2vw, 1rem);
   }
   .portfolio-metrics {
     gap: 0.8rem;
@@ -761,7 +761,7 @@
     display: grid;
     grid-template-columns: minmax(0, 1.1fr) minmax(18rem, 0.7fr);
     align-items: end;
-    gap: 2rem;
+    gap: clamp(1.5rem, 4vw, 3rem);
   }
 
   .split-heading h2 span {
@@ -934,7 +934,7 @@
   .system-story {
     position: relative;
     display: grid;
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.25rem);
     margin-block-start: 3rem;
   }
   .system-index {
@@ -955,10 +955,10 @@
   .system-state {
     display: grid;
     grid-template-columns: 0.75fr 1.25fr;
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.5rem);
     min-height: 25rem;
     border-radius: 1.4rem;
-    padding: 1rem;
+    padding: clamp(0.8rem, 2vw, 1rem);
   }
   .system-copy {
     display: grid;
@@ -1092,7 +1092,7 @@
   .health-explainer-grid {
     display: grid;
     grid-template-columns: 0.82fr 1.18fr;
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.25rem);
     margin-block-start: 3rem;
   }
   .explainable-score,
@@ -1189,13 +1189,13 @@
   .health-factor-panel {
     display: grid;
     grid-template-columns: 1fr 0.8fr;
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.5rem);
     border-radius: 1.4rem;
-    padding: 1rem;
+    padding: clamp(0.8rem, 2vw, 1.1rem);
   }
   .factor-groups {
     display: grid;
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.5rem);
   }
   .factor-groups h3 {
     margin-block-end: 0.55rem;
@@ -1292,7 +1292,7 @@
   .account-header {
     display: flex;
     justify-content: space-between;
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.5rem);
     padding: 1rem;
     border-block-end: 1px solid var(--marketing-line);
   }
@@ -1332,7 +1332,7 @@
     color: var(--marketing-muted);
   }
   .account-facts {
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.4rem);
     flex-wrap: wrap;
   }
   .account-facts span {
@@ -1346,7 +1346,7 @@
   }
   .account-workspace {
     align-items: stretch;
-    gap: 1rem;
+    gap: clamp(1rem, 2.5vw, 2rem);
     padding: 1rem;
   }
   .risk-signal-panel,
@@ -1523,7 +1523,7 @@
   .operations-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.5rem);
   }
   .collaboration-block,
   .renewals-block {
@@ -1650,7 +1650,7 @@
   .insight-cards {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 1rem;
+    gap: clamp(1rem, 2vw, 1.4rem);
     margin-block-start: 3rem;
   }
   .insight-card {
@@ -1716,7 +1716,7 @@
   .demo-shell {
     display: grid;
     grid-template-columns: 0.65fr 1.35fr;
-    gap: 1rem;
+    gap: clamp(1rem, 2.5vw, 2rem);
     margin-block-start: 5rem;
     align-items: center;
   }
@@ -1837,7 +1837,7 @@
   .integrations-layout {
     display: grid;
     grid-template-columns: 0.8fr 1.2fr;
-    gap: 2rem;
+    gap: clamp(1.5rem, 4vw, 3rem);
     align-items: center;
   }
   .integration-map {

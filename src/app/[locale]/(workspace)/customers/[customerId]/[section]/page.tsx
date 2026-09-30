@@ -115,9 +115,9 @@ export default async function CustomerSectionPage({
       ? options.owners
       : options.owners.filter((owner) => owner.id === access.memberId);
     return (
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+      <div className="waslix-two-column">
         <Card>
-          <div className="border-b p-5">
+          <div className="waslix-panel-header">
             <h2 className="text-lg font-semibold">{taskT("title")}</h2>
             <p className="text-muted-foreground mt-1">{taskT("description")}</p>
           </div>
@@ -142,7 +142,7 @@ export default async function CustomerSectionPage({
           ) : null}
         </Card>
         {access.role !== "VIEWER" && visibleOwners.length ? (
-          <Card className="p-5">
+          <Card className="waslix-panel-body">
             <h2 className="mb-4 font-semibold">{taskT("actions.add")}</h2>
             <TaskForm
               locale={locale}
@@ -254,7 +254,7 @@ export default async function CustomerSectionPage({
     }));
     return (
       <Card className="gap-0 overflow-hidden py-0">
-        <div className="flex flex-col gap-4 border-b p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="waslix-panel-header flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-lg font-semibold">{riskT("title")}</h2>
             <p className="text-muted-foreground mt-1">{riskT("description")}</p>
@@ -290,9 +290,9 @@ export default async function CustomerSectionPage({
       customer.status === "ACTIVE" &&
       canEditCustomer(access, customer.owner.id);
     return (
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+      <div className="waslix-two-column">
         <Card>
-          <div className="border-b p-5">
+          <div className="waslix-panel-header">
             <h2 className="text-lg font-semibold">{timelineT("title")}</h2>
             <p className="text-muted-foreground mt-1">
               {timelineT("description")}
@@ -330,7 +330,7 @@ export default async function CustomerSectionPage({
           ) : null}
         </Card>
         {canAddActivity ? (
-          <Card className="p-5">
+          <Card className="waslix-panel-body">
             <h2 className="mb-4 font-semibold">
               {timelineT("activity.addTitle")}
             </h2>
@@ -358,9 +358,9 @@ export default async function CustomerSectionPage({
   const canEdit =
     customer.status === "ACTIVE" && canEditCustomer(access, customer.owner.id);
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
+    <div className="waslix-two-column">
       <Card>
-        <div className="border-b p-5">
+        <div className="waslix-panel-header">
           <h2 className="text-lg font-semibold">{t("contacts.title")}</h2>
           <p className="text-muted-foreground mt-1">
             {t("contacts.description")}
@@ -435,7 +435,7 @@ export default async function CustomerSectionPage({
         )}
       </Card>
       {canEdit ? (
-        <Card className="p-5">
+        <Card className="waslix-panel-body">
           <h2 className="mb-4 font-semibold">{t("contacts.addTitle")}</h2>
           <ContactForm customerId={customerId} locale={locale} />
         </Card>
