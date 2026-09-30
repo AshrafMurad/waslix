@@ -57,7 +57,7 @@ export function NavigationLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "focus-visible:bg-raised flex min-h-10 items-center gap-3 rounded-md border px-3 font-bold transition-[background-color,border-color,color,box-shadow]",
+        "focus-visible:bg-raised flex min-h-10 items-center gap-3 rounded-md border px-3 font-bold transition-[background-color,border-color,color,box-shadow,transform] duration-150 ease-out hover:translate-x-0.5 rtl:hover:-translate-x-0.5",
         active
           ? "border-brand/30 bg-brand/10 text-brand-accent shadow-[inset_3px_0_0_var(--brand)] rtl:shadow-[inset_-3px_0_0_var(--brand)]"
           : "text-muted-foreground hover:bg-raised hover:text-foreground hover:border-border/80 border-transparent",

@@ -118,7 +118,7 @@ export function GlobalSearch({ className, labels }: GlobalSearchProps) {
                 key={result.id}
                 href={result.href}
                 onClick={() => setOpen(false)}
-                className="hover:bg-raised block rounded-md p-3"
+                className="waslix-result-row hover:bg-raised block rounded-md p-3"
               >
                 <span className="text-muted-foreground text-xs uppercase">
                   {typeLabel[result.type]}

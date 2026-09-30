@@ -160,19 +160,19 @@ export function ApplicationShell({
     user.name.trim().charAt(0).toLocaleUpperCase(locale) || "W";
 
   return (
-    <div className="bg-background min-h-screen md:grid md:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)]">
+    <div className="waslix-app-shell bg-background min-h-screen md:grid md:grid-cols-[15rem_minmax(0,1fr)] xl:grid-cols-[16rem_minmax(0,1fr)]">
       <a
         href="#workspace-content"
         className="bg-surface text-foreground fixed start-3 top-3 z-50 -translate-y-16 rounded-md border px-3 py-2 font-medium shadow-sm transition-transform focus-visible:translate-y-0 focus-visible:ring-2"
       >
         {labels.skipToContent}
       </a>
-      <aside className="bg-surface/95 sticky top-0 hidden h-screen border-e p-4 shadow-[12px_0_40px_-34px_rgb(15_23_42_/_0.75)] md:flex md:flex-col dark:shadow-[14px_0_52px_-36px_rgb(0_0_0_/_0.95)]">
+      <aside className="waslix-sidebar bg-surface/95 sticky top-0 hidden h-screen border-e p-4 shadow-[12px_0_40px_-34px_rgb(15_23_42_/_0.75)] md:flex md:flex-col dark:shadow-[14px_0_52px_-36px_rgb(0_0_0_/_0.95)]">
         <Link
           href="/overview"
-          className="mb-4 flex items-center gap-3 px-2 py-1"
+          className="waslix-brand-link mb-4 flex items-center gap-3 px-2 py-1"
         >
-          <span className="bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em] shadow-[0_16px_32px_-22px_rgb(15_118_110_/_0.9)]">
+          <span className="waslix-brand-mark bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em] shadow-[0_16px_32px_-22px_rgb(15_118_110_/_0.9)]">
             W
           </span>
           <span className="text-xl font-black tracking-[-0.05em]">Waslix</span>
@@ -183,7 +183,7 @@ export function ApplicationShell({
       </aside>
 
       <div className="min-w-0">
-        <header className="bg-background/92 sticky top-0 z-20 flex h-16 items-center gap-2 border-b px-4 shadow-[0_18px_42px_-38px_rgb(15_23_42_/_0.65)] md:px-6 dark:shadow-[0_18px_42px_-36px_rgb(0_0_0_/_0.9)]">
+        <header className="waslix-topbar bg-background/92 sticky top-0 z-20 flex h-16 items-center gap-2 border-b px-4 shadow-[0_18px_42px_-38px_rgb(15_23_42_/_0.65)] md:px-6 dark:shadow-[0_18px_42px_-36px_rgb(0_0_0_/_0.9)]">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -204,7 +204,7 @@ export function ApplicationShell({
                 <SheetDescription>{labels.navigation}</SheetDescription>
               </SheetHeader>
               <div className="flex min-h-16 items-center gap-3 border-b px-4 pe-12">
-                <span className="bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em] shadow-[0_16px_32px_-22px_rgb(15_118_110_/_0.9)]">
+                <span className="waslix-brand-mark bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em] shadow-[0_16px_32px_-22px_rgb(15_118_110_/_0.9)]">
                   W
                 </span>
                 <span className="text-xl font-black tracking-[-0.05em]">
@@ -229,8 +229,11 @@ export function ApplicationShell({
               </div>
             </SheetContent>
           </Sheet>
-          <Link href="/overview" className="flex items-center gap-2 md:hidden">
-            <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-md font-black tracking-[-0.08em] shadow-[0_12px_24px_-18px_rgb(15_118_110_/_0.9)]">
+          <Link
+            href="/overview"
+            className="waslix-brand-link flex items-center gap-2 md:hidden"
+          >
+            <span className="waslix-brand-mark bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-md font-black tracking-[-0.08em] shadow-[0_12px_24px_-18px_rgb(15_118_110_/_0.9)]">
               W
             </span>
             <span className="font-black tracking-[-0.04em]">Waslix</span>
@@ -256,7 +259,7 @@ export function ApplicationShell({
         <main
           id="workspace-content"
           tabIndex={-1}
-          className="mx-auto w-full max-w-screen-2xl px-4 py-5 sm:px-5 md:px-6 md:py-7 xl:px-8 xl:py-8"
+          className="waslix-content mx-auto w-full max-w-screen-2xl px-4 py-5 sm:px-5 md:px-6 md:py-7 xl:px-8 xl:py-8"
         >
           {children}
         </main>

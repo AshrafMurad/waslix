@@ -49,6 +49,11 @@ html[lang="ar"] body {
 
 :root {
   --radius: 0.5rem;
+  --motion-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-quick: 140ms;
+  --motion-standard: 220ms;
+  --motion-entrance: 520ms;
   --background: #f5f5f2;
   --foreground: #111113;
   --surface: #ffffff;
@@ -118,6 +123,7 @@ html[lang="ar"] body {
   html {
     @apply h-full;
     color-scheme: light;
+    scroll-behavior: smooth;
   }
 
   html.dark {
@@ -169,6 +175,7 @@ html[lang="ar"] body {
   summary,
   select {
     @apply focus-visible:outline-ring focus-visible:outline-2 focus-visible:outline-offset-2;
+    transition-timing-function: var(--motion-ease-standard);
   }
 
   button,
@@ -184,8 +191,40 @@ html[lang="ar"] body {
 }
 
 @layer components {
+  .waslix-app-shell {
+    isolation: isolate;
+  }
+
+  .waslix-sidebar {
+    animation: waslix-sidebar-settle var(--motion-entrance)
+      var(--motion-ease-out) both;
+  }
+
+  .waslix-topbar {
+    animation: waslix-topbar-settle 420ms var(--motion-ease-out) 80ms both;
+  }
+
+  .waslix-content {
+    animation: waslix-content-settle var(--motion-entrance)
+      var(--motion-ease-out) 120ms both;
+  }
+
+  .waslix-brand-mark {
+    transition:
+      transform var(--motion-standard) var(--motion-ease-out),
+      box-shadow var(--motion-standard) var(--motion-ease-standard),
+      background-color var(--motion-quick) var(--motion-ease-standard);
+  }
+
+  .waslix-brand-link:hover .waslix-brand-mark,
+  .waslix-brand-link:focus-visible .waslix-brand-mark {
+    transform: translateY(-1px) scale(1.03);
+    box-shadow: 0 18px 34px -20px rgb(15 118 110 / 0.9);
+  }
+
   .waslix-page {
     @apply space-y-7 md:space-y-9;
+    animation: waslix-page-resolve 380ms var(--motion-ease-out) both;
   }
 
   .waslix-page-header {
@@ -210,6 +249,24 @@ html[lang="ar"] body {
 
   .waslix-section-grid {
     @apply grid gap-5 lg:gap-6;
+  }
+
+  .waslix-section-grid > *,
+  .waslix-two-column > * {
+    animation: waslix-panel-resolve 360ms var(--motion-ease-out) both;
+  }
+
+  .waslix-section-grid > :nth-child(2),
+  .waslix-two-column > :nth-child(2) {
+    animation-delay: 55ms;
+  }
+
+  .waslix-section-grid > :nth-child(3) {
+    animation-delay: 90ms;
+  }
+
+  .waslix-section-grid > :nth-child(n + 4) {
+    animation-delay: 110ms;
   }
 
   .waslix-two-column {
@@ -243,6 +300,197 @@ html[lang="ar"] body {
   .waslix-data-value {
     @apply leading-none font-bold tracking-[-0.035em] tabular-nums;
   }
+
+  [data-slot="card"] {
+    transition:
+      border-color var(--motion-standard) var(--motion-ease-standard),
+      box-shadow var(--motion-standard) var(--motion-ease-standard),
+      transform var(--motion-standard) var(--motion-ease-out),
+      background-color var(--motion-standard) var(--motion-ease-standard);
+  }
+
+  [data-slot="card"]:has(a:hover),
+  [data-slot="card"]:has(button:hover),
+  [data-slot="card"]:focus-within {
+    transform: translateY(-1px);
+    box-shadow: 0 22px 54px -38px rgb(15 23 42 / 0.7);
+  }
+
+  .dark [data-slot="card"]:has(a:hover),
+  .dark [data-slot="card"]:has(button:hover),
+  .dark [data-slot="card"]:focus-within {
+    box-shadow: 0 24px 70px -42px rgb(0 0 0 / 0.95);
+  }
+
+  [data-slot="button"] {
+    transition-duration: var(--motion-quick);
+  }
+
+  [data-slot="button"]:active:not(:disabled) {
+    transform: translateY(0) scale(0.985);
+  }
+
+  [data-slot="tabs-trigger"]::after {
+    transition:
+      opacity var(--motion-quick) var(--motion-ease-standard),
+      transform var(--motion-standard) var(--motion-ease-out);
+    transform: scaleX(0.36);
+  }
+
+  [data-slot="tabs-trigger"][data-state="active"]::after {
+    transform: scaleX(1);
+  }
+
+  [data-slot="table-row"] {
+    transition:
+      background-color var(--motion-quick) var(--motion-ease-standard),
+      box-shadow var(--motion-quick) var(--motion-ease-standard);
+  }
+
+  [data-slot="dialog-overlay"],
+  [data-slot="sheet-overlay"] {
+    transition:
+      opacity 180ms var(--motion-ease-standard),
+      background-color 180ms var(--motion-ease-standard);
+  }
+
+  [data-slot="dialog-content"] {
+    transition:
+      opacity 220ms var(--motion-ease-standard),
+      transform 260ms var(--motion-ease-out),
+      box-shadow 260ms var(--motion-ease-standard);
+  }
+
+  [data-slot="sheet-content"] {
+    transition:
+      opacity 220ms var(--motion-ease-standard),
+      transform 360ms var(--motion-ease-out),
+      box-shadow 360ms var(--motion-ease-standard);
+  }
+
+  [data-slot="dropdown-menu-content"],
+  [data-slot="dropdown-menu-sub-content"],
+  [data-slot="popover-content"] {
+    transition:
+      opacity 160ms var(--motion-ease-standard),
+      transform 180ms var(--motion-ease-out),
+      box-shadow 180ms var(--motion-ease-standard);
+  }
+
+  [data-slot="dropdown-menu-item"],
+  [data-slot="dropdown-menu-checkbox-item"],
+  [data-slot="dropdown-menu-radio-item"],
+  [data-slot="dropdown-menu-sub-trigger"] {
+    transition:
+      background-color var(--motion-quick) var(--motion-ease-standard),
+      color var(--motion-quick) var(--motion-ease-standard),
+      transform var(--motion-quick) var(--motion-ease-out);
+  }
+
+  [data-slot="dropdown-menu-item"]:focus,
+  [data-slot="dropdown-menu-checkbox-item"]:focus,
+  [data-slot="dropdown-menu-radio-item"]:focus,
+  [data-slot="dropdown-menu-sub-trigger"]:focus {
+    transform: translateX(1px);
+  }
+
+  :dir(rtl) [data-slot="dropdown-menu-item"]:focus,
+  :dir(rtl) [data-slot="dropdown-menu-checkbox-item"]:focus,
+  :dir(rtl) [data-slot="dropdown-menu-radio-item"]:focus,
+  :dir(rtl) [data-slot="dropdown-menu-sub-trigger"]:focus {
+    transform: translateX(-1px);
+  }
+
+  .waslix-result-row {
+    transition:
+      background-color var(--motion-quick) var(--motion-ease-standard),
+      transform var(--motion-quick) var(--motion-ease-out),
+      box-shadow var(--motion-quick) var(--motion-ease-standard);
+  }
+
+  .waslix-result-row:hover,
+  .waslix-result-row:focus-visible {
+    transform: translateX(2px);
+  }
+
+  :dir(rtl) .waslix-result-row:hover,
+  :dir(rtl) .waslix-result-row:focus-visible {
+    transform: translateX(-2px);
+  }
+}
+
+@keyframes waslix-sidebar-settle {
+  from {
+    opacity: 0.88;
+    transform: translateX(-0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes waslix-sidebar-settle-rtl {
+  from {
+    opacity: 0.88;
+    transform: translateX(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes waslix-topbar-settle {
+  from {
+    opacity: 0.9;
+    transform: translateY(-0.4rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes waslix-content-settle {
+  from {
+    opacity: 0.92;
+    transform: translateY(0.45rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes waslix-page-resolve {
+  from {
+    opacity: 0.96;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes waslix-panel-resolve {
+  from {
+    opacity: 0.94;
+    transform: translateY(0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:dir(rtl) .waslix-sidebar {
+  animation-name: waslix-sidebar-settle-rtl;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -253,5 +501,27 @@ html[lang="ar"] body {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .waslix-sidebar,
+  .waslix-topbar,
+  .waslix-content,
+  .waslix-page,
+  .waslix-section-grid > *,
+  .waslix-two-column > * {
+    animation: none !important;
+  }
+
+  [data-slot="card"]:has(a:hover),
+  [data-slot="card"]:has(button:hover),
+  [data-slot="card"]:focus-within,
+  [data-slot="button"]:active:not(:disabled),
+  [data-slot="dropdown-menu-item"]:focus,
+  [data-slot="dropdown-menu-checkbox-item"]:focus,
+  [data-slot="dropdown-menu-radio-item"]:focus,
+  [data-slot="dropdown-menu-sub-trigger"]:focus,
+  .waslix-result-row:hover,
+  .waslix-result-row:focus-visible {
+    transform: none !important;
   }
 }
