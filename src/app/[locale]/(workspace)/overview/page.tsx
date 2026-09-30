@@ -104,12 +104,12 @@ export default async function OverviewPage({
           return (
             <Card key={key} className="gap-4 overflow-hidden py-0">
               <CardHeader className="px-5 pt-5 pb-0">
-                <p className="text-muted-foreground text-sm font-medium">
+                <p className="waslix-label text-sm">
                   {attentionT(`metrics.${key}`)}
                 </p>
               </CardHeader>
               <CardContent className="flex items-end justify-between gap-4 px-5 pb-5">
-                <p className="text-3xl leading-none font-semibold tabular-nums md:text-4xl">
+                <p className="waslix-data-value text-3xl md:text-4xl">
                   {format.number(value)}
                 </p>
                 <span
@@ -153,10 +153,10 @@ export default async function OverviewPage({
             <ul className="divide-y">
               {dashboard.tasks.map((task) => (
                 <li key={task.id} className="py-3">
-                  <p className="font-medium" dir="auto">
+                  <p className="leading-6 font-medium" dir="auto">
                     {task.title}
                   </p>
-                  <p className="text-muted-foreground text-xs" dir="auto">
+                  <p className="waslix-meta" dir="auto">
                     {task.customer?.name ?? attentionT("noCustomer")}
                   </p>
                 </li>
@@ -176,10 +176,10 @@ export default async function OverviewPage({
             {(["HEALTHY", "NEEDS_ATTENTION", "AT_RISK"] as const).map(
               (status) => (
                 <div key={status} className="bg-raised rounded-md p-3">
-                  <p className="text-2xl font-semibold tabular-nums">
+                  <p className="waslix-data-value text-2xl">
                     {format.number(Number(dashboard.healthGroups[status] ?? 0))}
                   </p>
-                  <p className="text-muted-foreground mt-1 text-xs">
+                  <p className="waslix-label mt-1">
                     {attentionT(`healthStatus.${status}`)}
                   </p>
                 </div>

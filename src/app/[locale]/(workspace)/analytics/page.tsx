@@ -50,12 +50,12 @@ function Metric({
   return (
     <Card className="min-w-0 p-5">
       <CardContent className="space-y-3 p-0">
-        <p className="text-muted-foreground text-sm font-medium">{label}</p>
-        <p className="text-3xl leading-none font-semibold tabular-nums">
-          {value}
-        </p>
+        <p className="waslix-label text-sm">{label}</p>
+        <p className="waslix-data-value text-3xl">{value}</p>
         <div className="bg-border h-px" />
-        <p className={`text-sm tabular-nums ${toneClass}`}>{insight}</p>
+        <p className={`text-sm leading-6 tabular-nums ${toneClass}`}>
+          {insight}
+        </p>
       </CardContent>
     </Card>
   );

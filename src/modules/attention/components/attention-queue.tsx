@@ -69,7 +69,7 @@ function AttentionRow({
             {item.customer.name}
           </Link>
         </div>
-        <dl className="text-muted-foreground mt-2 space-y-1 text-xs">
+        <dl className="waslix-meta mt-2 space-y-1">
           <div className="flex min-w-0 gap-1.5">
             <dt className="text-foreground shrink-0 font-medium">
               {t("owner")}
@@ -89,9 +89,7 @@ function AttentionRow({
         </dl>
       </div>
       <div className="min-w-0 space-y-2">
-        <p className="text-muted-foreground text-xs font-medium">
-          {t("evidenceLabel")}
-        </p>
+        <p className="waslix-label">{t("evidenceLabel")}</p>
         <div className="flex min-w-0 flex-wrap gap-2">
           {item.reasonKeys.slice(0, 3).map((reason) => (
             <span
@@ -108,7 +106,7 @@ function AttentionRow({
           ) : null}
         </div>
       </div>
-      <div className="min-w-0 text-sm tabular-nums">
+      <div className="min-w-0 text-sm leading-6 tabular-nums">
         <p
           className={
             item.priority === "CRITICAL" || item.priority === "HIGH"
@@ -124,16 +122,14 @@ function AttentionRow({
             : t("health", { score: item.customer.healthScore })}
         </p>
         {item.healthDelta != null ? (
-          <p className="text-muted-foreground text-xs">
+          <p className="waslix-meta">
             {t("trend", { delta: item.healthDelta })}
           </p>
         ) : null}
       </div>
       <div className="flex min-w-0 items-start justify-between gap-3">
         <div className="min-w-0 space-y-2">
-          <p className="text-muted-foreground text-xs font-medium">
-            {t("actionLabel")}
-          </p>
+          <p className="waslix-label">{t("actionLabel")}</p>
           {item.customer.recommendations?.length ? (
             <Button asChild size="sm" variant="outline" className="h-8">
               <Link href={`/customers/${item.customer.id}`}>
@@ -141,11 +137,9 @@ function AttentionRow({
               </Link>
             </Button>
           ) : (
-            <p className="text-muted-foreground text-xs">
-              {t("actions.noRecommendation")}
-            </p>
+            <p className="waslix-meta">{t("actions.noRecommendation")}</p>
           )}
-          <p className="text-muted-foreground text-xs tabular-nums">
+          <p className="waslix-meta">
             {item.customer.nearestDeadline
               ? t("deadline", { date: item.customer.nearestDeadline })
               : item.customer.renewalDate

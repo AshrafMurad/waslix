@@ -26,16 +26,6 @@ const tajawal = localFont({
   variable: "--font-tajawal",
   src: [
     {
-      path: "../../../public/fonts/Tajawal-ExtraLight.woff2",
-      weight: "200",
-      style: "normal",
-    },
-    {
-      path: "../../../public/fonts/Tajawal-Light.woff2",
-      weight: "300",
-      style: "normal",
-    },
-    {
       path: "../../../public/fonts/Tajawal-Regular.woff2",
       weight: "400",
       style: "normal",
@@ -53,11 +43,6 @@ const tajawal = localFont({
     {
       path: "../../../public/fonts/Tajawal-ExtraBold.woff2",
       weight: "800",
-      style: "normal",
-    },
-    {
-      path: "../../../public/fonts/Tajawal-Black.woff2",
-      weight: "900",
       style: "normal",
     },
   ],

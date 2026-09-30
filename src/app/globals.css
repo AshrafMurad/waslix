@@ -125,11 +125,13 @@ html[lang="ar"] body {
   }
 
   body {
-    @apply bg-background text-foreground min-h-full font-sans text-sm antialiased;
+    @apply bg-background text-foreground min-h-full font-sans text-sm leading-6 antialiased;
     font-feature-settings:
       "rlig" 1,
       "calt" 1,
       "tnum" 1;
+    font-optical-sizing: auto;
+    text-rendering: geometricPrecision;
   }
 
   ::selection {
@@ -165,15 +167,15 @@ html[lang="ar"] body {
   }
 
   .waslix-eyebrow {
-    @apply text-brand-accent text-xs font-semibold tracking-widest uppercase;
+    @apply text-brand-accent text-sm leading-6 font-medium tracking-[-0.005em];
   }
 
   .waslix-page-title {
-    @apply text-2xl leading-tight font-semibold tracking-tight md:text-3xl;
+    @apply max-w-4xl text-2xl leading-[1.12] font-semibold tracking-[-0.025em] text-balance md:text-[1.9rem];
   }
 
   .waslix-page-description {
-    @apply text-muted-foreground max-w-3xl text-sm leading-6;
+    @apply text-muted-foreground max-w-[70ch] text-base leading-7;
   }
 
   .waslix-panel-header {
@@ -181,11 +183,23 @@ html[lang="ar"] body {
   }
 
   .waslix-panel-title {
-    @apply text-base font-semibold tracking-tight;
+    @apply text-[0.98rem] leading-6 font-semibold tracking-[-0.015em];
   }
 
   .waslix-panel-description {
-    @apply text-muted-foreground mt-1 text-sm leading-6;
+    @apply text-muted-foreground mt-1 max-w-[68ch] text-sm leading-6;
+  }
+
+  .waslix-label {
+    @apply text-muted-foreground text-xs leading-5 font-medium tracking-[0.015em];
+  }
+
+  .waslix-meta {
+    @apply text-muted-foreground text-xs leading-5 tabular-nums;
+  }
+
+  .waslix-data-value {
+    @apply leading-none font-semibold tracking-[-0.025em] tabular-nums;
   }
 }
 

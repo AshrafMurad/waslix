@@ -24,6 +24,10 @@
     color: var(--marketing-text);
     min-height: 100vh;
     overflow: clip;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1,
+      "tnum" 1;
   }
 
   .marketing-container {
@@ -43,7 +47,7 @@
     color: var(--marketing-brand);
     font-size: 0.72rem;
     font-weight: 700;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.13em;
     line-height: 1.4;
     text-transform: uppercase;
   }
@@ -335,10 +339,11 @@
     max-width: 980px;
     margin-block-start: 1.7rem;
     color: white;
-    font-size: clamp(3rem, 7.2vw, 6.9rem);
+    font-size: clamp(3rem, 7vw, 6rem);
     font-weight: 740;
-    letter-spacing: -0.075em;
-    line-height: 0.9;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+    text-wrap: balance;
   }
 
   .hero-copy h1 span {
@@ -351,7 +356,7 @@
     margin-block-start: 1.55rem;
     color: var(--marketing-muted);
     font-size: clamp(1rem, 1.5vw, 1.18rem);
-    line-height: 1.75;
+    line-height: 1.72;
   }
 
   .hero-actions {
