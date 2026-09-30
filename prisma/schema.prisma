@@ -14,7 +14,36 @@ enum PreferredLocale {
 
 enum MembershipStatus {
   ACTIVE
+  INVITED
   INACTIVE
+  SUSPENDED
+}
+
+enum WorkspaceStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum WorkspacePlan {
+  FREE
+  STARTER
+  PRO
+  BUSINESS
+}
+
+enum WorkspaceSubscriptionStatus {
+  TRIALING
+  ACTIVE
+  CANCELED
+  PAST_DUE
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
 }
 
 enum CustomerStatus {
@@ -255,6 +284,7 @@ model User {
   accounts        Account[]
   memberships     WorkspaceMember[]
   invitations     Invitation[]      @relation("InvitationInviter")
+  ownedWorkspaces Workspace[]        @relation("WorkspaceOwner")
 
   @@map("user")
 }
@@ -315,11 +345,16 @@ model Workspace {
   name                  String                 @db.VarChar(200)
   slug                  String                 @unique @db.VarChar(200)
   logo                  String?
+  ownerId               String?                @db.Uuid
+  status                WorkspaceStatus        @default(ACTIVE)
+  onboardingCompleted   Boolean                @default(true)
   metadata              String?
   timezone              String                 @default("UTC") @db.VarChar(100)
   defaultCurrency       String                 @default("USD") @db.Char(3)
   createdAt             DateTime               @default(now()) @db.Timestamptz(3)
   updatedAt             DateTime               @updatedAt @db.Timestamptz(3)
+  owner                 User?                  @relation("WorkspaceOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  subscription          WorkspaceSubscription?
   members               WorkspaceMember[]
   invitations           Invitation[]
   sessions              Session[]
@@ -355,7 +390,27 @@ model Workspace {
   importValidations     ImportValidation[]
   importRows            ImportRow[]
 
+  @@index([ownerId])
+  @@index([status, onboardingCompleted])
   @@map("workspace")
+}
+
+model WorkspaceSubscription {
+  id                     String                      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  workspaceId            String                      @unique @db.Uuid
+  plan                   WorkspacePlan               @default(FREE)
+  status                 WorkspaceSubscriptionStatus @default(ACTIVE)
+  startedAt              DateTime                    @default(now()) @db.Timestamptz(3)
+  trialEndsAt            DateTime?                   @db.Timestamptz(3)
+  currentPeriodEnd       DateTime?                   @db.Timestamptz(3)
+  externalCustomerId     String?
+  externalSubscriptionId String?
+  createdAt              DateTime                    @default(now()) @db.Timestamptz(3)
+  updatedAt              DateTime                    @updatedAt @db.Timestamptz(3)
+  workspace              Workspace                   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([plan, status])
+  @@map("workspace_subscription")
 }
 
 model WorkspaceCurrency {
@@ -413,15 +468,19 @@ model Invitation {
   workspaceId String    @db.Uuid
   email       String
   role        String    @db.VarChar(32)
-  status      String    @db.VarChar(32)
+  token       String    @unique
+  status      InvitationStatus @default(PENDING)
   expiresAt   DateTime  @db.Timestamptz(3)
+  acceptedAt  DateTime? @db.Timestamptz(3)
   createdAt   DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime  @updatedAt @db.Timestamptz(3)
   inviterId   String    @db.Uuid
   workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   inviter     User      @relation("InvitationInviter", fields: [inviterId], references: [id], onDelete: Cascade)
 
   @@index([workspaceId])
   @@index([email])
+  @@index([status, expiresAt])
   @@map("invitation")
 }
 

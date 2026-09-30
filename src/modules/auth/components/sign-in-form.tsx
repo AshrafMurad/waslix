@@ -14,9 +14,14 @@ import { authClient } from "@/lib/auth/auth-client";
 type SignInFormProps = {
   defaultEmail?: string;
   defaultPassword?: string;
+  redirectTo?: string;
 };
 
-export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
+export function SignInForm({
+  defaultEmail,
+  defaultPassword,
+  redirectTo = "/workspace",
+}: SignInFormProps) {
   const t = useTranslations("auth");
   const router = useRouter();
   const [error, setError] = useState<string>();
@@ -58,7 +63,7 @@ export function SignInForm({ defaultEmail, defaultPassword }: SignInFormProps) {
         return;
       }
 
-      router.replace("/overview");
+      router.replace(redirectTo);
       router.refresh();
     } catch {
       setError(t("signInFailed"));

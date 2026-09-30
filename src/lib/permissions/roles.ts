@@ -33,7 +33,13 @@ export function isWorkspaceRole(role: string): role is WorkspaceRole {
 }
 
 export type WorkspaceCapability =
-  "readWorkspace" | "manageWorkspaceMembership" | "transferWorkspaceOwnership";
+  | "readWorkspace"
+  | "updateWorkspace"
+  | "readSubscription"
+  | "manageSubscription"
+  | "inviteWorkspaceMembers"
+  | "manageWorkspaceMembership"
+  | "transferWorkspaceOwnership";
 
 export function hasWorkspaceCapability(
   role: WorkspaceRole,
@@ -45,6 +51,18 @@ export function hasWorkspaceCapability(
 
   if (capability === "transferWorkspaceOwnership") {
     return role === "ADMIN" || role === "CS_MANAGER";
+  }
+
+  if (capability === "readSubscription") {
+    return role === "ADMIN" || role === "CS_MANAGER";
+  }
+
+  if (
+    capability === "updateWorkspace" ||
+    capability === "manageSubscription" ||
+    capability === "inviteWorkspaceMembers"
+  ) {
+    return role === "ADMIN";
   }
 
   return role === "ADMIN";
