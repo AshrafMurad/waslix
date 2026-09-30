@@ -36,6 +36,8 @@ export default getRequestConfig(async ({ requestLocale }) => {
       workspace: (await import(`../../messages/${locale}/workspace.json`))
         .default,
       shell: (await import(`../../messages/${locale}/shell.json`)).default,
+      marketing: (await import(`../../messages/${locale}/marketing.json`))
+        .default,
     },
   };
 });

@@ -102,17 +102,11 @@ export default async function TeamPage({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="waslix-page">
       <div className="space-y-1">
-        <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-          {t("team.eyebrow")}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t("team.title")}
-        </h1>
-        <p className="text-muted-foreground max-w-3xl">
-          {t("team.description")}
-        </p>
+        <p className="waslix-eyebrow">{t("team.eyebrow")}</p>
+        <h1 className="waslix-page-title">{t("team.title")}</h1>
+        <p className="waslix-page-description">{t("team.description")}</p>
       </div>
 
       <Card>

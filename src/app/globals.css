@@ -117,10 +117,23 @@ html[lang="ar"] body {
 
   html {
     @apply h-full;
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
   }
 
   body {
     @apply bg-background text-foreground min-h-full font-sans text-sm antialiased;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1,
+      "tnum" 1;
+  }
+
+  ::selection {
+    @apply bg-brand text-brand-foreground;
   }
 
   button,
@@ -139,6 +152,40 @@ html[lang="ar"] body {
   button:disabled,
   select:disabled {
     @apply cursor-not-allowed;
+  }
+}
+
+@layer components {
+  .waslix-page {
+    @apply space-y-6;
+  }
+
+  .waslix-page-header {
+    @apply flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between;
+  }
+
+  .waslix-eyebrow {
+    @apply text-brand-accent text-xs font-semibold tracking-widest uppercase;
+  }
+
+  .waslix-page-title {
+    @apply text-2xl leading-tight font-semibold tracking-tight md:text-3xl;
+  }
+
+  .waslix-page-description {
+    @apply text-muted-foreground max-w-3xl text-sm leading-6;
+  }
+
+  .waslix-panel-header {
+    @apply border-b px-5 py-4;
+  }
+
+  .waslix-panel-title {
+    @apply text-base font-semibold tracking-tight;
+  }
+
+  .waslix-panel-description {
+    @apply text-muted-foreground mt-1 text-sm leading-6;
   }
 }
 

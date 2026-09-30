@@ -50,8 +50,10 @@ function Metric({
   return (
     <Card className="min-w-0 p-5">
       <CardContent className="space-y-3 p-0">
-        <p className="text-muted-foreground text-sm">{label}</p>
-        <p className="text-3xl font-semibold tabular-nums">{value}</p>
+        <p className="text-muted-foreground text-sm font-medium">{label}</p>
+        <p className="text-3xl leading-none font-semibold tabular-nums">
+          {value}
+        </p>
         <div className="bg-border h-px" />
         <p className={`text-sm tabular-nums ${toneClass}`}>{insight}</p>
       </CardContent>
@@ -118,16 +120,12 @@ export default async function AnalyticsPage({
     }));
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div className="waslix-page">
+      <div className="waslix-page-header lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-1">
-          <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-            {t("eyebrow")}
-          </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {t("title")}
-          </h1>
-          <p className="text-muted-foreground max-w-3xl">{t("description")}</p>
+          <p className="waslix-eyebrow">{t("eyebrow")}</p>
+          <h1 className="waslix-page-title">{t("title")}</h1>
+          <p className="waslix-page-description">{t("description")}</p>
         </div>
         <AnalyticsFilters
           filters={analytics.filters}

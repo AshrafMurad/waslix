@@ -58,10 +58,8 @@ export default async function WorkspacePage({
     <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-6 py-16">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-            {t("onboarding.eyebrow")}
-          </p>
-          <CardTitle>{t("onboarding.title")}</CardTitle>
+          <p className="waslix-eyebrow">{t("onboarding.eyebrow")}</p>
+          <CardTitle className="text-2xl">{t("onboarding.title")}</CardTitle>
           <CardDescription>{t("onboarding.description")}</CardDescription>
         </CardHeader>
         <CardContent>

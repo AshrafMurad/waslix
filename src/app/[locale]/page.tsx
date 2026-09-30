@@ -1,9 +1,10 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { MarketingPage } from "@/components/marketing/marketing-page";
 import { isLocale } from "@/i18n/config";
-import { Link, redirect } from "@/i18n/navigation";
+import { redirect } from "@/i18n/navigation";
 import {
   AuthenticationRequiredError,
   requireWorkspaceAccess,
@@ -13,6 +14,39 @@ import {
 type HomePageProps = {
   params: Promise<{ locale: string }>;
 };
+
+export async function generateMetadata({
+  params,
+}: HomePageProps): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+
+  const t = await getTranslations({ locale, namespace: "marketing.metadata" });
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+
+  return {
+    metadataBase: new URL(appUrl),
+    title: t("title"),
+    description: t("description"),
+    alternates: {
+      canonical: `/${locale}`,
+      languages: { en: "/en", ar: "/ar" },
+    },
+    openGraph: {
+      type: "website",
+      locale: locale === "ar" ? "ar_SA" : "en_US",
+      title: t("title"),
+      description: t("description"),
+      url: `/${locale}`,
+      siteName: "Waslix",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+    },
+  };
+}
 
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
@@ -39,39 +73,5 @@ export default async function HomePage({ params }: HomePageProps) {
     }
   }
 
-  const t = await getTranslations({ locale, namespace: "common" });
-
-  return (
-    <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-6 py-16">
-      <section className="bg-card mx-auto flex w-full max-w-2xl flex-col gap-6 rounded-xl border p-8 text-start shadow-sm">
-        <p className="text-muted-foreground text-sm font-medium tracking-wide uppercase">
-          {t("home.kicker")}
-        </p>
-        <div className="space-y-3">
-          <h1 className="text-4xl font-semibold tracking-tight">
-            {t("home.title")}
-          </h1>
-          <p className="text-muted-foreground max-w-xl text-base leading-7">
-            {t("home.description")}
-          </p>
-        </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild>
-            <Link href="/sign-in">{t("home.signIn")}</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/sign-up">{t("home.getStarted")}</Link>
-          </Button>
-        </div>
-        <div className="border-t pt-5">
-          <p className="text-muted-foreground text-sm leading-6">
-            {t("home.features")}
-          </p>
-        </div>
-        <footer className="text-muted-foreground text-xs">
-          {t("home.footer")}
-        </footer>
-      </section>
-    </main>
-  );
+  return <MarketingPage locale={locale} />;
 }

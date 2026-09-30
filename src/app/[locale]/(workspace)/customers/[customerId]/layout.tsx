@@ -61,7 +61,7 @@ export default async function CustomerLayout({
     : t("missing");
 
   return (
-    <div className="space-y-6">
+    <div className="waslix-page">
       {customer.status === "ARCHIVED" ? (
         <div className="border-attention/40 bg-attention/10 text-attention rounded-md border px-4 py-3 font-medium">
           {t("archivedBanner")}
@@ -75,10 +75,8 @@ export default async function CustomerLayout({
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1 text-start">
-            <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-              {t("customer360")}
-            </p>
-            <h1 className="truncate text-start text-2xl font-semibold tracking-tight">
+            <p className="waslix-eyebrow">{t("customer360")}</p>
+            <h1 className="waslix-page-title truncate text-start">
               <bdi dir="auto">{customer.name}</bdi>
             </h1>
             <p className="text-muted-foreground mt-1 text-start">

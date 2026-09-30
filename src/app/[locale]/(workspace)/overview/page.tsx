@@ -6,12 +6,7 @@ import {
 import { MinusIcon, TrendingDownIcon, TrendingUpIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
@@ -73,15 +68,11 @@ export default async function OverviewPage({
     },
   }));
   return (
-    <div className="space-y-6">
+    <div className="waslix-page">
       <div className="space-y-1">
-        <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-          {t("eyebrow")}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-        <p className="text-muted-foreground max-w-2xl text-sm leading-6">
-          {t("description")}
-        </p>
+        <p className="waslix-eyebrow">{t("eyebrow")}</p>
+        <h1 className="waslix-page-title">{t("title")}</h1>
+        <p className="waslix-page-description max-w-2xl">{t("description")}</p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map(([key, value, baseline]) => {
@@ -106,27 +97,19 @@ export default async function OverviewPage({
               : trend === "decrease"
                 ? TrendingDownIcon
                 : MinusIcon;
-          const sparklinePath =
-            trend === "increase"
-              ? "M4 42 L20 36 L34 38 L49 24 L62 27 L76 12"
-              : trend === "decrease"
-                ? "M4 14 L20 20 L34 18 L49 32 L62 29 L76 44"
-                : "M4 29 L18 26 L32 31 L46 27 L60 30 L76 28";
-          const sparklineFillPath = `${sparklinePath} L76 56 L4 56 Z`;
-
           return (
             <Card key={key} className="gap-4 overflow-hidden py-0">
               <CardHeader className="px-5 pt-5 pb-0">
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-sm font-medium">
                   {attentionT(`metrics.${key}`)}
                 </p>
               </CardHeader>
-              <CardContent className="flex items-start justify-between gap-4 px-5">
-                <p className="text-4xl leading-none font-semibold tabular-nums">
+              <CardContent className="flex items-end justify-between gap-4 px-5 pb-5">
+                <p className="text-3xl leading-none font-semibold tabular-nums md:text-4xl">
                   {format.number(value)}
                 </p>
                 <span
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-medium tabular-nums ${trendClass} ${trendPanelClass}`}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium tabular-nums ${trendClass} ${trendPanelClass}`}
                 >
                   <TrendIcon className="size-3.5" aria-hidden="true" />
                   {attentionT(`metricsTrend.${trend}`, {
@@ -134,19 +117,14 @@ export default async function OverviewPage({
                   })}
                 </span>
               </CardContent>
-              <CardFooter
-                className={`mx-5 mb-5  ${trendPanelClass}`}
-              >
-
-              </CardFooter>
             </Card>
           );
         })}
       </div>
       <Card className="gap-0 py-0">
-        <div className="border-b p-5">
-          <h2 className="text-lg font-semibold">{attentionT("title")}</h2>
-          <p className="text-muted-foreground mt-1 text-sm">
+        <div className="waslix-panel-header">
+          <h2 className="waslix-panel-title">{attentionT("title")}</h2>
+          <p className="waslix-panel-description">
             {attentionT("description")}
           </p>
         </div>
@@ -159,10 +137,10 @@ export default async function OverviewPage({
       <div className="grid gap-6 lg:grid-cols-2">
         <Card className="p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-semibold">{attentionT("myTasks")}</h2>
+            <h2 className="waslix-panel-title">{attentionT("myTasks")}</h2>
             <Link
               href="/tasks"
-              className="text-brand-accent text-sm hover:underline"
+              className="text-brand-accent text-sm font-medium hover:underline"
             >
               {attentionT("viewAll")}
             </Link>
@@ -187,7 +165,7 @@ export default async function OverviewPage({
           )}
         </Card>
         <Card className="p-5">
-          <h2 className="mb-4 font-semibold">
+          <h2 className="waslix-panel-title mb-4">
             {attentionT("portfolioHealth")}
           </h2>
           <div className="grid grid-cols-3 gap-3 text-center">

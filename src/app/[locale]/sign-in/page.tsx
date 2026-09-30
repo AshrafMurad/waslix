@@ -44,9 +44,19 @@ export default async function SignInPage({
   const redirectTo = invite ? `/invite/${invite}` : "/workspace";
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 py-16">
-      <section className="bg-card flex w-full max-w-md flex-col gap-6 rounded-xl border p-8">
-        <h1 className="text-3xl font-semibold">{t("title")}</h1>
+    <main className="bg-background flex min-h-screen items-center justify-center px-6 py-16">
+      <section className="bg-card border-border/80 flex w-full max-w-md flex-col gap-6 rounded-lg border p-6 shadow-xs sm:p-8">
+        <div className="flex items-center gap-3">
+          <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-md text-base font-semibold shadow-xs">
+            W
+          </span>
+          <div>
+            <p className="waslix-eyebrow">Waslix</p>
+            <h1 className="text-2xl font-semibold tracking-tight">
+              {t("title")}
+            </h1>
+          </div>
+        </div>
         <SignInForm
           redirectTo={redirectTo}
           defaultEmail={

@@ -64,17 +64,11 @@ export default async function SettingsPage({
   );
 
   return (
-    <div className="space-y-6">
+    <div className="waslix-page">
       <div className="space-y-1">
-        <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-          {t("settings.eyebrow")}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t("settings.title")}
-        </h1>
-        <p className="text-muted-foreground max-w-3xl">
-          {t("settings.description")}
-        </p>
+        <p className="waslix-eyebrow">{t("settings.eyebrow")}</p>
+        <h1 className="waslix-page-title">{t("settings.title")}</h1>
+        <p className="waslix-page-description">{t("settings.description")}</p>
       </div>
 
       <Card>

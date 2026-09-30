@@ -62,16 +62,14 @@ export default async function CustomersPage({
     : null;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="waslix-page">
+      <div className="waslix-page-header">
         <div className="space-y-1">
-          <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-            {t("eyebrow")}
+          <p className="waslix-eyebrow">{t("eyebrow")}</p>
+          <h1 className="waslix-page-title">{t("title")}</h1>
+          <p className="waslix-page-description max-w-2xl">
+            {t("description")}
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {t("title")}
-          </h1>
-          <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
         </div>
         {canCreateCustomer(access) && initialStage && initialOwner ? (
           <CustomerFormDialog
@@ -103,7 +101,7 @@ export default async function CustomersPage({
         ) : null}
       </div>
 
-      <Card>
+      <Card className="gap-0 overflow-hidden py-0">
         <CustomerFilters
           key={JSON.stringify(portfolio.filters)}
           filters={{
@@ -188,10 +186,10 @@ export default async function CustomersPage({
         )}
       </Card>
       {access.role === "ADMIN" ? (
-        <Card className="p-4">
+        <Card className="p-5">
           <div className="mb-4 space-y-1">
-            <h2 className="text-lg font-semibold">{t("import.title")}</h2>
-            <p className="text-muted-foreground text-sm">
+            <h2 className="waslix-panel-title">{t("import.title")}</h2>
+            <p className="waslix-panel-description">
               {t("import.description")}
             </p>
           </div>

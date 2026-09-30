@@ -7,6 +7,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import "../globals.css";
+import "../../components/marketing/marketing.css";
 
 import { ThemeInitializer } from "@/components/layout/theme-initializer";
 import { getDirection, isLocale, locales } from "@/i18n/config";

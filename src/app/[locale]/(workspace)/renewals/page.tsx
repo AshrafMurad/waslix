@@ -35,15 +35,11 @@ export default async function RenewalsPage({
     getFormatter({ locale }),
   ]);
   return (
-    <div className="space-y-6">
+    <div className="waslix-page">
       <div className="space-y-1">
-        <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-          {t("portfolio.eyebrow")}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t("portfolio.title")}
-        </h1>
-        <p className="text-muted-foreground max-w-2xl text-sm leading-6">
+        <p className="waslix-eyebrow">{t("portfolio.eyebrow")}</p>
+        <h1 className="waslix-page-title">{t("portfolio.title")}</h1>
+        <p className="waslix-page-description max-w-2xl">
           {t("portfolio.description")}
         </p>
       </div>

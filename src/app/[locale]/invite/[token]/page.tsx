@@ -37,10 +37,11 @@ export default async function InvitationPage({
     invitation.expiresAt <= new Date();
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-6 py-16">
+    <main className="bg-background flex min-h-screen items-center justify-center px-6 py-16">
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>{t("invite.title")}</CardTitle>
+          <p className="waslix-eyebrow">Waslix</p>
+          <CardTitle className="text-2xl">{t("invite.title")}</CardTitle>
           <CardDescription>
             {invitation
               ? t("invite.description", {

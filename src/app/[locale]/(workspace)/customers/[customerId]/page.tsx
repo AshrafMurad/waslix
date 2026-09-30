@@ -41,14 +41,14 @@ export default async function CustomerOverviewPage({
     customer.status === "ACTIVE" && canEditCustomer(access, customer.owner.id);
 
   return (
-    <div className="space-y-6">
+    <div className="waslix-page">
       <div className="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]">
         <Card className="p-5">
-          <h2 className="text-lg font-semibold">{t("overview.title")}</h2>
-          <p className="text-muted-foreground mt-2">
+          <h2 className="waslix-panel-title">{t("overview.title")}</h2>
+          <p className="waslix-panel-description">
             {t("overview.description")}
           </p>
-          <div className="bg-raised mt-5 rounded-md p-4">
+          <div className="bg-raised/70 border-border/70 mt-5 rounded-md border p-4">
             <h3 className="font-medium">{t("overview.healthTitle")}</h3>
             <p className="text-muted-foreground mt-1">
               {customer.health?.overallScore !== null &&
@@ -98,8 +98,8 @@ export default async function CustomerOverviewPage({
           ) : null}
           {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
             <Card className="p-5">
-              <h2 className="font-semibold">{t("archive.title")}</h2>
-              <p className="text-muted-foreground my-2">
+              <h2 className="waslix-panel-title">{t("archive.title")}</h2>
+              <p className="waslix-panel-description my-2">
                 {t("archive.description")}
               </p>
               <ArchiveCustomerButton customerId={customerId} locale={locale} />

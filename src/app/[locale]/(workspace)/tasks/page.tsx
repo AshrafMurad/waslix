@@ -39,16 +39,14 @@ export default async function TasksPage({
       ? options.owners.filter((owner) => owner.id === access.memberId)
       : options.owners;
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div className="waslix-page">
+      <div className="waslix-page-header">
         <div className="space-y-1">
-          <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-            {t("eyebrow")}
+          <p className="waslix-eyebrow">{t("eyebrow")}</p>
+          <h1 className="waslix-page-title">{t("title")}</h1>
+          <p className="waslix-page-description max-w-2xl">
+            {t("description")}
           </p>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {t("title")}
-          </h1>
-          <p className="text-muted-foreground max-w-2xl">{t("description")}</p>
         </div>
         {access.role !== "VIEWER" ? (
           <TaskFormDialog
@@ -65,7 +63,7 @@ export default async function TasksPage({
           />
         ) : null}
       </div>
-      <Card className="gap-0 py-0">
+      <Card className="gap-0 overflow-hidden py-0">
         <TaskViewTabs
           activeFilter={result.filter}
           label={t("filters.label")}
@@ -89,7 +87,7 @@ export default async function TasksPage({
         <div className="flex justify-end">
           <Link
             href={`/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
-            className="hover:bg-raised rounded-md border px-4 py-2 font-medium"
+            className="bg-surface hover:bg-raised border-border/80 rounded-md border px-4 py-2 font-medium transition-colors"
           >
             {t("pagination.next")}
           </Link>

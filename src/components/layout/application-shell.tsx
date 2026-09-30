@@ -126,7 +126,7 @@ function Navigation({
             <Link
               key={item.key}
               href={item.href}
-              className="hover:bg-raised flex min-h-10 items-center gap-3 rounded-md px-3 font-medium"
+              className="text-muted-foreground hover:bg-raised hover:text-foreground focus-visible:bg-raised flex min-h-10 items-center gap-3 rounded-md border border-transparent px-3 font-medium transition-colors"
             >
               <Icon aria-hidden="true" className="size-4" />
               <span>{labels.nav[item.key]}</span>
@@ -146,7 +146,7 @@ function Navigation({
             key={item.key}
             aria-disabled="true"
             title={labels.unavailable}
-            className="text-muted-foreground flex min-h-10 items-center gap-3 rounded-md px-3 opacity-60"
+            className="text-muted-foreground flex min-h-10 items-center gap-3 rounded-md border border-transparent px-3 opacity-60"
           >
             <Icon aria-hidden="true" className="size-4" />
             <span>{labels.nav[item.key]}</span>
@@ -161,7 +161,7 @@ function Navigation({
           <Link
             key={item.key}
             href={item.href}
-            className="hover:bg-raised flex min-h-10 items-center gap-3 rounded-md px-3 font-medium"
+            className="text-muted-foreground hover:bg-raised hover:text-foreground focus-visible:bg-raised flex min-h-10 items-center gap-3 rounded-md border border-transparent px-3 font-medium transition-colors"
           >
             <Icon aria-hidden="true" className="size-4" />
             <span>{labels.nav[item.key]}</span>
@@ -193,7 +193,7 @@ export function ApplicationShell({
     user.name.trim().charAt(0).toLocaleUpperCase(locale) || "W";
 
   return (
-    <div className="bg-background min-h-screen md:grid md:grid-cols-[16rem_1fr]">
+    <div className="bg-background min-h-screen md:grid md:grid-cols-[15rem_1fr] xl:grid-cols-[16rem_1fr]">
       <a
         href="#workspace-content"
         className="bg-surface text-foreground fixed start-3 top-3 z-50 -translate-y-16 rounded-md border px-3 py-2 font-medium shadow-sm transition-transform focus-visible:translate-y-0 focus-visible:ring-2"
@@ -201,8 +201,8 @@ export function ApplicationShell({
         {labels.skipToContent}
       </a>
       <aside className="bg-surface sticky top-0 hidden h-screen border-e p-4 md:flex md:flex-col">
-        <Link href="/overview" className="mb-6 flex items-center gap-3 px-2">
-          <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-md text-base font-semibold">
+        <Link href="/overview" className="mb-5 flex items-center gap-3 px-2">
+          <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-md text-base font-semibold shadow-xs">
             W
           </span>
           <span className="text-lg font-semibold tracking-tight">Waslix</span>
@@ -211,13 +211,13 @@ export function ApplicationShell({
           activeWorkspaceId={workspace.id}
           workspaces={workspaces}
         />
-        <div className="mt-6 flex-1 overflow-y-auto">
+        <div className="mt-5 flex-1 overflow-y-auto pe-1">
           <Navigation labels={labels} role={role} />
         </div>
       </aside>
 
       <div className="min-w-0">
-        <header className="bg-background/95 sticky top-0 z-20 flex h-16 items-center gap-2 border-b px-4 md:px-6">
+        <header className="bg-background sticky top-0 z-20 flex h-16 items-center gap-2 border-b px-4 md:px-6">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -244,7 +244,7 @@ export function ApplicationShell({
             </SheetContent>
           </Sheet>
           <Link href="/overview" className="flex items-center gap-2 md:hidden">
-            <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-md font-semibold">
+            <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-md font-semibold shadow-xs">
               W
             </span>
             <span className="font-semibold">Waslix</span>
@@ -270,7 +270,7 @@ export function ApplicationShell({
         <main
           id="workspace-content"
           tabIndex={-1}
-          className="mx-auto w-full max-w-screen-2xl p-4 md:p-6 lg:p-8"
+          className="mx-auto w-full max-w-screen-2xl p-4 md:p-6 xl:p-8"
         >
           {children}
         </main>

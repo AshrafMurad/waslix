@@ -29,15 +29,11 @@ export default async function SubscriptionPage({
   const subscription = state.subscription;
 
   return (
-    <div className="space-y-6">
+    <div className="waslix-page">
       <div className="space-y-1">
-        <p className="text-brand-accent text-xs font-medium tracking-wide uppercase">
-          {t("subscription.eyebrow")}
-        </p>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t("subscription.title")}
-        </h1>
-        <p className="text-muted-foreground max-w-3xl">
+        <p className="waslix-eyebrow">{t("subscription.eyebrow")}</p>
+        <h1 className="waslix-page-title">{t("subscription.title")}</h1>
+        <p className="waslix-page-description">
           {t("subscription.description")}
         </p>
       </div>
