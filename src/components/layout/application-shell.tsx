@@ -105,7 +105,7 @@ function Navigation({
   closeOnNavigate?: boolean;
 }) {
   return (
-    <nav aria-label={labels.navigation} className="flex flex-col gap-1">
+    <nav aria-label={labels.navigation} className="flex flex-col gap-1.5">
       {primaryNavigation.map((item) => {
         if (item.href) {
           return (
@@ -167,12 +167,15 @@ export function ApplicationShell({
       >
         {labels.skipToContent}
       </a>
-      <aside className="bg-surface sticky top-0 hidden h-screen border-e p-4 md:flex md:flex-col">
-        <Link href="/overview" className="mb-4 flex items-center gap-3 px-2">
-          <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-md text-base font-semibold shadow-xs">
+      <aside className="bg-surface/95 sticky top-0 hidden h-screen border-e p-4 shadow-[12px_0_40px_-34px_rgb(15_23_42_/_0.75)] md:flex md:flex-col dark:shadow-[14px_0_52px_-36px_rgb(0_0_0_/_0.95)]">
+        <Link
+          href="/overview"
+          className="mb-4 flex items-center gap-3 px-2 py-1"
+        >
+          <span className="bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em] shadow-[0_16px_32px_-22px_rgb(15_118_110_/_0.9)]">
             W
           </span>
-          <span className="text-lg font-semibold tracking-tight">Waslix</span>
+          <span className="text-xl font-black tracking-[-0.05em]">Waslix</span>
         </Link>
         <div className="mt-4 flex-1 overflow-y-auto pe-1">
           <Navigation labels={labels} role={role} />
@@ -180,7 +183,7 @@ export function ApplicationShell({
       </aside>
 
       <div className="min-w-0">
-        <header className="bg-background sticky top-0 z-20 flex h-16 items-center gap-2 border-b px-4 md:px-6">
+        <header className="bg-background/92 sticky top-0 z-20 flex h-16 items-center gap-2 border-b px-4 shadow-[0_18px_42px_-38px_rgb(15_23_42_/_0.65)] md:px-6 dark:shadow-[0_18px_42px_-36px_rgb(0_0_0_/_0.9)]">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -201,10 +204,10 @@ export function ApplicationShell({
                 <SheetDescription>{labels.navigation}</SheetDescription>
               </SheetHeader>
               <div className="flex min-h-16 items-center gap-3 border-b px-4 pe-12">
-                <span className="bg-brand text-brand-foreground flex size-9 items-center justify-center rounded-md text-base font-semibold shadow-xs">
+                <span className="bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em] shadow-[0_16px_32px_-22px_rgb(15_118_110_/_0.9)]">
                   W
                 </span>
-                <span className="text-lg font-semibold tracking-tight">
+                <span className="text-xl font-black tracking-[-0.05em]">
                   Waslix
                 </span>
               </div>
@@ -227,10 +230,10 @@ export function ApplicationShell({
             </SheetContent>
           </Sheet>
           <Link href="/overview" className="flex items-center gap-2 md:hidden">
-            <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-md font-semibold shadow-xs">
+            <span className="bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-md font-black tracking-[-0.08em] shadow-[0_12px_24px_-18px_rgb(15_118_110_/_0.9)]">
               W
             </span>
-            <span className="font-semibold">Waslix</span>
+            <span className="font-black tracking-[-0.04em]">Waslix</span>
           </Link>
           <div className="ms-auto md:ms-4 md:w-80 lg:w-96">
             <GlobalSearch

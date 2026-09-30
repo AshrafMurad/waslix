@@ -57,10 +57,10 @@ export function NavigationLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "focus-visible:bg-raised flex min-h-10 items-center gap-3 rounded-md border px-3 font-medium transition-colors",
+        "focus-visible:bg-raised flex min-h-10 items-center gap-3 rounded-md border px-3 font-bold transition-[background-color,border-color,color,box-shadow]",
         active
-          ? "border-brand/20 bg-brand/10 text-brand-accent"
-          : "text-muted-foreground hover:bg-raised hover:text-foreground border-transparent",
+          ? "border-brand/30 bg-brand/10 text-brand-accent shadow-[inset_3px_0_0_var(--brand)] rtl:shadow-[inset_-3px_0_0_var(--brand)]"
+          : "text-muted-foreground hover:bg-raised hover:text-foreground hover:border-border/80 border-transparent",
       )}
     >
       <Icon aria-hidden="true" className="size-4" />

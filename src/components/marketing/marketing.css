@@ -1,11 +1,11 @@
 @layer components {
   .marketing-shell {
-    --marketing-bg: #050505;
-    --marketing-surface: #08090a;
-    --marketing-surface-2: #0b0c0d;
-    --marketing-surface-3: #101112;
-    --marketing-line: rgba(255, 255, 255, 0.08);
-    --marketing-line-strong: rgba(255, 255, 255, 0.14);
+    --marketing-bg: #030404;
+    --marketing-surface: #070908;
+    --marketing-surface-2: #0a0d0c;
+    --marketing-surface-3: #111615;
+    --marketing-line: rgba(255, 255, 255, 0.11);
+    --marketing-line-strong: rgba(94, 234, 212, 0.24);
     --marketing-text: #f6f7f8;
     --marketing-muted: #9ca3af;
     --marketing-dim: #666d77;
@@ -20,7 +20,7 @@
         rgba(15, 118, 110, 0.18),
         transparent 34rem
       ),
-      linear-gradient(180deg, #050505 0%, #070808 42%, #050505 100%);
+      linear-gradient(180deg, #030404 0%, #070a09 42%, #030404 100%);
     color: var(--marketing-text);
     min-height: 100vh;
     overflow: clip;
@@ -31,7 +31,7 @@
   }
 
   .marketing-container {
-    width: min(100% - 2rem, 1180px);
+    width: min(100% - 2rem, 1220px);
     margin-inline: auto;
   }
 
@@ -76,9 +76,10 @@
     width: 2.1rem;
     height: 2.1rem;
     overflow: hidden;
-    border: 1px solid rgba(94, 234, 212, 0.35);
+    border: 1px solid rgba(94, 234, 212, 0.52);
     border-radius: 0.55rem;
     background: #0f766e;
+    box-shadow: 0 1rem 2.6rem rgba(15, 118, 110, 0.28);
   }
 
   .marketing-brand-mark::before {
@@ -133,7 +134,7 @@
     padding-inline: 1.15rem;
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.18),
-      0 1rem 2.5rem rgba(15, 118, 110, 0.22);
+      0 1.4rem 3.2rem rgba(15, 118, 110, 0.32);
   }
 
   .marketing-button-small {
@@ -171,7 +172,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: min(100% - 2rem, 1160px);
+    width: min(100% - 2rem, 1200px);
     min-height: 3.9rem;
     margin-inline: auto;
     padding: 0.55rem 0.65rem 0.55rem 0.85rem;
@@ -280,17 +281,24 @@
     position: absolute;
     inset: 0;
     z-index: -3;
-    background-image:
-      linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
-    background-size: 72px 72px;
+    background:
+      radial-gradient(
+        circle at 24% 18%,
+        rgba(94, 234, 212, 0.11),
+        transparent 18rem
+      ),
+      radial-gradient(
+        circle at 78% 32%,
+        rgba(94, 234, 212, 0.08),
+        transparent 22rem
+      );
     mask-image: radial-gradient(circle at 50% 22%, black, transparent 72%);
   }
 
   .hero-orbit {
     position: absolute;
     z-index: -2;
-    border: 1px solid rgba(94, 234, 212, 0.1);
+    border: 1px solid rgba(94, 234, 212, 0.18);
     border-radius: 999px;
     opacity: 0.9;
   }
@@ -336,11 +344,11 @@
   }
 
   .hero-copy h1 {
-    max-width: 980px;
+    max-width: 1060px;
     margin-block-start: 1.7rem;
     color: white;
-    font-size: clamp(3rem, 7vw, 6rem);
-    font-weight: 740;
+    font-size: clamp(3.35rem, 8vw, 6rem);
+    font-weight: 800;
     letter-spacing: -0.045em;
     line-height: 0.95;
     text-wrap: balance;
@@ -421,10 +429,11 @@
     background: linear-gradient(
       180deg,
       rgba(16, 17, 18, 0.98),
-      rgba(8, 9, 10, 0.98)
+      rgba(5, 8, 7, 0.98)
     );
     box-shadow:
-      0 4rem 7rem rgba(0, 0, 0, 0.48),
+      0 5rem 8rem rgba(0, 0, 0, 0.58),
+      0 0 0 1px rgba(94, 234, 212, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.06);
     transform: rotateX(var(--hero-rx, 0deg)) rotateY(var(--hero-ry, 0deg));
     transform-style: preserve-3d;
@@ -493,9 +502,9 @@
     flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
-    border: 1px solid var(--marketing-line);
+    border: 1px solid var(--marketing-line-strong);
     border-radius: 0.9rem;
-    background: rgba(255, 255, 255, 0.025);
+    background: rgba(94, 234, 212, 0.035);
     padding: 0.9rem;
   }
 
@@ -535,9 +544,9 @@
   }
   .portfolio-chart-panel,
   .portfolio-list-panel {
-    border: 1px solid var(--marketing-line);
+    border: 1px solid var(--marketing-line-strong);
     border-radius: 0.95rem;
-    background: rgba(255, 255, 255, 0.022);
+    background: rgba(255, 255, 255, 0.032);
     padding: 0.9rem;
   }
   .portfolio-chart-panel {
@@ -628,7 +637,7 @@
   .portfolio-table-header {
     padding: 0.55rem 0.65rem;
     border-radius: 0.65rem;
-    background: rgba(255, 255, 255, 0.035);
+    background: rgba(94, 234, 212, 0.07);
   }
   .portfolio-account-row {
     min-height: 3rem;
@@ -672,10 +681,12 @@
     width: min(16rem, 42vw);
     border: 1px solid var(--marketing-line-strong);
     border-radius: 1rem;
-    background: rgba(10, 11, 12, 0.86);
+    background: rgba(7, 10, 9, 0.92);
     padding: 0.8rem;
     backdrop-filter: blur(12px);
-    box-shadow: 0 1.6rem 4rem rgba(0, 0, 0, 0.38);
+    box-shadow:
+      0 1.9rem 4.6rem rgba(0, 0, 0, 0.48),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
     animation: card-float 5s ease-in-out infinite;
   }
 
@@ -740,8 +751,8 @@
   .final-cta-content h2 {
     margin-block-start: 0.8rem;
     color: white;
-    font-size: clamp(2.1rem, 4.5vw, 4.5rem);
-    font-weight: 740;
+    font-size: clamp(2.35rem, 5vw, 5rem);
+    font-weight: 800;
     letter-spacing: -0.065em;
     line-height: 0.98;
   }
@@ -800,8 +811,8 @@
   .insight-card,
   .demo-panel,
   .integration-map {
-    border: 1px solid var(--marketing-line);
-    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid var(--marketing-line-strong);
+    background: rgba(255, 255, 255, 0.032);
   }
   .source-node {
     border-radius: 1rem;
