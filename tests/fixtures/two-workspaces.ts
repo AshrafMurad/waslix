@@ -113,7 +113,7 @@ export async function seedTwoWorkspaceFixture(
     );
   }
 
-  const workspaceASlug = options.demoMode ? "waslix-demo" : "fixture-alpha";
+  const workspaceASlug = "fixture-alpha";
   const workspaceAName = options.demoMode
     ? "Waslix Demo Workspace"
     : "Fixture Alpha";
@@ -205,11 +205,12 @@ export async function seedTwoWorkspaceFixture(
   };
 
   if (options.demoMode) {
-    await prisma.workspaceMember.deleteMany({
+    await prisma.workspaceMember.updateMany({
       where: {
         userId: users.shared.id,
         workspaceId: { not: workspaceA.id },
       },
+      data: { status: "INACTIVE" },
     });
   }
 

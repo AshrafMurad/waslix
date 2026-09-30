@@ -468,7 +468,7 @@ model Invitation {
   workspaceId String    @db.Uuid
   email       String
   role        String    @db.VarChar(32)
-  token       String    @unique
+  token       String?   @unique
   status      InvitationStatus @default(PENDING)
   expiresAt   DateTime  @db.Timestamptz(3)
   acceptedAt  DateTime? @db.Timestamptz(3)
