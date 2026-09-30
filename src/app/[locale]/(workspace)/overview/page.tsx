@@ -59,6 +59,10 @@ export default async function OverviewPage({
     customer: {
       id: item.customer.id,
       name: item.customer.name,
+      attentionSince: format.dateTime(item.createdAt, { dateStyle: "medium" }),
+      nearestDeadline: item.nearestDeadline
+        ? format.dateTime(item.nearestDeadline, { dateStyle: "medium" })
+        : null,
       renewalDate: item.customer.renewalDate
         ? format.dateTime(item.customer.renewalDate, { dateStyle: "medium" })
         : null,

@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
-import { MoreHorizontal, Pencil, SlidersHorizontal } from "lucide-react";
+import { Pencil, SlidersHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -12,16 +12,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
+import { OperationalCallout } from "@/components/shared/operational-callout";
 import {
   Table,
   TableBody,
@@ -182,39 +177,30 @@ function RiskRow({
       <TableCell className="w-0 align-top whitespace-normal md:align-middle">
         {risk.canManage ? (
           <>
-            <div className="flex justify-start md:justify-center">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon-sm"
-                    aria-label={t("dialog.actions")}
-                  >
-                    <MoreHorizontal aria-hidden="true" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  {risk.status !== "RESOLVED" ? (
-                    <DropdownMenuItem
-                      onSelect={() => {
-                        setEditOperationKey(crypto.randomUUID());
-                        setEditOpen(true);
-                      }}
-                    >
-                      <Pencil aria-hidden="true" />
-                      {t("actions.edit")}
-                    </DropdownMenuItem>
-                  ) : null}
-                  <DropdownMenuItem
-                    onSelect={() => {
-                      setManageOpen(true);
-                    }}
-                  >
-                    <SlidersHorizontal aria-hidden="true" />
-                    {t("dialog.manage")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <div className="flex flex-wrap justify-start gap-2 md:justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setManageOpen(true)}
+              >
+                <SlidersHorizontal aria-hidden="true" />
+                {t("dialog.manage")}
+              </Button>
+              {risk.status !== "RESOLVED" ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={t("actions.edit")}
+                  onClick={() => {
+                    setEditOperationKey(crypto.randomUUID());
+                    setEditOpen(true);
+                  }}
+                >
+                  <Pencil aria-hidden="true" />
+                </Button>
+              ) : null}
             </div>
             {risk.status !== "RESOLVED" ? (
               <RiskFormDialog
@@ -239,6 +225,17 @@ function RiskRow({
                     {t("dialog.manageDescription")}
                   </DialogDescription>
                 </DialogHeader>
+                <OperationalCallout
+                  tone={
+                    risk.status === "RESOLVED"
+                      ? "healthy"
+                      : risk.severity === "CRITICAL" || risk.severity === "HIGH"
+                        ? "risk"
+                        : "attention"
+                  }
+                  title={t("dialog.consequenceTitle")}
+                  description={t("dialog.consequenceDescription")}
+                />
                 <div className="bg-raised grid gap-3 rounded-md p-4 text-sm sm:grid-cols-2">
                   <div>
                     <p className="text-muted-foreground text-xs">
@@ -419,38 +416,40 @@ export function RiskList(props: {
       </Empty>
     );
   return (
-    <Table dir={props.locale === "ar" ? "rtl" : "ltr"}>
-      <TableHeader>
-        <TableRow className="bg-raised hover:bg-raised">
-          <TableHead className="px-4">{t("columns.risk")}</TableHead>
-          <TableHead className="hidden px-4 sm:table-cell">
-            {t("columns.severity")}
-          </TableHead>
-          <TableHead className="hidden px-4 sm:table-cell">
-            {t("columns.status")}
-          </TableHead>
-          <TableHead className="hidden px-4 lg:table-cell">
-            {t("columns.owner")}
-          </TableHead>
-          <TableHead className="hidden px-4 xl:table-cell">
-            {t("columns.mitigation")}
-          </TableHead>
-          <TableHead className="px-4 text-start md:text-center">
-            {t("columns.actions")}
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {props.risks.map((risk) => (
-          <RiskRow
-            key={risk.id}
-            risk={risk}
-            locale={props.locale}
-            customers={props.customers}
-            owners={props.owners}
-          />
-        ))}
-      </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+      <Table dir={props.locale === "ar" ? "rtl" : "ltr"}>
+        <TableHeader>
+          <TableRow className="bg-raised hover:bg-raised">
+            <TableHead className="px-4">{t("columns.risk")}</TableHead>
+            <TableHead className="hidden px-4 sm:table-cell">
+              {t("columns.severity")}
+            </TableHead>
+            <TableHead className="hidden px-4 sm:table-cell">
+              {t("columns.status")}
+            </TableHead>
+            <TableHead className="hidden px-4 lg:table-cell">
+              {t("columns.owner")}
+            </TableHead>
+            <TableHead className="hidden px-4 xl:table-cell">
+              {t("columns.mitigation")}
+            </TableHead>
+            <TableHead className="px-4 text-start md:text-center">
+              {t("columns.actions")}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {props.risks.map((risk) => (
+            <RiskRow
+              key={risk.id}
+              risk={risk}
+              locale={props.locale}
+              customers={props.customers}
+              owners={props.owners}
+            />
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

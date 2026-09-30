@@ -14,7 +14,8 @@
     "date": "Renewal date",
     "stage": "Stage",
     "readiness": "Readiness",
-    "value": "Contract value"
+    "value": "Contract value",
+    "action": "Next step"
   },
   "form": {
     "create": "Create renewal",
@@ -53,7 +54,8 @@
     "notAssessed": "Not assessed",
     "pending": "Readiness is pending recalculation.",
     "window": "Not assessed until the 60-day readiness window.",
-    "calculated": "Calculated {date}"
+    "calculated": "Calculated {date}",
+    "evidence": "Readiness evidence"
   },
   "reasons": {
     "HEALTH_AT_RISK": "Health is at risk.",
@@ -79,7 +81,14 @@
     "saving": "Saving...",
     "changeStage": "Change stage",
     "recordRenewed": "Record renewed",
-    "recordChurned": "Record churned"
+    "recordChurned": "Record churned",
+    "openCycle": "Open cycle"
+  },
+  "workflow": {
+    "title": "Stage changes affect the active renewal record",
+    "description": "Move the cycle only when the team has confirmed progress. Outcomes create history and start the next cycle where applicable.",
+    "churnTitle": "Churn is terminal for this cycle",
+    "churnDescription": "Record churn only after confirmation. Add the reason so the timeline explains the outcome later."
   },
   "feedback": {
     "saved": "Renewal saved.",

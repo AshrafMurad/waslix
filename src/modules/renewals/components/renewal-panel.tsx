@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
+import { OperationalCallout } from "@/components/shared/operational-callout";
 
 import {
   changeRenewalStageAction,
@@ -179,7 +180,36 @@ function RenewalDetails({
         />
         <Metric label={t("fields.stage")} value={t(`stage.${renewal.stage}`)} />
       </div>
+      <OperationalCallout
+        tone={
+          renewal.readinessStatus === "AT_RISK"
+            ? "risk"
+            : renewal.readinessStatus === "NEEDS_ATTENTION"
+              ? "attention"
+              : renewal.readinessStatus === "HEALTHY"
+                ? "healthy"
+                : "neutral"
+        }
+        title={
+          renewal.readinessStatus
+            ? t(`readiness.${renewal.readinessStatus}`)
+            : t("readiness.notAssessed")
+        }
+        description={
+          renewal.readinessPending
+            ? t("readiness.pending")
+            : renewal.readinessCalculatedAt
+              ? t("readiness.calculated", {
+                  date: format.dateTime(renewal.readinessCalculatedAt, {
+                    dateStyle: "medium",
+                    timeStyle: "short",
+                  }),
+                })
+              : t("readiness.window")
+        }
+      />
       <div className="rounded-md border p-4">
+        <p className="text-sm font-semibold">{t("readiness.evidence")}</p>
         <p
           className={
             renewal.readinessStatus === "AT_RISK"
@@ -194,18 +224,6 @@ function RenewalDetails({
           {renewal.readinessStatus
             ? t(`readiness.${renewal.readinessStatus}`)
             : t("readiness.notAssessed")}
-        </p>
-        <p className="text-muted-foreground mt-1 text-sm">
-          {renewal.readinessPending
-            ? t("readiness.pending")
-            : renewal.readinessCalculatedAt
-              ? t("readiness.calculated", {
-                  date: format.dateTime(renewal.readinessCalculatedAt, {
-                    dateStyle: "medium",
-                    timeStyle: "short",
-                  }),
-                })
-              : t("readiness.window")}
         </p>
         {reasons.length ? (
           <ul className="mt-3 grid gap-1 text-sm">
@@ -262,6 +280,11 @@ function RenewalWorkflow({
   };
   return (
     <div className="grid gap-4 rounded-md border p-4">
+      <OperationalCallout
+        title={t("workflow.title")}
+        description={t("workflow.description")}
+        tone="attention"
+      />
       <form
         className="grid gap-3 sm:grid-cols-[1fr_1fr_auto]"
         onSubmit={(event) => submit(stageAction, event)}
@@ -355,6 +378,11 @@ function RenewalWorkflow({
         className="grid gap-3"
         onSubmit={(event) => submit(churnedAction, event)}
       >
+        <OperationalCallout
+          title={t("workflow.churnTitle")}
+          description={t("workflow.churnDescription")}
+          tone="risk"
+        />
         <Hidden
           locale={locale}
           customerId={customerId}

@@ -156,44 +156,63 @@ export default async function SettingsPage({
             </Button>
           </form>
 
-          <Table className="min-w-[42rem]">
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("settings.currencies.code")}</TableHead>
-                <TableHead>{t("settings.currencies.name")}</TableHead>
-                <TableHead>{t("settings.currencies.symbol")}</TableHead>
-                <TableHead>{t("settings.currencies.decimals")}</TableHead>
-                <TableHead>{t("settings.currencies.status")}</TableHead>
-                <TableHead>{t("settings.currencies.default")}</TableHead>
-                <TableHead>{t("settings.currencies.actions")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {settings.currencies.map((currency) => (
-                <TableRow key={currency.id}>
-                  <TableCell className="font-medium">{currency.code}</TableCell>
-                  <TableCell>{currency.name}</TableCell>
-                  <TableCell dir="auto">{currency.symbol}</TableCell>
-                  <TableCell>{currency.decimalPlaces}</TableCell>
-                  <TableCell>
-                    <span
-                      className={
-                        currency.isActive
-                          ? "text-healthy text-sm font-medium"
-                          : "text-muted-foreground text-sm font-medium"
-                      }
-                    >
-                      {currency.isActive
-                        ? t("settings.currencies.active")
-                        : t("settings.currencies.inactive")}
-                    </span>
-                  </TableCell>
-                  <TableCell>
-                    {currency.isDefault ? (
-                      <span className="text-healthy text-sm font-medium">
-                        {t("settings.currencies.currentDefault")}
+          <div className="overflow-x-auto">
+            <Table className="min-w-[42rem]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("settings.currencies.code")}</TableHead>
+                  <TableHead>{t("settings.currencies.name")}</TableHead>
+                  <TableHead>{t("settings.currencies.symbol")}</TableHead>
+                  <TableHead>{t("settings.currencies.decimals")}</TableHead>
+                  <TableHead>{t("settings.currencies.status")}</TableHead>
+                  <TableHead>{t("settings.currencies.default")}</TableHead>
+                  <TableHead>{t("settings.currencies.actions")}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {settings.currencies.map((currency) => (
+                  <TableRow key={currency.id}>
+                    <TableCell className="font-medium">
+                      {currency.code}
+                    </TableCell>
+                    <TableCell>{currency.name}</TableCell>
+                    <TableCell dir="auto">{currency.symbol}</TableCell>
+                    <TableCell>{currency.decimalPlaces}</TableCell>
+                    <TableCell>
+                      <span
+                        className={
+                          currency.isActive
+                            ? "text-healthy text-sm font-medium"
+                            : "text-muted-foreground text-sm font-medium"
+                        }
+                      >
+                        {currency.isActive
+                          ? t("settings.currencies.active")
+                          : t("settings.currencies.inactive")}
                       </span>
-                    ) : (
+                    </TableCell>
+                    <TableCell>
+                      {currency.isDefault ? (
+                        <span className="text-healthy text-sm font-medium">
+                          {t("settings.currencies.currentDefault")}
+                        </span>
+                      ) : (
+                        <form action={updateWorkspaceCurrencyAction}>
+                          <input type="hidden" name="locale" value={locale} />
+                          <input
+                            type="hidden"
+                            name="currencyId"
+                            value={currency.id}
+                          />
+                          <input type="hidden" name="isActive" value="true" />
+                          <input type="hidden" name="isDefault" value="on" />
+                          <Button variant="outline" size="sm">
+                            {t("settings.currencies.makeDefault")}
+                          </Button>
+                        </form>
+                      )}
+                    </TableCell>
+                    <TableCell className="flex flex-wrap gap-2">
                       <form action={updateWorkspaceCurrencyAction}>
                         <input type="hidden" name="locale" value={locale} />
                         <input
@@ -201,45 +220,30 @@ export default async function SettingsPage({
                           name="currencyId"
                           value={currency.id}
                         />
-                        <input type="hidden" name="isActive" value="true" />
-                        <input type="hidden" name="isDefault" value="on" />
-                        <Button variant="outline" size="sm">
-                          {t("settings.currencies.makeDefault")}
+                        <input
+                          type="hidden"
+                          name="isActive"
+                          value={currency.isActive ? "false" : "true"}
+                        />
+                        {currency.isDefault ? (
+                          <input type="hidden" name="isDefault" value="on" />
+                        ) : null}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={currency.isDefault}
+                        >
+                          {currency.isActive
+                            ? t("settings.currencies.deactivate")
+                            : t("settings.currencies.activate")}
                         </Button>
                       </form>
-                    )}
-                  </TableCell>
-                  <TableCell className="flex flex-wrap gap-2">
-                    <form action={updateWorkspaceCurrencyAction}>
-                      <input type="hidden" name="locale" value={locale} />
-                      <input
-                        type="hidden"
-                        name="currencyId"
-                        value={currency.id}
-                      />
-                      <input
-                        type="hidden"
-                        name="isActive"
-                        value={currency.isActive ? "false" : "true"}
-                      />
-                      {currency.isDefault ? (
-                        <input type="hidden" name="isDefault" value="on" />
-                      ) : null}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        disabled={currency.isDefault}
-                      >
-                        {currency.isActive
-                          ? t("settings.currencies.deactivate")
-                          : t("settings.currencies.activate")}
-                      </Button>
-                    </form>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
@@ -251,57 +255,59 @@ export default async function SettingsPage({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Table className="min-w-[36rem]">
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("settings.lifecycle.name")}</TableHead>
-                <TableHead>{t("settings.lifecycle.key")}</TableHead>
-                <TableHead>{t("settings.lifecycle.status")}</TableHead>
-                <TableHead>{t("settings.lifecycle.actions")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {settings.lifecycleStages.map((stage) => (
-                <TableRow key={stage.id}>
-                  <TableCell colSpan={4}>
-                    <form
-                      action={updateLifecycleStageSettingsAction}
-                      className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto] md:items-center"
-                    >
-                      <input type="hidden" name="locale" value={locale} />
-                      <input type="hidden" name="stageId" value={stage.id} />
-                      <Input
-                        name="name"
-                        defaultValue={stage.name}
-                        required
-                        className="font-medium"
-                      />
-                      <code className="py-2">{stage.key}</code>
-                      <Select
-                        name="isActive"
-                        defaultValue={stage.isActive ? "true" : "false"}
-                      >
-                        <SelectTrigger className="w-full md:w-40">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="true">
-                            {t("settings.lifecycle.active")}
-                          </SelectItem>
-                          <SelectItem value="false">
-                            {t("settings.lifecycle.inactive")}
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <Button variant="outline">
-                        {t("settings.lifecycle.save")}
-                      </Button>
-                    </form>
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table className="min-w-[36rem]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("settings.lifecycle.name")}</TableHead>
+                  <TableHead>{t("settings.lifecycle.key")}</TableHead>
+                  <TableHead>{t("settings.lifecycle.status")}</TableHead>
+                  <TableHead>{t("settings.lifecycle.actions")}</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {settings.lifecycleStages.map((stage) => (
+                  <TableRow key={stage.id}>
+                    <TableCell colSpan={4}>
+                      <form
+                        action={updateLifecycleStageSettingsAction}
+                        className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto] md:items-center"
+                      >
+                        <input type="hidden" name="locale" value={locale} />
+                        <input type="hidden" name="stageId" value={stage.id} />
+                        <Input
+                          name="name"
+                          defaultValue={stage.name}
+                          required
+                          className="font-medium"
+                        />
+                        <code className="py-2">{stage.key}</code>
+                        <Select
+                          name="isActive"
+                          defaultValue={stage.isActive ? "true" : "false"}
+                        >
+                          <SelectTrigger className="w-full md:w-40">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="true">
+                              {t("settings.lifecycle.active")}
+                            </SelectItem>
+                            <SelectItem value="false">
+                              {t("settings.lifecycle.inactive")}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Button variant="outline">
+                          {t("settings.lifecycle.save")}
+                        </Button>
+                      </form>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

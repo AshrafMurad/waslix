@@ -65,67 +65,95 @@ export async function TaskList({
     );
   }
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className="bg-raised hover:bg-raised">
-          <TableHead className="min-w-52 px-4">{t("columns.task")}</TableHead>
-          <TableHead className="hidden px-4 sm:table-cell">
-            {t("columns.status")}
-          </TableHead>
-          <TableHead className="hidden px-4 md:table-cell">
-            {t("columns.due")}
-          </TableHead>
-          <TableHead className="hidden px-4 lg:table-cell">
-            {t("columns.owner")}
-          </TableHead>
-          <TableHead className="bg-raised sticky end-0 w-24 px-2 text-center">
-            {t("columns.actions")}
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {tasks.map((task) => {
-          const managesAccount =
-            access.role === "ADMIN" ||
-            access.role === "CS_MANAGER" ||
-            task.customer?.ownerId === access.memberId;
-          const canEdit = managesAccount || task.ownerId === access.memberId;
-          return (
-            <TableRow key={task.id} className="group">
-              <TableCell className="px-4 py-3 whitespace-normal">
-                <div className="flex flex-wrap items-center gap-2">
-                  <p className="font-medium">
-                    <bdi dir="auto">{task.title}</bdi>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow className="bg-raised hover:bg-raised">
+            <TableHead className="min-w-52 px-4">{t("columns.task")}</TableHead>
+            <TableHead className="hidden px-4 sm:table-cell">
+              {t("columns.status")}
+            </TableHead>
+            <TableHead className="hidden px-4 md:table-cell">
+              {t("columns.due")}
+            </TableHead>
+            <TableHead className="hidden px-4 lg:table-cell">
+              {t("columns.owner")}
+            </TableHead>
+            <TableHead className="bg-raised sticky end-0 w-24 px-2 text-center">
+              {t("columns.actions")}
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {tasks.map((task) => {
+            const managesAccount =
+              access.role === "ADMIN" ||
+              access.role === "CS_MANAGER" ||
+              task.customer?.ownerId === access.memberId;
+            const canEdit = managesAccount || task.ownerId === access.memberId;
+            return (
+              <TableRow key={task.id} className="group">
+                <TableCell className="px-4 py-3 whitespace-normal">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-medium">
+                      <bdi dir="auto">{task.title}</bdi>
+                    </p>
+                    <span
+                      className={
+                        task.priority === "URGENT"
+                          ? "text-risk text-xs font-medium"
+                          : task.priority === "HIGH"
+                            ? "text-attention text-xs font-medium"
+                            : "text-muted-foreground text-xs font-medium"
+                      }
+                    >
+                      {t(`priority.${task.priority}`)}
+                    </span>
+                    <span
+                      className={`${taskStatusClass(task.status)} rounded-md px-2 py-1 text-xs font-medium sm:hidden`}
+                    >
+                      {t(`status.${task.status}`)}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    <bdi dir="auto">
+                      {task.customer?.name ?? t("standalone")}
+                    </bdi>
                   </p>
+                  {task.description ? (
+                    <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
+                      <bdi dir="auto">{task.description}</bdi>
+                    </p>
+                  ) : null}
+                  {task.dueDate || task.dueAt ? (
+                    <p className="text-muted-foreground mt-1 text-xs md:hidden">
+                      {t("due", {
+                        date: format.dateTime(task.dueAt ?? task.dueDate!, {
+                          timeZone: task.dueAt ? timezone : "UTC",
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                          ...(task.dueAt
+                            ? { hour: "numeric", minute: "2-digit" }
+                            : {}),
+                        }),
+                      })}
+                    </p>
+                  ) : null}
+                  <p className="text-muted-foreground mt-1 text-xs lg:hidden">
+                    <bdi dir="auto">{task.owner.user.name}</bdi>
+                  </p>
+                </TableCell>
+                <TableCell className="hidden px-4 sm:table-cell">
                   <span
-                    className={
-                      task.priority === "URGENT"
-                        ? "text-risk text-xs font-medium"
-                        : task.priority === "HIGH"
-                          ? "text-attention text-xs font-medium"
-                          : "text-muted-foreground text-xs font-medium"
-                    }
-                  >
-                    {t(`priority.${task.priority}`)}
-                  </span>
-                  <span
-                    className={`${taskStatusClass(task.status)} rounded-md px-2 py-1 text-xs font-medium sm:hidden`}
+                    className={`${taskStatusClass(task.status)} rounded-md px-2 py-1 text-xs font-medium`}
                   >
                     {t(`status.${task.status}`)}
                   </span>
-                </div>
-                <p className="text-muted-foreground mt-1 text-sm">
-                  <bdi dir="auto">{task.customer?.name ?? t("standalone")}</bdi>
-                </p>
-                {task.description ? (
-                  <p className="text-muted-foreground mt-1 line-clamp-2 text-sm">
-                    <bdi dir="auto">{task.description}</bdi>
-                  </p>
-                ) : null}
-                {task.dueDate || task.dueAt ? (
-                  <p className="text-muted-foreground mt-1 text-xs md:hidden">
-                    {t("due", {
-                      date: format.dateTime(task.dueAt ?? task.dueDate!, {
+                </TableCell>
+                <TableCell className="text-muted-foreground hidden px-4 md:table-cell">
+                  {task.dueDate || task.dueAt
+                    ? format.dateTime(task.dueAt ?? task.dueDate!, {
                         timeZone: task.dueAt ? timezone : "UTC",
                         year: "numeric",
                         month: "short",
@@ -133,66 +161,43 @@ export async function TaskList({
                         ...(task.dueAt
                           ? { hour: "numeric", minute: "2-digit" }
                           : {}),
-                      }),
-                    })}
-                  </p>
-                ) : null}
-                <p className="text-muted-foreground mt-1 text-xs lg:hidden">
-                  <bdi dir="auto">{task.owner.user.name}</bdi>
-                </p>
-              </TableCell>
-              <TableCell className="hidden px-4 sm:table-cell">
-                <span
-                  className={`${taskStatusClass(task.status)} rounded-md px-2 py-1 text-xs font-medium`}
-                >
-                  {t(`status.${task.status}`)}
-                </span>
-              </TableCell>
-              <TableCell className="text-muted-foreground hidden px-4 md:table-cell">
-                {task.dueDate || task.dueAt
-                  ? format.dateTime(task.dueAt ?? task.dueDate!, {
-                      timeZone: task.dueAt ? timezone : "UTC",
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      ...(task.dueAt
-                        ? { hour: "numeric", minute: "2-digit" }
-                        : {}),
-                    })
-                  : t("notSet")}
-              </TableCell>
-              <TableCell className="hidden px-4 lg:table-cell">
-                <bdi dir="auto">{task.owner.user.name}</bdi>
-              </TableCell>
-              {canEdit ? (
-                <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 pt-3 text-center align-top transition-colors">
-                  <TaskActionsMenu
-                    editTitle={t("actions.edit")}
-                    editDescription={t("description")}
-                    editLabel={t("actions.edit")}
-                    moreLabel={t("actions.more")}
-                    locale={locale}
-                    operationKey={randomUUID()}
-                    statusOperationKey={randomUUID()}
-                    cancelOperationKey={randomUUID()}
-                    task={{
-                      ...task,
-                      dueDate: task.dueDate?.toISOString().slice(0, 10) ?? null,
-                    }}
-                    lockedCustomerId={lockedCustomerId}
-                    owners={owners}
-                    customers={customers}
-                    defaultOwnerId={task.ownerId}
-                    canAssignOwner={managesAccount}
-                  />
+                      })
+                    : t("notSet")}
                 </TableCell>
-              ) : (
-                <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 pt-3 text-center align-top transition-colors" />
-              )}
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+                <TableCell className="hidden px-4 lg:table-cell">
+                  <bdi dir="auto">{task.owner.user.name}</bdi>
+                </TableCell>
+                {canEdit ? (
+                  <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 pt-3 text-center align-top transition-colors">
+                    <TaskActionsMenu
+                      editTitle={t("actions.edit")}
+                      editDescription={t("description")}
+                      editLabel={t("actions.edit")}
+                      moreLabel={t("actions.more")}
+                      locale={locale}
+                      operationKey={randomUUID()}
+                      statusOperationKey={randomUUID()}
+                      cancelOperationKey={randomUUID()}
+                      task={{
+                        ...task,
+                        dueDate:
+                          task.dueDate?.toISOString().slice(0, 10) ?? null,
+                      }}
+                      lockedCustomerId={lockedCustomerId}
+                      owners={owners}
+                      customers={customers}
+                      defaultOwnerId={task.ownerId}
+                      canAssignOwner={managesAccount}
+                    />
+                  </TableCell>
+                ) : (
+                  <TableCell className="bg-card group-hover:bg-muted/50 sticky end-0 px-2 pt-3 text-center align-top transition-colors" />
+                )}
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

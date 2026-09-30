@@ -34,6 +34,8 @@ type Item = {
   customer: {
     id: string;
     name: string;
+    attentionSince: string;
+    nearestDeadline: string | null;
     renewalDate: string | null;
     ownerName: string;
     healthScore: number | null;
@@ -56,30 +58,55 @@ function AttentionRow({
     initial,
   );
   return (
-    <li className="grid gap-4 px-5 py-4 lg:grid-cols-[minmax(12rem,1.05fr)_minmax(18rem,1.55fr)_minmax(8rem,.55fr)_minmax(13rem,13rem)] lg:items-start">
+    <li className="grid gap-4 px-5 py-4 lg:grid-cols-[minmax(12rem,1fr)_minmax(18rem,1.45fr)_minmax(12rem,.8fr)_minmax(14rem,14rem)] lg:items-start">
       <div className="min-w-0">
-        <Link
-          href={`/customers/${item.customer.id}`}
-          className="block truncate rounded-sm font-semibold hover:underline"
-          dir="auto"
-        >
-          {item.customer.name}
-        </Link>
-        <p className="text-muted-foreground mt-1 text-xs" dir="auto">
-          {item.customer.ownerName}
-        </p>
+        <div className="truncate text-start">
+          <Link
+            href={`/customers/${item.customer.id}`}
+            className="inline-block max-w-full truncate rounded-sm font-semibold hover:underline"
+            dir="auto"
+          >
+            {item.customer.name}
+          </Link>
+        </div>
+        <dl className="text-muted-foreground mt-2 space-y-1 text-xs">
+          <div className="flex min-w-0 gap-1.5">
+            <dt className="text-foreground shrink-0 font-medium">
+              {t("owner")}
+            </dt>
+            <dd className="min-w-0 truncate" dir="auto">
+              {item.customer.ownerName}
+            </dd>
+          </div>
+          <div className="flex min-w-0 gap-1.5">
+            <dt className="text-foreground shrink-0 font-medium">
+              {t("evidenceSince")}
+            </dt>
+            <dd className="min-w-0 truncate tabular-nums">
+              {item.customer.attentionSince}
+            </dd>
+          </div>
+        </dl>
       </div>
-      <div className="flex min-w-0 flex-wrap gap-2">
-        {item.reasonKeys.slice(0, 3).map((reason) => (
-          <span key={reason} className="bg-raised rounded-md px-2 py-1 text-xs">
-            {t(`reasons.${reason}`)}
-          </span>
-        ))}
-        {item.reasonKeys.length > 3 ? (
-          <span className="text-muted-foreground rounded-md border px-2 py-1 text-xs">
-            {t("moreReasons", { count: item.reasonKeys.length - 3 })}
-          </span>
-        ) : null}
+      <div className="min-w-0 space-y-2">
+        <p className="text-muted-foreground text-xs font-medium">
+          {t("evidenceLabel")}
+        </p>
+        <div className="flex min-w-0 flex-wrap gap-2">
+          {item.reasonKeys.slice(0, 3).map((reason) => (
+            <span
+              key={reason}
+              className="bg-raised rounded-md px-2 py-1 text-xs"
+            >
+              {t(`reasons.${reason}`)}
+            </span>
+          ))}
+          {item.reasonKeys.length > 3 ? (
+            <span className="text-muted-foreground rounded-md border px-2 py-1 text-xs">
+              {t("moreReasons", { count: item.reasonKeys.length - 3 })}
+            </span>
+          ) : null}
+        </div>
       </div>
       <div className="min-w-0 text-sm tabular-nums">
         <p
@@ -103,11 +130,29 @@ function AttentionRow({
         ) : null}
       </div>
       <div className="flex min-w-0 items-start justify-between gap-3">
-        {item.customer.renewalDate ? (
-          <p className="text-muted-foreground min-w-0 text-xs tabular-nums">
-            {t("renewal", { date: item.customer.renewalDate })}
+        <div className="min-w-0 space-y-2">
+          <p className="text-muted-foreground text-xs font-medium">
+            {t("actionLabel")}
           </p>
-        ) : null}
+          {item.customer.recommendations?.length ? (
+            <Button asChild size="sm" variant="outline" className="h-8">
+              <Link href={`/customers/${item.customer.id}`}>
+                {t("actions.viewNextAction")}
+              </Link>
+            </Button>
+          ) : (
+            <p className="text-muted-foreground text-xs">
+              {t("actions.noRecommendation")}
+            </p>
+          )}
+          <p className="text-muted-foreground text-xs tabular-nums">
+            {item.customer.nearestDeadline
+              ? t("deadline", { date: item.customer.nearestDeadline })
+              : item.customer.renewalDate
+                ? t("renewal", { date: item.customer.renewalDate })
+                : t("deadlineUnknown")}
+          </p>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -124,13 +169,6 @@ function AttentionRow({
             <DropdownMenuLabel className="text-muted-foreground text-xs">
               {t("actions.label")}
             </DropdownMenuLabel>
-            {item.customer.recommendations?.length ? (
-              <DropdownMenuItem asChild>
-                <Link href={`/customers/${item.customer.id}`}>
-                  {t("actions.viewNextAction")}
-                </Link>
-              </DropdownMenuItem>
-            ) : null}
             {canAct && item.status === "OPEN" ? (
               <DropdownMenuItem asChild disabled={pending}>
                 <form action={action} className="w-full">

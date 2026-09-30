@@ -144,78 +144,80 @@ export default async function TeamPage({
             </form>
           ) : null}
 
-          <Table className="min-w-[54rem]">
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("team.invite.email")}</TableHead>
-                <TableHead>{t("team.invite.role")}</TableHead>
-                <TableHead>{t("team.invite.status")}</TableHead>
-                <TableHead>{t("team.invite.expires")}</TableHead>
-                {canManageMembers ? (
-                  <TableHead>{t("team.invite.actions")}</TableHead>
-                ) : null}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {invitations.length ? (
-                invitations.map((invitation) => (
-                  <TableRow key={invitation.id}>
-                    <TableCell>{invitation.email}</TableCell>
-                    <TableCell>{t(`roles.${invitation.role}`)}</TableCell>
-                    <TableCell>
-                      {t(`invitationStatus.${invitation.status}`)}
-                    </TableCell>
-                    <TableCell>
-                      {invitation.expiresAt.toLocaleDateString(locale)}
-                    </TableCell>
-                    {canManageMembers ? (
-                      <TableCell className="flex flex-wrap gap-2">
-                        <form action={resendWorkspaceInvitationAction}>
-                          <input type="hidden" name="locale" value={locale} />
-                          <input
-                            type="hidden"
-                            name="invitationId"
-                            value={invitation.id}
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={invitation.status !== "PENDING"}
-                          >
-                            {t("team.invite.resend")}
-                          </Button>
-                        </form>
-                        <form action={revokeWorkspaceInvitationAction}>
-                          <input type="hidden" name="locale" value={locale} />
-                          <input
-                            type="hidden"
-                            name="invitationId"
-                            value={invitation.id}
-                          />
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={invitation.status !== "PENDING"}
-                          >
-                            {t("team.invite.revoke")}
-                          </Button>
-                        </form>
-                      </TableCell>
-                    ) : null}
-                  </TableRow>
-                ))
-              ) : (
+          <div className="overflow-x-auto">
+            <Table className="min-w-[54rem]">
+              <TableHeader>
                 <TableRow>
-                  <TableCell
-                    colSpan={canManageMembers ? 5 : 4}
-                    className="text-muted-foreground"
-                  >
-                    {t("team.invite.empty")}
-                  </TableCell>
+                  <TableHead>{t("team.invite.email")}</TableHead>
+                  <TableHead>{t("team.invite.role")}</TableHead>
+                  <TableHead>{t("team.invite.status")}</TableHead>
+                  <TableHead>{t("team.invite.expires")}</TableHead>
+                  {canManageMembers ? (
+                    <TableHead>{t("team.invite.actions")}</TableHead>
+                  ) : null}
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {invitations.length ? (
+                  invitations.map((invitation) => (
+                    <TableRow key={invitation.id}>
+                      <TableCell>{invitation.email}</TableCell>
+                      <TableCell>{t(`roles.${invitation.role}`)}</TableCell>
+                      <TableCell>
+                        {t(`invitationStatus.${invitation.status}`)}
+                      </TableCell>
+                      <TableCell>
+                        {invitation.expiresAt.toLocaleDateString(locale)}
+                      </TableCell>
+                      {canManageMembers ? (
+                        <TableCell className="flex flex-wrap gap-2">
+                          <form action={resendWorkspaceInvitationAction}>
+                            <input type="hidden" name="locale" value={locale} />
+                            <input
+                              type="hidden"
+                              name="invitationId"
+                              value={invitation.id}
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={invitation.status !== "PENDING"}
+                            >
+                              {t("team.invite.resend")}
+                            </Button>
+                          </form>
+                          <form action={revokeWorkspaceInvitationAction}>
+                            <input type="hidden" name="locale" value={locale} />
+                            <input
+                              type="hidden"
+                              name="invitationId"
+                              value={invitation.id}
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={invitation.status !== "PENDING"}
+                            >
+                              {t("team.invite.revoke")}
+                            </Button>
+                          </form>
+                        </TableCell>
+                      ) : null}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={canManageMembers ? 5 : 4}
+                      className="text-muted-foreground"
+                    >
+                      {t("team.invite.empty")}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
 
@@ -367,100 +369,102 @@ export default async function TeamPage({
           <CardDescription>{t("team.members.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table className="min-w-[72rem]">
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("team.members.member")}</TableHead>
-                <TableHead>{t("team.members.role")}</TableHead>
-                <TableHead>{t("team.members.status")}</TableHead>
-                <TableHead>{t("team.members.ownership")}</TableHead>
-                {canManageMembers ? (
-                  <TableHead>{t("team.members.actions")}</TableHead>
-                ) : null}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {members.map((member) => (
-                <TableRow key={member.id} className="align-top">
-                  <TableCell>
-                    <p className="font-medium" dir="auto">
-                      {member.user.name}
-                    </p>
-                    <p className="text-muted-foreground" dir="auto">
-                      {member.user.email}
-                    </p>
-                  </TableCell>
-                  <TableCell>{t(`roles.${member.role}`)}</TableCell>
-                  <TableCell>{t(`status.${member.status}`)}</TableCell>
-                  <TableCell>
-                    {t("team.members.ownershipSummary", {
-                      customers: member._count.customers,
-                      tasks: member._count.ownedTasks,
-                      risks: member._count.ownedRisks,
-                      goals: member._count.ownedGoals,
-                    })}
-                  </TableCell>
+          <div className="overflow-x-auto">
+            <Table className="min-w-[72rem]">
+              <TableHeader>
+                <TableRow>
+                  <TableHead>{t("team.members.member")}</TableHead>
+                  <TableHead>{t("team.members.role")}</TableHead>
+                  <TableHead>{t("team.members.status")}</TableHead>
+                  <TableHead>{t("team.members.ownership")}</TableHead>
                   {canManageMembers ? (
-                    <TableCell className="space-y-2">
-                      <form
-                        action={changeMemberRoleAction}
-                        className="flex gap-2"
-                      >
-                        <input type="hidden" name="locale" value={locale} />
-                        <input
-                          type="hidden"
-                          name="memberId"
-                          value={member.id}
-                        />
-                        <Select name="role" defaultValue={member.role}>
-                          <SelectTrigger className="w-48">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {workspaceRoles.map((role) => (
-                              <SelectItem key={role} value={role}>
-                                {t(`roles.${role}`)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Button variant="outline" size="sm">
-                          {t("team.members.updateRole")}
-                        </Button>
-                      </form>
-                      <form
-                        action={changeMemberStatusAction}
-                        className="flex gap-2"
-                      >
-                        <input type="hidden" name="locale" value={locale} />
-                        <input
-                          type="hidden"
-                          name="memberId"
-                          value={member.id}
-                        />
-                        <Select name="status" defaultValue={member.status}>
-                          <SelectTrigger className="w-48">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="ACTIVE">
-                              {t("status.ACTIVE")}
-                            </SelectItem>
-                            <SelectItem value="INACTIVE">
-                              {t("status.INACTIVE")}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Button variant="outline" size="sm">
-                          {t("team.members.updateStatus")}
-                        </Button>
-                      </form>
-                    </TableCell>
+                    <TableHead>{t("team.members.actions")}</TableHead>
                   ) : null}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {members.map((member) => (
+                  <TableRow key={member.id} className="align-top">
+                    <TableCell>
+                      <p className="font-medium" dir="auto">
+                        {member.user.name}
+                      </p>
+                      <p className="text-muted-foreground" dir="auto">
+                        {member.user.email}
+                      </p>
+                    </TableCell>
+                    <TableCell>{t(`roles.${member.role}`)}</TableCell>
+                    <TableCell>{t(`status.${member.status}`)}</TableCell>
+                    <TableCell>
+                      {t("team.members.ownershipSummary", {
+                        customers: member._count.customers,
+                        tasks: member._count.ownedTasks,
+                        risks: member._count.ownedRisks,
+                        goals: member._count.ownedGoals,
+                      })}
+                    </TableCell>
+                    {canManageMembers ? (
+                      <TableCell className="space-y-2">
+                        <form
+                          action={changeMemberRoleAction}
+                          className="flex gap-2"
+                        >
+                          <input type="hidden" name="locale" value={locale} />
+                          <input
+                            type="hidden"
+                            name="memberId"
+                            value={member.id}
+                          />
+                          <Select name="role" defaultValue={member.role}>
+                            <SelectTrigger className="w-48">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {workspaceRoles.map((role) => (
+                                <SelectItem key={role} value={role}>
+                                  {t(`roles.${role}`)}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <Button variant="outline" size="sm">
+                            {t("team.members.updateRole")}
+                          </Button>
+                        </form>
+                        <form
+                          action={changeMemberStatusAction}
+                          className="flex gap-2"
+                        >
+                          <input type="hidden" name="locale" value={locale} />
+                          <input
+                            type="hidden"
+                            name="memberId"
+                            value={member.id}
+                          />
+                          <Select name="status" defaultValue={member.status}>
+                            <SelectTrigger className="w-48">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="ACTIVE">
+                                {t("status.ACTIVE")}
+                              </SelectItem>
+                              <SelectItem value="INACTIVE">
+                                {t("status.INACTIVE")}
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Button variant="outline" size="sm">
+                            {t("team.members.updateStatus")}
+                          </Button>
+                        </form>
+                      </TableCell>
+                    ) : null}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

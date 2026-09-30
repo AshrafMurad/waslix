@@ -13,11 +13,13 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Link } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
 import { globalSearchAction } from "@/modules/search/actions/search-actions";
 
 type SearchResult = Awaited<ReturnType<typeof globalSearchAction>>[number];
 
 type GlobalSearchProps = {
+  className?: string;
   labels: {
     trigger: string;
     title: string;
@@ -30,7 +32,7 @@ type GlobalSearchProps = {
   };
 };
 
-export function GlobalSearch({ labels }: GlobalSearchProps) {
+export function GlobalSearch({ className, labels }: GlobalSearchProps) {
   const locale = useLocale();
   const direction = locale === "ar" ? "rtl" : "ltr";
   const [open, setOpen] = useState(false);
@@ -67,10 +69,17 @@ export function GlobalSearch({ labels }: GlobalSearchProps) {
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setOpen(true)}
+        className={cn("min-w-64 gap-2.5", className)}
+      >
         <Search aria-hidden="true" className="size-4" />
-        <span className="hidden sm:inline">{labels.trigger}</span>
-        <kbd className="text-muted-foreground ms-2 hidden text-xs sm:inline">
+        <span className="hidden min-w-0 flex-1 text-start md:inline">
+          {labels.trigger}
+        </span>
+        <kbd className="text-muted-foreground ms-2 hidden text-xs lg:inline">
           Ctrl K
         </kbd>
       </Button>

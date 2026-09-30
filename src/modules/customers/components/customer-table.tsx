@@ -73,13 +73,15 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <Link
-              href={`/customers/${row.original.id}`}
-              className="block truncate font-medium hover:underline"
-              dir="auto"
-            >
-              {row.original.name}
-            </Link>
+            <div className="truncate text-start">
+              <Link
+                href={`/customers/${row.original.id}`}
+                className="inline-block max-w-full truncate font-medium hover:underline"
+                dir="auto"
+              >
+                {row.original.name}
+              </Link>
+            </div>
             <span
               className="text-muted-foreground block truncate text-xs"
               dir="auto"
@@ -151,40 +153,42 @@ export function CustomerTable({ rows, locale, labels }: CustomerTableProps) {
       <p id="customer-table-scroll-hint" className="sr-only">
         {labels.scrollHint}
       </p>
-      <Table
-        aria-describedby="customer-table-scroll-hint"
-        className="min-w-4xl border-collapse"
-        dir={locale === "ar" ? "rtl" : "ltr"}
-      >
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow
-              key={headerGroup.id}
-              className="bg-raised hover:bg-raised text-start"
-            >
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="px-4 text-start">
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="px-4 text-start">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <div className="overflow-x-auto">
+        <Table
+          aria-describedby="customer-table-scroll-hint"
+          className="min-w-4xl border-collapse"
+          dir={locale === "ar" ? "rtl" : "ltr"}
+        >
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow
+                key={headerGroup.id}
+                className="bg-raised hover:bg-raised text-start"
+              >
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="px-4 text-start">
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext(),
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id} className="px-4 text-start">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </>
   );
 }

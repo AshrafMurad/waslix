@@ -6,6 +6,7 @@ import {
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
 import {
   Table,
@@ -59,6 +60,9 @@ export default async function RenewalsPage({
                 <TableHead className="hidden px-4 lg:table-cell">
                   {t("columns.value")}
                 </TableHead>
+                <TableHead className="px-4 text-start">
+                  {t("columns.action")}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -73,6 +77,12 @@ export default async function RenewalsPage({
                     </Link>
                     <p className="text-muted-foreground mt-1 text-xs">
                       <bdi>{renewal.owner.user.name}</bdi>
+                    </p>
+                    <p className="text-muted-foreground mt-2 text-xs md:hidden">
+                      {t(`stage.${renewal.stage}`)} ·{" "}
+                      {renewal.readinessStatus
+                        ? t(`readiness.${renewal.readinessStatus}`)
+                        : t("readiness.notAssessed")}
                     </p>
                   </TableCell>
                   <TableCell className="px-4 py-3">
@@ -94,6 +104,13 @@ export default async function RenewalsPage({
                       currency: renewal.currency,
                       currencyDisplay: "code",
                     })}
+                  </TableCell>
+                  <TableCell className="px-4 py-3">
+                    <Button asChild size="sm" variant="outline">
+                      <Link href={`/customers/${renewal.customer.id}/renewal`}>
+                        {t("actions.openCycle")}
+                      </Link>
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}

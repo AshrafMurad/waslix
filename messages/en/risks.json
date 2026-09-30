@@ -41,6 +41,8 @@
     "manage": "Manage risk",
     "actions": "Risk actions",
     "manageDescription": "Move the risk through monitoring, mitigation, and resolution.",
+    "consequenceTitle": "Risk lifecycle changes are recorded",
+    "consequenceDescription": "Use monitoring when mitigation is underway, resolve only with a note, and reopen if the risk returns.",
     "close": "Close"
   },
   "type": {

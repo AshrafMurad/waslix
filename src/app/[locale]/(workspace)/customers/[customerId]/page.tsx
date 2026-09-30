@@ -2,7 +2,10 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { OperationalCallout } from "@/components/shared/operational-callout";
 import { isLocale } from "@/i18n/config";
+import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { ArchiveCustomerButton } from "@/modules/customers/components/customer-form";
 import { CustomerFormDialog } from "@/modules/customers/components/customer-form-dialog";
@@ -59,6 +62,37 @@ export default async function CustomerOverviewPage({
                 : t("overview.healthUnknown")}
             </p>
           </div>
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <OperationalCallout
+              title={t("overview.evidenceTitle")}
+              description={
+                customer.health?.calculatedAt
+                  ? t("overview.evidenceDescription")
+                  : t("overview.evidenceMissing")
+              }
+              tone={
+                customer.health?.overallScore == null ? "attention" : "neutral"
+              }
+              action={
+                <Button asChild size="sm" variant="outline">
+                  <Link href={`/customers/${customerId}/health`}>
+                    {t("tabs.health")}
+                  </Link>
+                </Button>
+              }
+            />
+            <OperationalCallout
+              title={t("overview.actionTitle")}
+              description={t("overview.actionDescription")}
+              action={
+                <Button asChild size="sm" variant="outline">
+                  <Link href={`/customers/${customerId}/tasks`}>
+                    {t("tabs.tasks")}
+                  </Link>
+                </Button>
+              }
+            />
+          </div>
         </Card>
         <div className="space-y-4">
           {nextActions ? (
@@ -102,7 +136,17 @@ export default async function CustomerOverviewPage({
               <p className="waslix-panel-description my-2">
                 {t("archive.description")}
               </p>
-              <ArchiveCustomerButton customerId={customerId} locale={locale} />
+              <OperationalCallout
+                title={t("archive.consequenceTitle")}
+                description={t("archive.consequenceDescription")}
+                tone="attention"
+              />
+              <div className="mt-4">
+                <ArchiveCustomerButton
+                  customerId={customerId}
+                  locale={locale}
+                />
+              </div>
             </Card>
           ) : null}
         </div>

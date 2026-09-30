@@ -161,11 +161,18 @@
     "title": "Current situation",
     "description": "Account details and ownership are current. Operational insights will appear as their domains are implemented.",
     "healthTitle": "Customer health",
-    "healthUnknown": "There is no health assessment yet. Missing data is not treated as a zero score."
+    "healthUnknown": "There is no health assessment yet. Missing data is not treated as a zero score.",
+    "evidenceTitle": "Evidence status",
+    "evidenceDescription": "Health evidence is available. Review the health tab for freshness, confidence, and dimension details.",
+    "evidenceMissing": "Health evidence is incomplete. Missing inputs stay explicit until the account has enough facts.",
+    "actionTitle": "Accountable next work",
+    "actionDescription": "Use tasks and next actions to turn customer context into owned follow-up work."
   },
   "archive": {
     "title": "Archive customer",
-    "description": "Remove this account from the active portfolio while preserving its contacts and history."
+    "description": "Remove this account from the active portfolio while preserving its contacts and history.",
+    "consequenceTitle": "Archive keeps history but removes active work",
+    "consequenceDescription": "The customer leaves active portfolio views. Existing contacts, timeline, risks, and history remain available as records."
   },
   "contacts": {
     "title": "Contacts",
