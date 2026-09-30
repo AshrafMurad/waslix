@@ -12,13 +12,18 @@ import {
 
 export async function requireProtectedPage(locale: Locale) {
   try {
-    return await requireWorkspaceAccess();
+    const access = await requireWorkspaceAccess();
+    if (!access.workspaceOnboardingCompleted) {
+      redirect(`/${locale}/workspace`);
+    }
+    return access;
   } catch (error) {
-    if (
-      error instanceof AuthenticationRequiredError ||
-      error instanceof WorkspaceAccessDeniedError
-    ) {
+    if (error instanceof AuthenticationRequiredError) {
       redirect(`/${locale}/sign-in`);
+    }
+
+    if (error instanceof WorkspaceAccessDeniedError) {
+      redirect(`/${locale}/workspace`);
     }
 
     throw error;

@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -46,8 +47,14 @@ import {
   changeMemberStatusAction,
   transferOwnershipAction,
 } from "@/modules/workspace/actions/team-settings-actions";
+import {
+  inviteWorkspaceMemberAction,
+  resendWorkspaceInvitationAction,
+  revokeWorkspaceInvitationAction,
+} from "@/modules/workspace/actions/workspace-invitation-actions";
 import { OwnershipTransferFromSelect } from "@/modules/workspace/components/ownership-transfer-from-select";
 import { getWorkspaceMembers } from "@/modules/workspace/queries/get-workspace-members";
+import { getWorkspaceInvitations } from "@/modules/workspace/services/workspace-invitations";
 import {
   getOwnershipTransferPreview,
   totalPreviewCount,
@@ -76,17 +83,18 @@ export default async function TeamPage({
 
   const raw = await searchParams;
   const fromMemberId = first(raw.fromMemberId);
-  const [members, t] = await Promise.all([
+  const canManageMembers = hasWorkspaceCapability(
+    access.role,
+    "manageWorkspaceMembership",
+  );
+  const [members, invitations, t] = await Promise.all([
     getWorkspaceMembers(access),
+    canManageMembers ? getWorkspaceInvitations(access) : Promise.resolve([]),
     getTranslations({ locale, namespace: "workspace" }),
   ]);
   const preview = fromMemberId
     ? await getOwnershipTransferPreview(access, fromMemberId)
     : null;
-  const canManageMembers = hasWorkspaceCapability(
-    access.role,
-    "manageWorkspaceMembership",
-  );
   const eligibleTargets = members.filter(
     (member) =>
       member.status === "ACTIVE" &&
@@ -106,6 +114,116 @@ export default async function TeamPage({
           {t("team.description")}
         </p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("team.invite.title")}</CardTitle>
+          <CardDescription>{t("team.invite.description")}</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          {canManageMembers ? (
+            <form
+              action={inviteWorkspaceMemberAction}
+              className="bg-raised grid gap-4 rounded-md border p-4 md:grid-cols-[minmax(16rem,1fr)_12rem_auto] md:items-end"
+            >
+              <input type="hidden" name="locale" value={locale} />
+              <div className="space-y-2">
+                <Label htmlFor="invite-email">{t("team.invite.email")}</Label>
+                <Input id="invite-email" name="email" type="email" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="invite-role">{t("team.invite.role")}</Label>
+                <Select name="role" defaultValue="CSM">
+                  <SelectTrigger id="invite-role" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(["CS_MANAGER", "CSM", "VIEWER"] as const).map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {t(`roles.${role}`)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button>{t("team.invite.send")}</Button>
+            </form>
+          ) : null}
+
+          <Table className="min-w-[54rem]">
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("team.invite.email")}</TableHead>
+                <TableHead>{t("team.invite.role")}</TableHead>
+                <TableHead>{t("team.invite.status")}</TableHead>
+                <TableHead>{t("team.invite.expires")}</TableHead>
+                {canManageMembers ? (
+                  <TableHead>{t("team.invite.actions")}</TableHead>
+                ) : null}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {invitations.length ? (
+                invitations.map((invitation) => (
+                  <TableRow key={invitation.id}>
+                    <TableCell>{invitation.email}</TableCell>
+                    <TableCell>{t(`roles.${invitation.role}`)}</TableCell>
+                    <TableCell>
+                      {t(`invitationStatus.${invitation.status}`)}
+                    </TableCell>
+                    <TableCell>
+                      {invitation.expiresAt.toLocaleDateString(locale)}
+                    </TableCell>
+                    {canManageMembers ? (
+                      <TableCell className="flex flex-wrap gap-2">
+                        <form action={resendWorkspaceInvitationAction}>
+                          <input type="hidden" name="locale" value={locale} />
+                          <input
+                            type="hidden"
+                            name="invitationId"
+                            value={invitation.id}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={invitation.status !== "PENDING"}
+                          >
+                            {t("team.invite.resend")}
+                          </Button>
+                        </form>
+                        <form action={revokeWorkspaceInvitationAction}>
+                          <input type="hidden" name="locale" value={locale} />
+                          <input
+                            type="hidden"
+                            name="invitationId"
+                            value={invitation.id}
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={invitation.status !== "PENDING"}
+                          >
+                            {t("team.invite.revoke")}
+                          </Button>
+                        </form>
+                      </TableCell>
+                    ) : null}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={canManageMembers ? 5 : 4}
+                    className="text-muted-foreground"
+                  >
+                    {t("team.invite.empty")}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

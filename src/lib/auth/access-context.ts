@@ -32,6 +32,12 @@ export async function requireWorkspaceAccess(
         workspaceId: true,
         role: true,
         status: true,
+        workspace: {
+          select: {
+            status: true,
+            onboardingCompleted: true,
+          },
+        },
       },
     }),
   );

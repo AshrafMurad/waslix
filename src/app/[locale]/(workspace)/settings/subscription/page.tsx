@@ -48,15 +48,23 @@ export default async function SubscriptionPage({
         </CardHeader>
         <CardContent className="grid gap-4 sm:grid-cols-2">
           <div className="bg-raised rounded-md border p-4">
-            <p className="text-muted-foreground text-sm">{t("subscription.plan")}</p>
+            <p className="text-muted-foreground text-sm">
+              {t("subscription.plan")}
+            </p>
             <p className="text-xl font-semibold">
-              {subscription ? t(`plans.${subscription.plan}`) : t("subscription.none")}
+              {subscription
+                ? t(`plans.${subscription.plan}`)
+                : t("subscription.none")}
             </p>
           </div>
           <div className="bg-raised rounded-md border p-4">
-            <p className="text-muted-foreground text-sm">{t("subscription.status")}</p>
+            <p className="text-muted-foreground text-sm">
+              {t("subscription.status")}
+            </p>
             <p className="text-xl font-semibold">
-              {subscription ? t(`subscriptionStatus.${subscription.status}`) : t("subscription.none")}
+              {subscription
+                ? t(`subscriptionStatus.${subscription.status}`)
+                : t("subscription.none")}
             </p>
           </div>
         </CardContent>

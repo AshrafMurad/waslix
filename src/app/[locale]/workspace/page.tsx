@@ -91,7 +91,9 @@ export default async function WorkspacePage({
                 {t("onboarding.planNote")}
               </p>
             </div>
-            <Button className="w-full sm:w-auto">{t("onboarding.submit")}</Button>
+            <Button className="w-full sm:w-auto">
+              {t("onboarding.submit")}
+            </Button>
           </form>
         </CardContent>
       </Card>

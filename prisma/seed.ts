@@ -23,7 +23,9 @@ async function main() {
 
   try {
     // User definitions remain owned by the established auth-compatible fixture.
-    const fixture = await seedTwoWorkspaceFixture(prisma, fixturePassword);
+    const fixture = await seedTwoWorkspaceFixture(prisma, fixturePassword, {
+      demoMode: true,
+    });
     const summary = await seedDemoPortfolio(prisma, {
       workspaceId: fixture.workspaceA.id,
       stageIds: new Map(

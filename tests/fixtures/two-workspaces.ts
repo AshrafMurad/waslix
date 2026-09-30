@@ -49,6 +49,7 @@ const fixtureUsers = [
 export async function seedTwoWorkspaceFixture(
   prisma: PrismaClient,
   credentialPassword?: string,
+  options: { demoMode?: boolean } = {},
 ) {
   const users = Object.fromEntries(
     await Promise.all(
@@ -112,26 +113,54 @@ export async function seedTwoWorkspaceFixture(
     );
   }
 
+  const workspaceASlug = options.demoMode ? "waslix-demo" : "fixture-alpha";
+  const workspaceAName = options.demoMode
+    ? "Waslix Demo Workspace"
+    : "Fixture Alpha";
   const workspaceA = await prisma.workspace.upsert({
-    where: { slug: "fixture-alpha" },
-    update: { name: "Fixture Alpha" },
+    where: { slug: workspaceASlug },
+    update: { name: workspaceAName, ownerId: users.shared.id },
     create: {
-      name: "Fixture Alpha",
-      slug: "fixture-alpha",
+      name: workspaceAName,
+      slug: workspaceASlug,
+      ownerId: users.shared.id,
       timezone: "Asia/Riyadh",
       defaultCurrency: "SAR",
     },
   });
   const workspaceB = await prisma.workspace.upsert({
     where: { slug: "fixture-beta" },
-    update: { name: "Fixture Beta" },
+    update: { name: "Fixture Beta", ownerId: users.tenantBAdmin.id },
     create: {
       name: "Fixture Beta",
       slug: "fixture-beta",
+      ownerId: users.tenantBAdmin.id,
       timezone: "UTC",
       defaultCurrency: "USD",
     },
   });
+
+  await Promise.all([
+    prisma.workspaceSubscription.upsert({
+      where: { workspaceId: workspaceA.id },
+      update: { plan: "BUSINESS", status: "TRIALING" },
+      create: {
+        workspaceId: workspaceA.id,
+        plan: "BUSINESS",
+        status: "TRIALING",
+        trialEndsAt: new Date("2026-10-13T00:00:00.000Z"),
+      },
+    }),
+    prisma.workspaceSubscription.upsert({
+      where: { workspaceId: workspaceB.id },
+      update: { plan: "FREE", status: "ACTIVE" },
+      create: {
+        workspaceId: workspaceB.id,
+        plan: "FREE",
+        status: "ACTIVE",
+      },
+    }),
+  ]);
 
   async function upsertMembership(
     workspaceId: string,
@@ -165,17 +194,24 @@ export async function seedTwoWorkspaceFixture(
       "CSM",
       "INACTIVE",
     ),
-    betaSharedViewer: await upsertMembership(
-      workspaceB.id,
-      users.shared.id,
-      "VIEWER",
-    ),
+    betaSharedViewer: options.demoMode
+      ? null
+      : await upsertMembership(workspaceB.id, users.shared.id, "VIEWER"),
     betaAdmin: await upsertMembership(
       workspaceB.id,
       users.tenantBAdmin.id,
       "ADMIN",
     ),
   };
+
+  if (options.demoMode) {
+    await prisma.workspaceMember.deleteMany({
+      where: {
+        userId: users.shared.id,
+        workspaceId: { not: workspaceA.id },
+      },
+    });
+  }
 
   const stageDefinitions = [
     ["new", "New"],

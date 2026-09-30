@@ -94,7 +94,8 @@ export async function inviteWorkspaceMember(
       },
       select: { id: true },
     });
-    if (existingInvitation) throw new InvitationError("Invitation already exists");
+    if (existingInvitation)
+      throw new InvitationError("Invitation already exists");
 
     return transaction.invitation.create({
       data: {
@@ -118,7 +119,11 @@ export async function revokeWorkspaceInvitation(
   requireCanInvite(access);
 
   const invitation = await prisma.invitation.findFirst({
-    where: { id: invitationId, workspaceId: access.workspaceId, status: "PENDING" },
+    where: {
+      id: invitationId,
+      workspaceId: access.workspaceId,
+      status: "PENDING",
+    },
     select: { id: true },
   });
   if (!invitation) throw new WorkspaceAccessDeniedError();
@@ -137,7 +142,11 @@ export async function resendWorkspaceInvitation(
   requireCanInvite(access);
 
   const invitation = await prisma.invitation.findFirst({
-    where: { id: invitationId, workspaceId: access.workspaceId, status: "PENDING" },
+    where: {
+      id: invitationId,
+      workspaceId: access.workspaceId,
+      status: "PENDING",
+    },
     select: { id: true },
   });
   if (!invitation) throw new WorkspaceAccessDeniedError();
@@ -197,7 +206,9 @@ export async function acceptInvitationForCurrentUser(
       });
       throw new InvitationError("Invitation has expired");
     }
-    if (normalizeEmail(session.user.email) !== normalizeEmail(invitation.email)) {
+    if (
+      normalizeEmail(session.user.email) !== normalizeEmail(invitation.email)
+    ) {
       throw new InvitationError("Invitation email does not match this account");
     }
 

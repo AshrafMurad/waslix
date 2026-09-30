@@ -5,6 +5,7 @@ export type WorkspaceAccessContext = {
   workspaceId: string;
   memberId: string;
   role: WorkspaceRole;
+  workspaceOnboardingCompleted?: boolean;
 };
 
 export class AuthenticationRequiredError extends Error {
@@ -30,7 +31,11 @@ type MembershipProjection = {
   id: string;
   workspaceId: string;
   role: string;
-  status: "ACTIVE" | "INACTIVE";
+  status: "ACTIVE" | "INVITED" | "INACTIVE" | "SUSPENDED";
+  workspace?: {
+    status: "ACTIVE" | "INACTIVE" | "SUSPENDED";
+    onboardingCompleted: boolean;
+  };
 };
 
 type FindMembership = (input: {
@@ -59,6 +64,8 @@ export async function resolveWorkspaceAccess(
   if (
     !membership ||
     membership.status !== "ACTIVE" ||
+    membership.workspace?.status === "INACTIVE" ||
+    membership.workspace?.status === "SUSPENDED" ||
     !isWorkspaceRole(membership.role)
   ) {
     throw new WorkspaceAccessDeniedError();
@@ -69,5 +76,11 @@ export async function resolveWorkspaceAccess(
     workspaceId: membership.workspaceId,
     memberId: membership.id,
     role: membership.role,
+    ...(membership.workspace
+      ? {
+          workspaceOnboardingCompleted:
+            membership.workspace.onboardingCompleted,
+        }
+      : {}),
   };
 }

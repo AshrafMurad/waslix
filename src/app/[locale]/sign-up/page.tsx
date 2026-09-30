@@ -15,7 +15,10 @@ function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
-export default async function SignUpPage({ params, searchParams }: SignUpPageProps) {
+export default async function SignUpPage({
+  params,
+  searchParams,
+}: SignUpPageProps) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
@@ -37,7 +40,13 @@ export default async function SignUpPage({ params, searchParams }: SignUpPagePro
         </div>
         <SignUpForm invitationToken={token} defaultEmail={invitation?.email} />
         <p className="text-muted-foreground text-sm">
-          {t("hasAccount")} <Link className="text-brand-accent" href={token ? `/sign-in?invite=${token}` : "/sign-in"}>{t("signIn")}</Link>
+          {t("hasAccount")}{" "}
+          <Link
+            className="text-brand-accent"
+            href={token ? `/sign-in?invite=${token}` : "/sign-in"}
+          >
+            {t("signIn")}
+          </Link>
         </p>
       </section>
     </main>

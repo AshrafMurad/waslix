@@ -1,10 +1,13 @@
 {
   "home": {
-    "kicker": "Waslix foundation",
-    "title": "Customer success starts here",
-    "description": "The project foundation is ready with locale-prefixed routing, English and Arabic catalogs, Tailwind, and shadcn configuration.",
+    "kicker": "Waslix",
+    "title": "A focused customer success workspace",
+    "description": "Waslix helps B2B teams manage customers, health, onboarding, renewals, tasks, and team collaboration from one place.",
     "signIn": "Sign in",
-    "openWorkspace": "Open workspace"
+    "getStarted": "Get started",
+    "openWorkspace": "Open workspace",
+    "features": "Workspace-scoped customers, team roles, onboarding, renewals, tasks, and health signals.",
+    "footer": "Billing and advanced marketing pages are coming later."
   },
   "datePicker": {
     "choose": "Choose a date",

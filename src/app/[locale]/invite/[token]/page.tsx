@@ -43,7 +43,9 @@ export default async function InvitationPage({
           <CardTitle>{t("invite.title")}</CardTitle>
           <CardDescription>
             {invitation
-              ? t("invite.description", { workspace: invitation.workspace.name })
+              ? t("invite.description", {
+                  workspace: invitation.workspace.name,
+                })
               : t("invite.invalid")}
           </CardDescription>
         </CardHeader>
@@ -62,10 +64,14 @@ export default async function InvitationPage({
           ) : (
             <div className="flex flex-col gap-3 sm:flex-row">
               <Button asChild>
-                <Link href={`/sign-in?invite=${token}`}>{t("invite.signIn")}</Link>
+                <Link href={`/sign-in?invite=${token}`}>
+                  {t("invite.signIn")}
+                </Link>
               </Button>
               <Button asChild variant="outline">
-                <Link href={`/sign-up?invite=${token}`}>{t("invite.signUp")}</Link>
+                <Link href={`/sign-up?invite=${token}`}>
+                  {t("invite.signUp")}
+                </Link>
               </Button>
             </div>
           )}

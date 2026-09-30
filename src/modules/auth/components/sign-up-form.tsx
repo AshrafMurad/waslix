@@ -25,7 +25,9 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const name = String(formData.get("name") ?? "").trim();
-    const email = String(formData.get("email") ?? "").trim().toLowerCase();
+    const email = String(formData.get("email") ?? "")
+      .trim()
+      .toLowerCase();
     const password = String(formData.get("password") ?? "");
 
     setError(undefined);
@@ -42,7 +44,9 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
         return;
       }
 
-      router.replace(invitationToken ? `/invite/${invitationToken}` : "/workspace");
+      router.replace(
+        invitationToken ? `/invite/${invitationToken}` : "/workspace",
+      );
       router.refresh();
     } catch {
       setError(t("signUpFailed"));
@@ -52,7 +56,11 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
   }
 
   return (
-    <form onSubmit={signUp} className="flex w-full max-w-sm flex-col gap-4" noValidate>
+    <form
+      onSubmit={signUp}
+      className="flex w-full max-w-sm flex-col gap-4"
+      noValidate
+    >
       <Field>
         <FieldLabel htmlFor="sign-up-name">{t("name")}</FieldLabel>
         <Input id="sign-up-name" name="name" autoComplete="name" required />

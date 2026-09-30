@@ -27,6 +27,10 @@ export default async function HomePage({ params }: HomePageProps) {
     await requireWorkspaceAccess();
     redirect({ href: "/overview", locale });
   } catch (error) {
+    if (error instanceof WorkspaceAccessDeniedError) {
+      redirect({ href: "/workspace", locale });
+    }
+
     if (
       !(error instanceof AuthenticationRequiredError) &&
       !(error instanceof WorkspaceAccessDeniedError)
@@ -56,9 +60,17 @@ export default async function HomePage({ params }: HomePageProps) {
             <Link href="/sign-in">{t("home.signIn")}</Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href="/workspace">{t("home.openWorkspace")}</Link>
+            <Link href="/sign-up">{t("home.getStarted")}</Link>
           </Button>
         </div>
+        <div className="border-t pt-5">
+          <p className="text-muted-foreground text-sm leading-6">
+            {t("home.features")}
+          </p>
+        </div>
+        <footer className="text-muted-foreground text-xs">
+          {t("home.footer")}
+        </footer>
       </section>
     </main>
   );

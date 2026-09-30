@@ -98,7 +98,7 @@ export const auth = betterAuth({
           },
           additionalFields: {
             status: {
-              type: ["ACTIVE", "INACTIVE"],
+              type: ["ACTIVE", "INVITED", "INACTIVE", "SUSPENDED"],
               required: true,
               defaultValue: "ACTIVE",
               input: false,
