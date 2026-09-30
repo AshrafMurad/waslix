@@ -37,6 +37,7 @@
     "title": "Search workspace",
     "placeholder": "Search customers, contacts, or tasks",
     "empty": "No matching workspace records found.",
+    "error": "Search could not load results. Check your connection and try again.",
     "loading": "Searching...",
     "customer": "Customer",
     "contact": "Contact",

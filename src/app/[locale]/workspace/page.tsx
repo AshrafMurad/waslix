@@ -56,13 +56,27 @@ export default async function WorkspacePage({
 
   return (
     <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-6 py-16">
-      <Card className="w-full max-w-2xl">
+      <Card className="relative w-full max-w-2xl overflow-hidden">
+        <div
+          aria-hidden="true"
+          className="bg-brand pointer-events-none absolute inset-x-6 top-0 h-px opacity-40"
+        />
         <CardHeader>
           <p className="waslix-eyebrow">{t("onboarding.eyebrow")}</p>
           <CardTitle className="text-2xl">{t("onboarding.title")}</CardTitle>
           <CardDescription>{t("onboarding.description")}</CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="mb-5 grid gap-2 text-sm sm:grid-cols-3">
+            {["evidence", "isolation", "locale"].map((key) => (
+              <span
+                key={key}
+                className="bg-raised/45 text-muted-foreground rounded-md border px-3 py-2"
+              >
+                {t(`onboarding.assurances.${key}`)}
+              </span>
+            ))}
+          </div>
           <form action={createWorkspaceAction} className="grid gap-5">
             <input type="hidden" name="locale" value={locale} />
             <div className="space-y-2">

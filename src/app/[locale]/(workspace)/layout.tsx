@@ -38,6 +38,7 @@ export default async function WorkspaceLayout({
           title: t("search.title"),
           placeholder: t("search.placeholder"),
           empty: t("search.empty"),
+          error: t("search.error"),
           loading: t("search.loading"),
           customer: t("search.customer"),
           contact: t("search.contact"),

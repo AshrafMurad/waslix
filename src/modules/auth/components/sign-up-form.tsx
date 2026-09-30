@@ -19,7 +19,17 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
   const t = useTranslations("auth");
   const router = useRouter();
   const [error, setError] = useState<string>();
+  const [fieldErrors, setFieldErrors] = useState<{
+    name?: string;
+    email?: string;
+    password?: string;
+  }>({});
   const [isPending, setIsPending] = useState(false);
+
+  function clearFieldError(field: keyof typeof fieldErrors) {
+    setError(undefined);
+    setFieldErrors((current) => ({ ...current, [field]: undefined }));
+  }
 
   async function signUp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,12 +39,28 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
       .trim()
       .toLowerCase();
     const password = String(formData.get("password") ?? "");
+    const nextFieldErrors = {
+      name: name ? undefined : t("validation.required"),
+      email: !email
+        ? t("validation.required")
+        : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+          ? t("validation.email")
+          : undefined,
+      password: !password
+        ? t("validation.required")
+        : password.length < 6
+          ? t("passwordHint")
+          : undefined,
+    };
 
     setError(undefined);
-    if (!name || !email || !password || password.length < 6) {
-      setError(t("validation.required"));
+    setFieldErrors(nextFieldErrors);
+    if (
+      nextFieldErrors.name ||
+      nextFieldErrors.email ||
+      nextFieldErrors.password
+    )
       return;
-    }
 
     setIsPending(true);
     try {
@@ -61,11 +87,21 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
       className="flex w-full max-w-sm flex-col gap-4"
       noValidate
     >
-      <Field>
+      <Field data-invalid={Boolean(fieldErrors.name)}>
         <FieldLabel htmlFor="sign-up-name">{t("name")}</FieldLabel>
-        <Input id="sign-up-name" name="name" autoComplete="name" required />
+        <Input
+          id="sign-up-name"
+          name="name"
+          autoComplete="name"
+          aria-required="true"
+          aria-invalid={Boolean(fieldErrors.name)}
+          aria-describedby={fieldErrors.name ? "sign-up-name-error" : undefined}
+          onChange={() => clearFieldError("name")}
+          dir="auto"
+        />
+        <FieldError id="sign-up-name-error">{fieldErrors.name}</FieldError>
       </Field>
-      <Field>
+      <Field data-invalid={Boolean(fieldErrors.email)}>
         <FieldLabel htmlFor="sign-up-email">{t("email")}</FieldLabel>
         <Input
           id="sign-up-email"
@@ -73,21 +109,32 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
           type="email"
           defaultValue={defaultEmail}
           autoComplete="email"
-          required
+          aria-required="true"
+          aria-invalid={Boolean(fieldErrors.email)}
+          aria-describedby={
+            fieldErrors.email ? "sign-up-email-error" : undefined
+          }
+          onChange={() => clearFieldError("email")}
           dir="ltr"
         />
+        <FieldError id="sign-up-email-error">{fieldErrors.email}</FieldError>
       </Field>
-      <Field>
+      <Field data-invalid={Boolean(fieldErrors.password)}>
         <FieldLabel htmlFor="sign-up-password">{t("password")}</FieldLabel>
         <Input
           id="sign-up-password"
           name="password"
           type="password"
           autoComplete="new-password"
-          required
+          aria-required="true"
+          aria-invalid={Boolean(fieldErrors.password)}
+          aria-describedby="sign-up-password-error"
+          onChange={() => clearFieldError("password")}
           dir="ltr"
         />
-        <FieldError>{t("passwordHint")}</FieldError>
+        <FieldError id="sign-up-password-error">
+          {fieldErrors.password ?? t("passwordHint")}
+        </FieldError>
       </Field>
       {error ? (
         <p className="text-risk text-sm" role="alert">

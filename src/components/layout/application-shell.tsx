@@ -31,6 +31,7 @@ type ShellLabels = {
     title: string;
     placeholder: string;
     empty: string;
+    error: string;
     loading: string;
     customer: string;
     contact: string;

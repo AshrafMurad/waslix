@@ -1,7 +1,7 @@
 "use client";
 
 import { Search } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useLocale } from "next-intl";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,7 @@ type GlobalSearchProps = {
     title: string;
     placeholder: string;
     empty: string;
+    error: string;
     loading: string;
     customer: string;
     contact: string;
@@ -38,7 +39,9 @@ export function GlobalSearch({ className, labels }: GlobalSearchProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [error, setError] = useState<string>();
   const [isPending, startTransition] = useTransition();
+  const requestId = useRef(0);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -56,10 +59,23 @@ export function GlobalSearch({ className, labels }: GlobalSearchProps) {
       return;
     }
     const timeout = window.setTimeout(() => {
-      startTransition(async () => setResults(await globalSearchAction(query)));
+      const currentRequest = requestId.current + 1;
+      requestId.current = currentRequest;
+      startTransition(async () => {
+        try {
+          const nextResults = await globalSearchAction(query);
+          if (requestId.current !== currentRequest) return;
+          setResults(nextResults);
+          setError(undefined);
+        } catch {
+          if (requestId.current !== currentRequest) return;
+          setResults([]);
+          setError(labels.error);
+        }
+      });
     }, 200);
     return () => window.clearTimeout(timeout);
-  }, [query]);
+  }, [labels.error, query]);
 
   const typeLabel = {
     customer: labels.customer,
@@ -93,7 +109,11 @@ export function GlobalSearch({ className, labels }: GlobalSearchProps) {
             onChange={(event) => {
               const nextQuery = event.target.value;
               setQuery(nextQuery);
-              if (nextQuery.trim().length < 2) setResults([]);
+              if (nextQuery.trim().length < 2) {
+                requestId.current += 1;
+                setResults([]);
+                setError(undefined);
+              }
             }}
             placeholder={labels.placeholder}
             dir="auto"
@@ -103,12 +123,20 @@ export function GlobalSearch({ className, labels }: GlobalSearchProps) {
             className="max-h-80 space-y-1 overflow-y-auto"
             aria-busy={isPending}
           >
-            {isPending ? (
+            {error ? (
+              <p className="text-risk p-3 text-sm" role="alert">
+                {error}
+              </p>
+            ) : null}
+            {!error && isPending ? (
               <p className="text-muted-foreground p-3 text-sm">
                 {labels.loading}
               </p>
             ) : null}
-            {!isPending && query.trim().length >= 2 && !results.length ? (
+            {!error &&
+            !isPending &&
+            query.trim().length >= 2 &&
+            !results.length ? (
               <p className="text-muted-foreground p-3 text-sm">
                 {labels.empty}
               </p>

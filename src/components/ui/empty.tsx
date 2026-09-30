@@ -6,7 +6,7 @@ function Empty({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="empty"
       className={cn(
-        "bg-raised/20 flex min-w-0 flex-1 flex-col items-center justify-center gap-5 rounded-lg border border-dashed p-6 text-center text-balance md:p-10",
+        "bg-raised/20 relative flex min-w-0 flex-1 flex-col items-center justify-center gap-5 overflow-hidden rounded-lg border border-dashed p-6 text-center text-balance md:p-10",
         className,
       )}
       {...props}
@@ -51,7 +51,10 @@ function EmptyMedia({
     <div
       data-slot="empty-icon"
       data-variant={variant}
-      className={cn(emptyMediaVariants({ variant, className }))}
+      className={cn(
+        "relative z-10",
+        emptyMediaVariants({ variant, className }),
+      )}
       {...props}
     />
   );
@@ -61,7 +64,10 @@ function EmptyTitle({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="empty-title"
-      className={cn("text-base font-semibold tracking-tight", className)}
+      className={cn(
+        "relative z-10 text-base font-semibold tracking-tight",
+        className,
+      )}
       {...props}
     />
   );
@@ -69,10 +75,10 @@ function EmptyTitle({ className, ...props }: React.ComponentProps<"div">) {
 
 function EmptyDescription({ className, ...props }: React.ComponentProps<"p">) {
   return (
-    <div
+    <p
       data-slot="empty-description"
       className={cn(
-        "text-muted-foreground [&>a:hover]:text-primary text-sm/relaxed [&>a]:underline [&>a]:underline-offset-4",
+        "text-muted-foreground [&>a:hover]:text-primary relative z-10 text-sm/relaxed [&>a]:underline [&>a]:underline-offset-4",
         className,
       )}
       {...props}
@@ -85,7 +91,7 @@ function EmptyContent({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="empty-content"
       className={cn(
-        "flex w-full max-w-sm min-w-0 flex-col items-center gap-4 text-sm text-balance",
+        "relative z-10 flex w-full max-w-sm min-w-0 flex-col items-center gap-4 text-sm text-balance",
         className,
       )}
       {...props}

@@ -62,6 +62,11 @@ export function PortfolioVisual() {
           />
         ))}
       </div>
+      <div className="evidence-ribbon" aria-hidden="true">
+        <span data-tone="healthy" />
+        <span data-tone="attention" />
+        <span data-tone="risk" />
+      </div>
 
       <div className="portfolio-frame" ref={frame}>
         <div className="portfolio-window-bar">

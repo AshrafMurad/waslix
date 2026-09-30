@@ -131,13 +131,17 @@ html[lang="ar"] body {
   }
 
   body {
-    @apply bg-background text-foreground min-h-full font-sans text-sm leading-6 antialiased;
+    @apply bg-background text-foreground min-h-full font-sans text-base leading-7 antialiased md:text-sm md:leading-6;
     font-feature-settings:
       "rlig" 1,
       "calt" 1,
       "tnum" 1;
     font-optical-sizing: auto;
     text-rendering: geometricPrecision;
+  }
+
+  :where(input, textarea, select, button) {
+    font: inherit;
   }
 
   ::selection {
@@ -195,6 +199,30 @@ html[lang="ar"] body {
     isolation: isolate;
   }
 
+  .waslix-content,
+  [data-slot="dialog-content"],
+  [data-slot="sheet-content"],
+  [data-slot="card"] {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .waslix-content {
+    position: relative;
+  }
+
+  .waslix-content::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    height: 1px;
+    pointer-events: none;
+    background: color-mix(in srgb, var(--brand) 28%, var(--border));
+    opacity: 0.32;
+  }
+
   .waslix-sidebar {
     animation: waslix-sidebar-settle var(--motion-entrance)
       var(--motion-ease-out) both;
@@ -225,6 +253,13 @@ html[lang="ar"] body {
   .waslix-page {
     @apply space-y-7 md:space-y-9;
     animation: waslix-page-resolve 380ms var(--motion-ease-out) both;
+  }
+
+  .waslix-page-title::selection,
+  .waslix-panel-title::selection,
+  .waslix-data-value::selection {
+    background: var(--accent);
+    color: var(--accent-foreground);
   }
 
   .waslix-page-header {
@@ -330,6 +365,30 @@ html[lang="ar"] body {
     transform: translateY(0) scale(0.985);
   }
 
+  [data-slot="empty"]::before,
+  [data-slot="empty"]::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+  }
+
+  [data-slot="empty"]::before {
+    inset: 0.75rem;
+    border-radius: inherit;
+    border: 1px solid color-mix(in srgb, var(--brand) 18%, transparent);
+    opacity: 0.42;
+  }
+
+  [data-slot="empty"]::after {
+    width: 2.75rem;
+    height: 2px;
+    inset-block-start: 1.75rem;
+    inset-inline-start: calc(50% - 1.375rem);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--brand) 58%, var(--border));
+    animation: waslix-empty-scan 5s var(--motion-ease-standard) infinite;
+  }
+
   [data-slot="tabs-trigger"]::after {
     transition:
       opacity var(--motion-quick) var(--motion-ease-standard),
@@ -416,6 +475,19 @@ html[lang="ar"] body {
   :dir(rtl) .waslix-result-row:hover,
   :dir(rtl) .waslix-result-row:focus-visible {
     transform: translateX(-2px);
+  }
+}
+
+@keyframes waslix-empty-scan {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.22;
+  }
+
+  50% {
+    transform: translateY(7rem);
+    opacity: 0.7;
   }
 }
 
@@ -508,7 +580,8 @@ html[lang="ar"] body {
   .waslix-content,
   .waslix-page,
   .waslix-section-grid > *,
-  .waslix-two-column > * {
+  .waslix-two-column > *,
+  [data-slot="empty"]::after {
     animation: none !important;
   }
 

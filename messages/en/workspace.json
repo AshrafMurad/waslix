@@ -36,6 +36,11 @@
     "name": "Workspace or company name",
     "plan": "Plan",
     "planNote": "No card or checkout is required. The plan record prepares billing for a later integration.",
+    "assurances": {
+      "evidence": "Evidence stays visible",
+      "isolation": "Workspace scoped",
+      "locale": "English and Arabic ready"
+    },
     "submit": "Create workspace"
   },
   "invite": {

@@ -418,6 +418,35 @@
     animation-delay: calc(var(--signal-index) * -420ms);
   }
 
+  .evidence-ribbon {
+    position: absolute;
+    inset-inline: 8% 8%;
+    inset-block-start: 2.6rem;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 0.62fr 0.28fr;
+    gap: 0.45rem;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+
+  .evidence-ribbon span {
+    height: 2px;
+    border-radius: 999px;
+    background: var(--marketing-brand);
+    animation: evidence-pass 4.8s ease-in-out infinite;
+  }
+
+  .evidence-ribbon span[data-tone="attention"] {
+    background: var(--marketing-attention);
+    animation-delay: -1.4s;
+  }
+
+  .evidence-ribbon span[data-tone="risk"] {
+    background: var(--marketing-risk);
+    animation-delay: -2.6s;
+  }
+
   .portfolio-frame {
     position: relative;
     z-index: 2;
@@ -1992,6 +2021,18 @@
     opacity: 0.95;
   }
 }
+@keyframes evidence-pass {
+  0%,
+  100% {
+    transform: scaleX(0.42);
+    transform-origin: center;
+    opacity: 0.24;
+  }
+  50% {
+    transform: scaleX(1);
+    opacity: 0.78;
+  }
+}
 @keyframes chart-draw {
   from {
     stroke-dashoffset: 620;
@@ -2228,6 +2269,7 @@
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     .signal-field i,
+    .evidence-ribbon span,
     .chart-line,
     .intelligence-card,
     .source-node,
