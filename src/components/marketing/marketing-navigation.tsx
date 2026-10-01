@@ -13,8 +13,8 @@ type MarketingNavigationProps = {
 };
 
 const navigationItems = [
-  ["product", "#product"],
-  ["pricing", "#pricing"],
+  ["product", "#story"],
+  ["resources", "#capabilities"],
 ] as const;
 
 export function MarketingNavigation({ locale }: MarketingNavigationProps) {

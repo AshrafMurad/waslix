@@ -1,21 +1,140 @@
 {
-  "schema": 1,
-  "world": "dashboard-aligned evidence-to-action operations rail",
-  "mode": "persuade",
-  "palette": {
-    "ground": "application background token",
-    "material": "surface and raised-neutral tokens",
-    "brand": "Waslix teal identity and interaction",
-    "healthy": "semantic green",
-    "attention": "semantic amber",
-    "risk": "semantic red"
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-01T00:00:00.000Z",
+  "title": "Design System: Waslix",
+  "extensions": {
+    "colorMeta": {
+      "brand-solid": {
+        "role": "primary",
+        "displayName": "Waslix Teal",
+        "canonical": "#0f766e",
+        "tonalRamp": [
+          "#062f2c",
+          "#084a45",
+          "#0b625b",
+          "#0f766e",
+          "#27968c",
+          "#4fb7ac",
+          "#8ed5cd",
+          "#d4f2ee"
+        ]
+      },
+      "marketing-ground": {
+        "role": "neutral",
+        "displayName": "Control Room Black",
+        "canonical": "#060807",
+        "tonalRamp": [
+          "#060807",
+          "#0d100f",
+          "#141816",
+          "#252b28",
+          "#46504c",
+          "#78837f",
+          "#b7bfbc",
+          "#eef2f1"
+        ]
+      },
+      "attention": {
+        "role": "tertiary",
+        "displayName": "Evidence Amber",
+        "canonical": "#d6a94a",
+        "tonalRamp": [
+          "#342407",
+          "#563c0c",
+          "#795715",
+          "#9e7629",
+          "#d6a94a",
+          "#e2c173",
+          "#eedaa4",
+          "#faf1d6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Operational Display",
+        "purpose": "First-view and scroll-story statements."
+      },
+      "body": {
+        "displayName": "Product Narrative",
+        "purpose": "Clear product explanation and UI copy."
+      },
+      "label": {
+        "displayName": "Measured Label",
+        "purpose": "Coordinates, timestamps, sources, and numeric state."
+      }
+    },
+    "shadows": [
+      {
+        "name": "product-plane",
+        "value": "0 3rem 8rem -4rem rgb(0 0 0 / 0.96)",
+        "purpose": "Only for major product planes entering the network field."
+      }
+    ],
+    "motion": [
+      {
+        "name": "entrance",
+        "value": "power4.out",
+        "purpose": "Confident text and product-plane arrival."
+      },
+      {
+        "name": "scroll-link",
+        "value": "scrub 0.7-0.8",
+        "purpose": "Causal network and workspace transitions only."
+      }
+    ],
+    "breakpoints": [
+      { "name": "tablet", "value": "1100px" },
+      { "name": "mobile", "value": "760px" }
+    ]
   },
   "components": [
-    "live workspace rows",
-    "evidence continuity rails",
-    "chain-of-custody ledger",
-    "compact command controls"
+    {
+      "name": "Marketing Primary Button",
+      "kind": "button",
+      "refersTo": "marketing-button-primary",
+      "description": "Primary conversion action on dark marketing surfaces.",
+      "html": "<button class=\"ds-primary\">START YOUR WORKSPACE</button>",
+      "css": ".ds-primary { min-height: 3rem; padding: 0 1.15rem; border: 1px solid #0f766e; border-radius: .35rem; background: #0f766e; color: #fff; font: 720 .82rem Geist, Arial, sans-serif; transition: transform 240ms cubic-bezier(.16,1,.3,1), background 160ms; } .ds-primary:hover { transform: translateY(-2px); background: #116f68; } .ds-primary:focus-visible { outline: 2px solid #4fb7ac; outline-offset: 2px; }"
+    },
+    {
+      "name": "Evidence Panel",
+      "kind": "custom",
+      "refersTo": "marketing-panel",
+      "description": "Compact product-true plane for health, ownership, and next action.",
+      "html": "<section class=\"ds-panel\"><small>EVIDENCE</small><strong>64 · NEEDS ATTENTION</strong><p>Usage score down 18 points</p></section>",
+      "css": ".ds-panel { display: grid; gap: .75rem; padding: 1.2rem; border: 1px solid rgba(232,240,238,.24); border-radius: .5rem; background: #0d100f; color: #f1f5f4; font-family: Geist, Arial, sans-serif; } .ds-panel small { color: #9ba5a2; font: 600 .67rem 'Geist Mono', monospace; } .ds-panel strong { color: #d6a94a; } .ds-panel p { margin: 0; color: #9ba5a2; }"
+    }
   ],
-  "motion": "a bounded Three.js signal field and section rails carry evidence through accountable states; Motion settles selected rows; nonessential motion respects reduced-motion preferences",
-  "i18n": "English LTR and Arabic RTL keep equivalent content and semantic order"
+  "narrative": {
+    "northStar": "The Evidence Control Surface",
+    "overview": "Waslix pairs a calm authenticated workspace with a cinematic public control surface. Customer evidence visibly moves from disconnected signals to explainable health and accountable work.",
+    "keyCharacteristics": [
+      "Precise neutral fields",
+      "Thin operational rules",
+      "Large direct typography",
+      "Product-true evidence planes",
+      "Equivalent LTR and RTL composition"
+    ],
+    "rules": [
+      {
+        "name": "The Semantic Color Rule",
+        "body": "Brand teal means identity or interaction; green, amber, and red retain their business meaning everywhere.",
+        "section": "colors"
+      },
+      {
+        "name": "The Bounded Depth Rule",
+        "body": "Spatial depth belongs to the persistent network and major product transitions, never every card or control.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Show evidence, ownership, timing, and action together.",
+      "Use motion to explain causality and continuity."
+    ],
+    "donts": [
+      "Do not use generic neon gradients, decorative glass, or random 3D objects.",
+      "Do not fabricate customer proof, integrations, or AI claims."
+    ]
+  }
 }
