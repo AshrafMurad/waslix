@@ -220,7 +220,7 @@
     inset-inline-start: 18%;
     width: 72%;
     height: 1px;
-    background: color-mix(in srgb, var(--brand) 52%, transparent);
+    background: color-mix(in srgb, var(--brand) 36%, transparent);
     transform: rotate(-8deg);
     transform-origin: center;
   }
@@ -243,7 +243,7 @@
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 999px;
-    background: var(--brand-accent);
+    background: color-mix(in srgb, var(--brand-accent) 74%, var(--border));
   }
 
   .signal-rail-canvas > span i:nth-child(1) {
@@ -340,7 +340,7 @@
     z-index: 2;
     min-width: 0;
     overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--brand) 34%, var(--border));
+    border: 1px solid color-mix(in srgb, var(--brand) 24%, var(--border));
     border-radius: var(--radius-lg);
     background: var(--surface);
     box-shadow: 0 2.5rem 7rem -4rem rgb(0 0 0 / 0.72);
@@ -507,7 +507,7 @@
 
   .workspace-row:hover,
   .workspace-row[data-active="true"] {
-    background: color-mix(in srgb, var(--brand) 8%, var(--surface));
+    background: color-mix(in srgb, var(--brand) 6%, var(--surface));
   }
 
   .workspace-row[data-active="true"] {
@@ -526,7 +526,7 @@
     height: 2rem;
     place-items: center;
     border-radius: var(--radius-sm);
-    background: var(--brand);
+    background: color-mix(in srgb, var(--brand) 86%, black);
     color: var(--brand-foreground);
     font-size: 0.62rem;
     font-weight: 800;
@@ -1006,7 +1006,7 @@
     width: 0.5rem;
     height: 0.5rem;
     border-radius: 999px;
-    background: var(--brand-accent);
+    background: color-mix(in srgb, var(--brand-accent) 74%, var(--border));
     animation: marketing-rail-pulse 3.6s var(--motion-ease-standard) infinite;
   }
 
@@ -1154,7 +1154,7 @@
     border-inline-end: 0;
   }
   .lifecycle-track article[data-active="true"] {
-    background: color-mix(in srgb, var(--brand) 10%, var(--surface));
+    background: color-mix(in srgb, var(--brand) 7%, var(--surface));
   }
   .lifecycle-track article > span {
     display: grid;

@@ -178,12 +178,12 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
                 : "sign-up-password-hint"
             }
             onChange={() => clearFieldError("password")}
-            className="pe-10"
+            className="pr-10"
             dir="ltr"
           />
           <button
             type="button"
-            className="text-muted-foreground hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-1 end-1 inline-flex w-8 items-center justify-center rounded-md transition-colors outline-none focus-visible:ring-[3px]"
+            className="text-muted-foreground hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-1 right-1 inline-flex w-8 items-center justify-center rounded-md transition-colors outline-none focus-visible:ring-[3px]"
             aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             aria-pressed={showPassword}
             onClick={() => setShowPassword((current) => !current)}

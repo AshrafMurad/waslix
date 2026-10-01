@@ -3,6 +3,41 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
+let webglUnavailable = false;
+
+function createRenderer() {
+  if (webglUnavailable) return null;
+
+  const canvas = document.createElement("canvas");
+  const attributes: WebGLContextAttributes = {
+    alpha: true,
+    antialias: true,
+    powerPreference: "low-power",
+  };
+
+  try {
+    const context =
+      canvas.getContext("webgl2", attributes) ??
+      canvas.getContext("webgl", attributes);
+
+    if (!context) {
+      webglUnavailable = true;
+      return null;
+    }
+
+    return new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+      canvas,
+      context,
+      powerPreference: "low-power",
+    });
+  } catch {
+    webglUnavailable = true;
+    return null;
+  }
+}
+
 export function SignalRailCanvas() {
   const hostRef = useRef<HTMLDivElement>(null);
 
@@ -13,10 +48,12 @@ export function SignalRailCanvas() {
     const reduceMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+    const renderer = createRenderer();
+    if (!renderer) return;
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
     camera.position.z = 8;
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     host.appendChild(renderer.domElement);
 
@@ -31,10 +68,10 @@ export function SignalRailCanvas() {
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
     const material = new THREE.PointsMaterial({
-      color: 0x5eead4,
+      color: 0x4fb7ac,
       size: 0.16,
       transparent: true,
-      opacity: 0.82,
+      opacity: 0.62,
       sizeAttenuation: true,
     });
     const points = new THREE.Points(geometry, material);
@@ -52,9 +89,9 @@ export function SignalRailCanvas() {
       const rail = new THREE.Mesh(
         railGeometry,
         new THREE.MeshBasicMaterial({
-          color: index === 1 ? 0x5eead4 : 0x0f766e,
+          color: index === 1 ? 0x4fb7ac : 0x0f766e,
           transparent: true,
-          opacity: index === 1 ? 0.72 : 0.46,
+          opacity: index === 1 ? 0.5 : 0.32,
         }),
       );
       scene.add(rail);
@@ -63,7 +100,16 @@ export function SignalRailCanvas() {
 
     let frame = 0;
     let visible = true;
+    let contextLost = false;
+    const handleContextLost = (event: Event) => {
+      event.preventDefault();
+      contextLost = true;
+      window.cancelAnimationFrame(frame);
+    };
+    renderer.domElement.addEventListener("webglcontextlost", handleContextLost);
+
     const resize = () => {
+      if (contextLost) return;
       const { width, height } = host.getBoundingClientRect();
       renderer.setSize(width, height, false);
       camera.aspect = width / Math.max(height, 1);
@@ -79,6 +125,7 @@ export function SignalRailCanvas() {
     resize();
 
     const render = (time: number) => {
+      if (contextLost) return;
       if (visible) {
         points.rotation.y = reduceMotion ? 0 : time * 0.000055;
         points.position.x = reduceMotion ? 0 : Math.sin(time * 0.00025) * 0.18;
@@ -103,6 +150,10 @@ export function SignalRailCanvas() {
         rail.geometry.dispose();
         (rail.material as THREE.Material).dispose();
       });
+      renderer.domElement.removeEventListener(
+        "webglcontextlost",
+        handleContextLost,
+      );
       renderer.dispose();
       renderer.domElement.remove();
     };

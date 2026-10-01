@@ -73,11 +73,7 @@ export function SignInForm({
   }
 
   return (
-    <form
-      onSubmit={signIn}
-      className="flex w-full max-w-sm flex-col gap-4"
-      noValidate
-    >
+    <form onSubmit={signIn} className="flex w-full flex-col gap-5" noValidate>
       <Field data-invalid={Boolean(fieldErrors.email)}>
         <FieldLabel htmlFor="sign-in-email">{t("email")}</FieldLabel>
         <Input
@@ -111,12 +107,12 @@ export function SignInForm({
             aria-describedby={
               fieldErrors.password ? "sign-in-password-error" : undefined
             }
-            className="pe-10"
+            className="pr-10"
             dir="ltr"
           />
           <button
             type="button"
-            className="text-muted-foreground hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-1 end-1 inline-flex w-8 items-center justify-center rounded-md transition-colors outline-none focus-visible:ring-[3px]"
+            className="text-muted-foreground hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-1 right-1 inline-flex w-8 items-center justify-center rounded-md transition-colors outline-none focus-visible:ring-[3px]"
             aria-label={showPassword ? t("hidePassword") : t("showPassword")}
             aria-pressed={showPassword}
             onClick={() => setShowPassword((current) => !current)}
@@ -137,7 +133,13 @@ export function SignInForm({
           {error}
         </p>
       ) : null}
-      <Button type="submit" disabled={isPending} aria-busy={isPending}>
+      <Button
+        type="submit"
+        size="lg"
+        className="mt-1 w-full"
+        disabled={isPending}
+        aria-busy={isPending}
+      >
         {isPending ? <Spinner aria-label={t("signingIn")} /> : null}
         {isPending ? t("signingIn") : t("signIn")}
       </Button>
