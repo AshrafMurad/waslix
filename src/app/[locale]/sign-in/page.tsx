@@ -46,13 +46,13 @@ export default async function SignInPage({
     <main className="bg-background text-foreground min-h-screen px-4 py-4 sm:px-6 sm:py-6">
       <AuthNavigation />
       <div className="bg-card mx-auto grid min-h-[calc(100vh-5.5rem)] w-full max-w-6xl overflow-hidden rounded-lg border shadow-[0_30px_80px_-55px_rgb(15_23_42_/_0.65)] sm:min-h-[calc(100vh-6.5rem)] lg:grid-cols-[1.05fr_0.95fr]">
-        <section className="relative hidden overflow-hidden bg-[#102522] p-10 text-white lg:flex lg:flex-col lg:justify-between xl:p-14">
+        <section className="bg-primary text-primary-foreground relative hidden overflow-hidden p-10 lg:flex lg:flex-col lg:justify-between xl:p-14">
           <div
             aria-hidden="true"
-            className="absolute inset-0 [background-image:linear-gradient(rgb(255_255_255_/_0.12)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255_/_0.12)_1px,transparent_1px)] [background-size:48px_48px] opacity-20"
+            className="absolute inset-0 [background-image:linear-gradient(rgb(255_255_255_/_0.08)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255_/_0.08)_1px,transparent_1px)] [background-size:48px_48px] opacity-[0.18]"
           />
           <div className="relative flex items-center gap-3">
-            <span className="flex size-10 items-center justify-center rounded-md bg-white text-lg font-black tracking-[-0.08em] text-[#0f766e]">
+            <span className="text-primary flex size-10 items-center justify-center rounded-md bg-white/90 text-lg font-black tracking-[-0.08em]">
               W
             </span>
             <span className="text-xl font-black tracking-[-0.04em]">
@@ -65,7 +65,7 @@ export default async function SignInPage({
               <h2 className="text-4xl leading-[1.08] font-bold tracking-[-0.04em] text-balance xl:text-5xl">
                 {t("signInValueTitle")}
               </h2>
-              <p className="max-w-[56ch] text-base leading-7 text-teal-50/75">
+              <p className="text-primary-foreground/78 max-w-[56ch] text-base leading-7">
                 {t("signInValueDescription")}
               </p>
             </div>
@@ -76,21 +76,21 @@ export default async function SignInPage({
                     key={item}
                     className="flex items-center gap-4 rounded-md border border-white/15 bg-white/[0.06] px-4 py-3.5"
                   >
-                    <span className="flex size-7 shrink-0 items-center justify-center rounded-full border border-teal-200/35 bg-teal-300/10 text-sm font-semibold text-teal-100 tabular-nums">
+                    <span className="text-primary-foreground flex size-7 shrink-0 items-center justify-center rounded-full border border-white/28 bg-white/10 text-sm font-semibold tabular-nums">
                       {index + 1}
                     </span>
-                    <span className="text-sm font-medium text-teal-50">
+                    <span className="text-primary-foreground/92 text-sm font-medium">
                       {t(`signInBenefits.${item}`)}
                     </span>
                     {index < 2 ? (
                       <ArrowRight
                         aria-hidden="true"
-                        className="ms-auto size-4 text-teal-200/60 rtl:rotate-180"
+                        className="text-primary-foreground/58 ms-auto size-4 rtl:rotate-180"
                       />
                     ) : (
                       <Check
                         aria-hidden="true"
-                        className="ms-auto size-4 text-teal-200"
+                        className="text-primary-foreground/78 ms-auto size-4"
                       />
                     )}
                   </div>
@@ -99,8 +99,11 @@ export default async function SignInPage({
             </div>
           </div>
 
-          <p className="relative flex items-center gap-2 text-sm text-teal-50/70">
-            <ShieldCheck aria-hidden="true" className="size-4 text-teal-200" />
+          <p className="text-primary-foreground/72 relative flex items-center gap-2 text-sm">
+            <ShieldCheck
+              aria-hidden="true"
+              className="text-primary-foreground/78 size-4"
+            />
             {t("signUpTrust")}
           </p>
         </section>
