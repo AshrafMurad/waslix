@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -49,13 +50,8 @@ export default async function WorkspacePage({
     <main className="bg-background text-foreground min-h-screen px-4 py-6 sm:px-6 sm:py-10">
       <div className="mx-auto w-full max-w-5xl">
         <div className="mb-8 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em]">
-              W
-            </span>
-            <span className="text-xl font-black tracking-[-0.04em]">
-              Waslix
-            </span>
+          <div className="flex items-center">
+            <BrandLogo className="w-24" />
           </div>
           <p className="text-muted-foreground text-sm font-medium">
             {t("onboarding.progress")}

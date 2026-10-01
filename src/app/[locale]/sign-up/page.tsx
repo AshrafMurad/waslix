@@ -2,6 +2,7 @@ import { ArrowRight, Check, ShieldCheck } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import { AuthNavigation } from "@/modules/auth/components/auth-navigation";
@@ -38,13 +39,8 @@ export default async function SignUpPage({
             aria-hidden="true"
             className="absolute inset-0 [background-image:linear-gradient(rgb(255_255_255_/_0.08)_1px,transparent_1px),linear-gradient(90deg,rgb(255_255_255_/_0.08)_1px,transparent_1px)] [background-size:48px_48px] opacity-[0.18]"
           />
-          <div className="relative flex items-center gap-3">
-            <span className="text-primary flex size-10 items-center justify-center rounded-md bg-white/90 text-lg font-black tracking-[-0.08em]">
-              W
-            </span>
-            <span className="text-xl font-black tracking-[-0.04em]">
-              Waslix
-            </span>
+          <div className="relative flex items-center">
+            <BrandLogo className="w-28" />
           </div>
 
           <div className="relative max-w-lg space-y-8">
@@ -97,13 +93,8 @@ export default async function SignUpPage({
 
         <section className="flex items-center justify-center p-6 sm:p-10 lg:p-12">
           <div className="flex w-full max-w-md flex-col gap-7">
-            <div className="flex items-center gap-3 lg:hidden">
-              <span className="bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em]">
-                W
-              </span>
-              <span className="text-xl font-black tracking-[-0.04em]">
-                Waslix
-              </span>
+            <div className="flex items-center lg:hidden">
+              <BrandLogo className="w-24" />
             </div>
             <div className="space-y-3">
               <p className="text-brand-accent text-sm font-medium">

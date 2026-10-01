@@ -1,5 +1,6 @@
 import { LayoutDashboard, Menu } from "lucide-react";
 
+import { BrandLogo } from "@/components/brand-logo";
 import type { Locale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
 import type { WorkspaceRole } from "@/lib/permissions/roles";
@@ -171,12 +172,9 @@ export function ApplicationShell({
       <aside className="waslix-sidebar bg-surface/95 sticky top-0 hidden h-screen border-e p-4 shadow-[var(--sidebar-shadow)] md:flex md:flex-col">
         <Link
           href="/overview"
-          className="waslix-brand-link mb-4 flex items-center gap-3 px-2 py-1"
+          className="waslix-brand-link mb-4 flex items-center px-2 py-1"
         >
-          <span className="waslix-brand-mark bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em] shadow-[0_16px_32px_-22px_rgb(15_118_110_/_0.9)]">
-            W
-          </span>
-          <span className="text-xl font-black tracking-[-0.05em]">Waslix</span>
+          <BrandLogo className="waslix-brand-mark w-24" />
         </Link>
         <div className="mt-4 flex-1 overflow-y-auto pe-1">
           <Navigation labels={labels} role={role} />
@@ -204,13 +202,8 @@ export function ApplicationShell({
                 <SheetTitle>{labels.menu}</SheetTitle>
                 <SheetDescription>{labels.navigation}</SheetDescription>
               </SheetHeader>
-              <div className="flex min-h-16 items-center gap-3 border-b px-4 pe-12">
-                <span className="waslix-brand-mark bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em] shadow-[0_16px_32px_-22px_rgb(15_118_110_/_0.9)]">
-                  W
-                </span>
-                <span className="text-xl font-black tracking-[-0.05em]">
-                  Waslix
-                </span>
+              <div className="flex min-h-16 items-center border-b px-4 pe-12">
+                <BrandLogo className="waslix-brand-mark w-24" />
               </div>
               <div className="p-3">
                 <Navigation labels={labels} role={role} closeOnNavigate />
@@ -232,12 +225,9 @@ export function ApplicationShell({
           </Sheet>
           <Link
             href="/overview"
-            className="waslix-brand-link flex items-center gap-2 md:hidden"
+            className="waslix-brand-link flex items-center md:hidden"
           >
-            <span className="waslix-brand-mark bg-brand text-brand-foreground flex size-8 items-center justify-center rounded-md font-black tracking-[-0.08em] shadow-[0_12px_24px_-18px_rgb(15_118_110_/_0.9)]">
-              W
-            </span>
-            <span className="font-black tracking-[-0.04em]">Waslix</span>
+            <BrandLogo className="waslix-brand-mark w-20" />
           </Link>
           <div className="ms-auto md:ms-4 md:w-80 lg:w-96">
             <GlobalSearch

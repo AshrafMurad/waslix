@@ -29,43 +29,8 @@
     margin-inline: auto;
   }
 
-  .marketing-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.65rem;
-    color: var(--m-text);
-    font-weight: 760;
-    letter-spacing: -0.035em;
-  }
-
-  .marketing-brand-mark {
-    position: relative;
-    display: grid;
-    width: 2rem;
-    height: 2rem;
-    place-items: center;
-    overflow: hidden;
-    border: 1px solid rgb(255 255 255 / 0.16);
-    border-radius: 0.35rem;
-    background: var(--m-teal-dark);
-    color: white;
-  }
-
-  .marketing-brand-mark::before {
-    content: "W";
-    position: relative;
-    z-index: 1;
-    font-size: 0.95rem;
-    font-weight: 900;
-    letter-spacing: -0.08em;
-  }
-
-  .marketing-brand-mark span {
-    display: none;
-  }
-
-  .marketing-brand-word {
-    font-size: 1rem;
+  .marketing-brand-logo {
+    width: 5rem;
   }
 
   .marketing-nav-wrap {
@@ -769,8 +734,8 @@
     font-size: 0.67rem;
   }
 
-  .workspace-window-bar .marketing-brand-word {
-    display: none;
+  .workspace-window-bar .marketing-brand-logo {
+    width: 3rem;
   }
 
   .workspace-window-bar small {
@@ -1127,11 +1092,8 @@
     text-align: center;
   }
 
-  .final-composition > .marketing-brand .marketing-brand-word {
-    display: none;
-  }
-
-  .final-composition > .marketing-brand {
+  .final-composition > .marketing-brand-logo {
+    width: 10rem;
     margin-block-end: 2.5rem;
   }
 

@@ -111,7 +111,11 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
 
   const t = await getTranslations({ locale, namespace: "shell.metadata" });
-  return { title: t("title"), description: t("description") };
+  return {
+    title: t("title"),
+    description: t("description"),
+    icons: { icon: "/logo.png", apple: "/logo.png" },
+  };
 }
 
 export default async function LocaleLayout({
