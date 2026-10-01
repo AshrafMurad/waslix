@@ -14,8 +14,6 @@ type MarketingNavigationProps = {
 
 const navigationItems = [
   ["product", "#product"],
-  ["solutions", "#solutions"],
-  ["resources", "#how-it-works"],
   ["pricing", "#pricing"],
 ] as const;
 

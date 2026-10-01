@@ -187,10 +187,23 @@
 
   .marketing-hero {
     position: relative;
-    min-height: 100svh;
-    padding-block: calc(var(--marketing-header) + 4rem) 5rem;
+    padding-block: calc(var(--marketing-header) + 4rem) clamp(4rem, 8vw, 7rem);
     border-block-end: 1px solid var(--border);
     isolation: isolate;
+  }
+
+  .marketing-hero::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: var(--marketing-header);
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--brand) 35%, transparent),
+      transparent
+    );
   }
 
   .signal-rail-canvas {
@@ -258,10 +271,13 @@
 
   .hero-layout {
     display: grid;
-    min-height: calc(100svh - var(--marketing-header) - 9rem);
-    grid-template-columns: minmax(18rem, 0.82fr) minmax(38rem, 1.4fr);
-    align-items: center;
-    gap: clamp(2rem, 5vw, 5rem);
+    grid-template-columns: minmax(20rem, 0.8fr) minmax(26rem, 1fr);
+    align-items: end;
+    gap: clamp(2rem, 6vw, 5rem);
+  }
+
+  .hero-layout-clean {
+    min-height: auto;
   }
 
   .hero-copy {
@@ -285,11 +301,11 @@
   }
 
   .hero-copy h1 {
-    max-width: 12ch;
-    font-size: clamp(3.2rem, 6vw, 5.8rem);
+    max-width: 15ch;
+    font-size: clamp(2.65rem, 5.2vw, 4.8rem);
     font-weight: 780;
-    letter-spacing: -0.04em;
-    line-height: 0.94;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
     text-wrap: balance;
   }
 
@@ -303,8 +319,22 @@
     max-width: 58ch;
     margin-block-start: 1.5rem;
     color: var(--muted-foreground);
-    font-size: 1rem;
-    line-height: 1.7;
+    font-size: 1.02rem;
+    line-height: 1.8;
+  }
+
+  :dir(rtl) .hero-copy h1 {
+    max-width: 16ch;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+
+  :dir(rtl) .hero-copy > p,
+  :dir(rtl) .section-heading > p,
+  :dir(rtl) .account-copy > p,
+  :dir(rtl) .evidence-copy > p,
+  :dir(rtl) .closing-grid > div > p {
+    line-height: 1.95;
   }
 
   .hero-actions {
@@ -333,6 +363,79 @@
   .hero-proof-row svg {
     width: 0.8rem;
     color: var(--brand-accent);
+  }
+
+  .hero-evidence-panel {
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    box-shadow: 0 2rem 5rem -3.5rem rgb(0 0 0 / 0.42);
+  }
+
+  .hero-evidence-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border-block-end: 1px solid var(--border);
+    background: var(--raised);
+    padding: 1rem 1.15rem;
+    color: var(--muted-foreground);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+
+  .hero-evidence-topline strong {
+    border: 1px solid currentColor;
+    border-radius: var(--radius-sm);
+    color: var(--attention);
+    padding: 0.25rem 0.45rem;
+    font-size: 0.68rem;
+  }
+
+  .hero-evidence-path {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hero-evidence-path article {
+    display: grid;
+    min-height: 15rem;
+    align-content: space-between;
+    gap: 1.25rem;
+    border-inline-end: 1px solid var(--border);
+    padding: 1.25rem;
+  }
+
+  .hero-evidence-path article:last-child {
+    border-inline-end: 0;
+  }
+
+  .hero-evidence-path h2 {
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    font-weight: 740;
+    letter-spacing: -0.025em;
+    line-height: 1.18;
+  }
+
+  :dir(rtl) .hero-evidence-path h2 {
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+  }
+
+  .hero-evidence-path p {
+    color: var(--muted-foreground);
+    font-size: 0.84rem;
+    line-height: 1.65;
+  }
+
+  .hero-evidence-path span {
+    border-block-start: 1px solid var(--border);
+    padding-block-start: 0.8rem;
+    color: var(--foreground);
+    font-size: 0.76rem;
+    font-weight: 720;
   }
 
   .workspace-demo {
@@ -662,7 +765,7 @@
   .evidence-section,
   .lifecycle-section,
   .closing-section {
-    padding-block: clamp(5rem, 9vw, 8rem);
+    padding-block: clamp(4rem, 7vw, 6.5rem);
   }
 
   .section-heading {
@@ -678,11 +781,20 @@
   .evidence-copy h2,
   .closing-grid h2 {
     max-width: 15ch;
-    font-size: clamp(2.35rem, 5vw, 4.8rem);
+    font-size: clamp(2rem, 4vw, 3.8rem);
     font-weight: 760;
-    letter-spacing: -0.04em;
-    line-height: 0.98;
+    letter-spacing: -0.032em;
+    line-height: 1.08;
     text-wrap: balance;
+  }
+
+  :dir(rtl) .section-heading h2,
+  :dir(rtl) .account-copy h2,
+  :dir(rtl) .evidence-copy h2,
+  :dir(rtl) .closing-grid h2 {
+    max-width: 17ch;
+    letter-spacing: -0.012em;
+    line-height: 1.26;
   }
 
   .section-heading > p,
@@ -818,6 +930,10 @@
   .governance-list svg {
     width: 1rem;
     color: var(--brand-accent);
+  }
+
+  .account-facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .account-ledger,
@@ -1235,6 +1351,17 @@
     .hero-copy h1 {
       max-width: 13ch;
     }
+    .hero-evidence-path {
+      grid-template-columns: 1fr;
+    }
+    .hero-evidence-path article {
+      min-height: auto;
+      border-inline-end: 0;
+      border-block-end: 1px solid var(--border);
+    }
+    .hero-evidence-path article:last-child {
+      border-block-end: 0;
+    }
     .workspace-demo {
       width: 100%;
     }
@@ -1299,9 +1426,9 @@
       display: block;
     }
     .hero-copy h1 {
-      font-size: clamp(3rem, 14vw, 4.5rem);
+      font-size: clamp(2.45rem, 11vw, 3.65rem);
     }
-    .workspace-demo {
+    .hero-evidence-panel {
       margin-block-start: 3rem;
     }
     .workspace-chrome {
@@ -1394,6 +1521,9 @@
     .ledger-body > div:first-child {
       border-inline-end: 0;
       border-block-end: 1px solid var(--border);
+    }
+    .account-facts {
+      grid-template-columns: 1fr;
     }
     .evidence-columns {
       grid-template-columns: 1fr;

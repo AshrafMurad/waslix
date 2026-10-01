@@ -1,5 +1,4 @@
 import {
-  ArrowDown,
   ArrowUpRight,
   Check,
   CircleDot,
@@ -15,8 +14,6 @@ import { Link } from "@/i18n/navigation";
 
 import { BrandMark } from "./brand-mark";
 import { MarketingNavigation } from "./marketing-navigation";
-import { OperationsWorkspace } from "./operations-workspace";
-import { SignalRailCanvas } from "./signal-rail-canvas";
 
 type MarketingPageProps = { locale: "en" | "ar" };
 
@@ -48,24 +45,21 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
   });
   const final = await getTranslations({ locale, namespace: "marketing.final" });
 
-  const loop = [
+  const evidenceLoop = [
     {
       title: system("signals"),
       copy: system("signalsCopy"),
       detail: system("signal1"),
-      tone: "brand",
     },
     {
       title: system("health"),
       copy: system("healthCopy"),
       detail: system("good"),
-      tone: "attention",
     },
     {
       title: system("action"),
       copy: system("actionCopy"),
       detail: system("task1"),
-      tone: "healthy",
     },
   ] as const;
 
@@ -74,8 +68,7 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
       <MarketingNavigation locale={locale} />
 
       <section className="marketing-hero" aria-labelledby="hero-title">
-        <SignalRailCanvas />
-        <div className="marketing-container hero-layout">
+        <div className="marketing-container hero-layout hero-layout-clean">
           <div className="hero-copy">
             <div className="hero-status-line">
               <CircleDot aria-hidden="true" />
@@ -86,14 +79,13 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
             </h1>
             <p>{hero("description")}</p>
             <div className="hero-actions">
-              <a href="#product" className="marketing-button">
-                {hero("secondary")}
-                <ArrowDown aria-hidden="true" />
-              </a>
               <Link href="/sign-up" className="marketing-text-link">
                 {hero("primary")}
                 <ArrowUpRight aria-hidden="true" />
               </Link>
+              <a href="#product" className="marketing-button">
+                {hero("secondary")}
+              </a>
             </div>
             <div className="hero-proof-row" aria-label={hero("proofLabel")}>
               <span>
@@ -110,38 +102,20 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
               </span>
             </div>
           </div>
-          <OperationsWorkspace />
-        </div>
-      </section>
-
-      <section
-        id="how-it-works"
-        className="operations-loop"
-        aria-labelledby="loop-title"
-      >
-        <div className="marketing-container">
-          <div className="section-heading">
-            <h2 id="loop-title">{system("title")}</h2>
-            <p>{system("description")}</p>
-          </div>
-          <div className="loop-rail">
-            {loop.map((item, index) => (
-              <article
-                key={item.title}
-                className="loop-stage"
-                data-tone={item.tone}
-              >
-                <div className="loop-stage-header">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <h3>{item.title}</h3>
-                </div>
-                <p>{item.copy}</p>
-                <div className="loop-stage-event">
-                  <span aria-hidden="true" />
-                  {item.detail}
-                </div>
-              </article>
-            ))}
+          <div className="hero-evidence-panel" aria-label={hero("proofLabel")}>
+            <div className="hero-evidence-topline">
+              <span>{hero("signalValue")}</span>
+              <strong>{health("status")}</strong>
+            </div>
+            <div className="hero-evidence-path">
+              {evidenceLoop.map((item) => (
+                <article key={item.title}>
+                  <h2>{item.title}</h2>
+                  <p>{item.copy}</p>
+                  <span>{item.detail}</span>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -167,6 +141,14 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
               <div>
                 <Users aria-hidden="true" />
                 <span>{deepDive("owner")}</span>
+              </div>
+              <div>
+                <ShieldCheck aria-hidden="true" />
+                <span>{hero("proofOne")}</span>
+              </div>
+              <div>
+                <Languages aria-hidden="true" />
+                <span>{collaboration("title")}</span>
               </div>
             </div>
           </div>
@@ -221,98 +203,6 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section
-        id="solutions"
-        className="evidence-section"
-        aria-labelledby="evidence-title"
-      >
-        <div className="marketing-container evidence-layout">
-          <div className="evidence-board">
-            <header>
-              <span>{health("label")}</span>
-              <strong>64</strong>
-              <span className="status-badge attention">{health("status")}</span>
-            </header>
-            <div className="evidence-scale" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-              <i />
-            </div>
-            <div className="evidence-columns">
-              <div>
-                <h3>{health("positive")}</h3>
-                <p>
-                  <Check aria-hidden="true" />
-                  {health("usage")}
-                </p>
-                <p>
-                  <Check aria-hidden="true" />
-                  {health("executive")}
-                </p>
-              </div>
-              <div>
-                <h3>{health("negative")}</h3>
-                <p>
-                  <CircleDot aria-hidden="true" />
-                  {health("tickets")}
-                </p>
-                <p>
-                  <CircleDot aria-hidden="true" />
-                  {health("champion")}
-                </p>
-              </div>
-            </div>
-            <footer>
-              <FileSearch aria-hidden="true" />
-              <span>{health("source")}</span>
-              <strong>{health("confidence")}</strong>
-            </footer>
-          </div>
-          <div className="evidence-copy">
-            <h2 id="evidence-title">{health("title")}</h2>
-            <p>{health("description")}</p>
-            <div className="governance-list">
-              <div>
-                <ShieldCheck aria-hidden="true" />
-                <span>{hero("proofOne")}</span>
-              </div>
-              <div>
-                <FileSearch aria-hidden="true" />
-                <span>{hero("proofTwo")}</span>
-              </div>
-              <div>
-                <Languages aria-hidden="true" />
-                <span>{collaboration("title")}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="lifecycle-section" aria-labelledby="lifecycle-title">
-        <div className="marketing-container">
-          <div className="section-heading lifecycle-heading">
-            <h2 id="lifecycle-title">{lifecycle("title")}</h2>
-            <p>{lifecycle("description")}</p>
-          </div>
-          <div className="lifecycle-track">
-            {[
-              [lifecycle("onboarding"), lifecycle("onboardingCopy")],
-              [lifecycle("adoption"), lifecycle("adoptionCopy")],
-              [lifecycle("healthy"), lifecycle("healthyCopy")],
-              [lifecycle("renewal"), lifecycle("renewalCopy")],
-            ].map(([title, copy], index) => (
-              <article key={title} data-active={index === 2}>
-                <span>{index + 1}</span>
-                <h3>{title}</h3>
-                <p>{copy}</p>
-              </article>
-            ))}
           </div>
         </div>
       </section>
