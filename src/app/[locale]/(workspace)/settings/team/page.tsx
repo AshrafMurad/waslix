@@ -1,5 +1,11 @@
 import { randomUUID } from "node:crypto";
 
+import {
+  ArrowRightLeft,
+  MailPlus,
+  ShieldCheck,
+  UsersRound,
+} from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
@@ -100,17 +106,48 @@ export default async function TeamPage({
       member.status === "ACTIVE" &&
       ["ADMIN", "CS_MANAGER", "CSM"].includes(member.role),
   );
+  const activeMemberCount = members.filter(
+    (member) => member.status === "ACTIVE",
+  ).length;
+  const pendingInvitationCount = invitations.filter(
+    (invitation) => invitation.status === "PENDING",
+  ).length;
 
   return (
-    <div className="waslix-page">
-      <div className="space-y-1">
-        <h1 className="waslix-page-title">{t("team.title")}</h1>
-        <p className="waslix-page-description">{t("team.description")}</p>
+    <div className="waslix-page flex flex-col gap-7 space-y-0 md:gap-9 md:space-y-0">
+      <div className="order-1 grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+        <div className="space-y-2">
+          <h1 className="waslix-page-title">{t("team.title")}</h1>
+          <p className="waslix-page-description">{t("team.description")}</p>
+        </div>
+        <dl className="bg-raised/50 grid grid-cols-2 rounded-md border">
+          <div className="min-w-32 px-4 py-3">
+            <dt className="text-muted-foreground text-xs font-medium">
+              {t("team.summary.activeMembers")}
+            </dt>
+            <dd className="mt-1 text-xl font-semibold tabular-nums">
+              {activeMemberCount}
+            </dd>
+          </div>
+          <div className="min-w-32 border-s px-4 py-3">
+            <dt className="text-muted-foreground text-xs font-medium">
+              {t("team.summary.pendingInvites")}
+            </dt>
+            <dd className="mt-1 text-xl font-semibold tabular-nums">
+              {pendingInvitationCount}
+            </dd>
+          </div>
+        </dl>
       </div>
 
-      <Card>
+      <Card className="order-3">
         <CardHeader>
-          <CardTitle>{t("team.invite.title")}</CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="bg-brand/10 text-brand-accent flex size-9 items-center justify-center rounded-md">
+              <MailPlus aria-hidden="true" className="size-4" />
+            </span>
+            <CardTitle>{t("team.invite.title")}</CardTitle>
+          </div>
           <CardDescription>{t("team.invite.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -208,9 +245,16 @@ export default async function TeamPage({
                   <TableRow>
                     <TableCell
                       colSpan={canManageMembers ? 5 : 4}
-                      className="text-muted-foreground"
+                      className="py-10 text-center"
                     >
-                      {t("team.invite.empty")}
+                      <MailPlus
+                        aria-hidden="true"
+                        className="text-muted-foreground mx-auto mb-3 size-5"
+                      />
+                      <p className="font-medium">{t("team.invite.empty")}</p>
+                      <p className="text-muted-foreground mt-1 text-sm">
+                        {t("team.invite.emptyDescription")}
+                      </p>
                     </TableCell>
                   </TableRow>
                 )}
@@ -220,9 +264,14 @@ export default async function TeamPage({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="border-attention/35 order-4">
         <CardHeader>
-          <CardTitle>{t("team.transfer.title")}</CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="bg-attention/10 text-attention flex size-9 items-center justify-center rounded-md">
+              <ArrowRightLeft aria-hidden="true" className="size-4" />
+            </span>
+            <CardTitle>{t("team.transfer.title")}</CardTitle>
+          </div>
           <CardDescription>{t("team.transfer.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -362,9 +411,14 @@ export default async function TeamPage({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="order-2">
         <CardHeader>
-          <CardTitle>{t("team.members.title")}</CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="bg-brand/10 text-brand-accent flex size-9 items-center justify-center rounded-md">
+              <UsersRound aria-hidden="true" className="size-4" />
+            </span>
+            <CardTitle>{t("team.members.title")}</CardTitle>
+          </div>
           <CardDescription>{t("team.members.description")}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -385,15 +439,34 @@ export default async function TeamPage({
                 {members.map((member) => (
                   <TableRow key={member.id} className="align-top">
                     <TableCell>
-                      <p className="font-medium" dir="auto">
-                        {member.user.name}
-                      </p>
-                      <p className="text-muted-foreground" dir="auto">
-                        {member.user.email}
-                      </p>
+                      <div className="flex min-w-56 items-center gap-3">
+                        <span className="bg-brand text-brand-foreground flex size-9 shrink-0 items-center justify-center rounded-md font-semibold">
+                          {member.user.name
+                            .trim()
+                            .charAt(0)
+                            .toLocaleUpperCase(locale) || "W"}
+                        </span>
+                        <div>
+                          <p className="font-medium" dir="auto">
+                            {member.user.name}
+                          </p>
+                          <p className="text-muted-foreground" dir="auto">
+                            {member.user.email}
+                          </p>
+                        </div>
+                      </div>
                     </TableCell>
                     <TableCell>{t(`roles.${member.role}`)}</TableCell>
-                    <TableCell>{t(`status.${member.status}`)}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-xs font-medium ${member.status === "ACTIVE" ? "border-healthy/25 bg-healthy/8 text-healthy" : "text-muted-foreground"}`}
+                      >
+                        {member.status === "ACTIVE" ? (
+                          <ShieldCheck aria-hidden="true" className="size-3" />
+                        ) : null}
+                        {t(`status.${member.status}`)}
+                      </span>
+                    </TableCell>
                     <TableCell>
                       {t("team.members.ownershipSummary", {
                         customers: member._count.customers,

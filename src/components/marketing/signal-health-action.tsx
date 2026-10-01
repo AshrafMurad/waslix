@@ -65,16 +65,6 @@ export async function SignalHealthAction({ locale }: SignalHealthActionProps) {
           </div>
           <div className="health-model">
             <div className="health-orbit-display">
-              <svg viewBox="0 0 180 180" aria-hidden="true">
-                <circle cx="90" cy="90" r="72" />
-                <circle
-                  className="health-progress"
-                  cx="90"
-                  cy="90"
-                  r="72"
-                  pathLength="100"
-                />
-              </svg>
               <strong>72</strong>
               <span>{t("good")}</span>
             </div>

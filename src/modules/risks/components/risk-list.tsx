@@ -17,6 +17,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { OperationalCallout } from "@/components/shared/operational-callout";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Table,
   TableBody,
@@ -36,10 +37,10 @@ import { RiskFormDialog } from "./risk-form-dialog";
 
 const initial: RiskActionState = { status: "idle" };
 
-function riskStatusClass(status: RiskRowValue["status"]) {
-  if (status === "RESOLVED") return "bg-healthy/10 text-healthy";
-  if (status === "MONITORING") return "bg-attention/10 text-attention";
-  return "bg-risk/10 text-risk";
+function riskStatusTone(status: RiskRowValue["status"]) {
+  if (status === "RESOLVED") return "healthy";
+  if (status === "MONITORING") return "attention";
+  return "risk";
 }
 
 type RiskRowValue = {
@@ -128,11 +129,9 @@ function RiskRow({
           >
             {t(`severity.${risk.severity}`)}
           </span>
-          <span
-            className={`${riskStatusClass(risk.status)} rounded-md px-2 py-1 text-xs font-medium`}
-          >
+          <StatusBadge tone={riskStatusTone(risk.status)}>
             {t(`status.${risk.status}`)}
-          </span>
+          </StatusBadge>
         </div>
         {risk.description ? (
           <p className="mt-2 line-clamp-2 text-start text-sm">
@@ -162,11 +161,9 @@ function RiskRow({
         </span>
       </TableCell>
       <TableCell className="hidden sm:table-cell">
-        <span
-          className={`${riskStatusClass(risk.status)} rounded-md px-2 py-1 text-xs font-medium`}
-        >
+        <StatusBadge tone={riskStatusTone(risk.status)}>
           {t(`status.${risk.status}`)}
-        </span>
+        </StatusBadge>
       </TableCell>
       <TableCell className="hidden text-start lg:table-cell">
         <bdi dir="auto">{risk.ownerName}</bdi>

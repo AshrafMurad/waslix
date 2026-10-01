@@ -23,11 +23,16 @@
     "primary": "Start your workspace",
     "secondary": "Explore the product",
     "support": "No credit card required · Setup in minutes",
+    "proofLabel": "Product proof points",
+    "proofOne": "Deterministic health",
+    "proofTwo": "Evidence-backed attention",
+    "proofThree": "Owned next actions",
     "signalLabel": "Live portfolio signal",
     "signalValue": "4 accounts need attention"
   },
   "portfolio": {
     "window": "Portfolio overview",
+    "illustrative": "Illustrative workspace",
     "search": "Search workspace",
     "totalArr": "Total ARR",
     "customers": "Customers",
@@ -54,7 +59,23 @@
     "healthyStatus": "Healthy",
     "stakeholder": "Stakeholder activity",
     "stakeholderDetail": "No executive activity for 24 days",
-    "openAccount": "Open account"
+    "openAccount": "Open account",
+    "boardLabel": "Portfolio evidence-to-action board",
+    "signals": "Signal",
+    "action": "Action",
+    "signalValue": "4 active signals",
+    "renewalWindow": "Renewal window opens in 21 days",
+    "stakeholderQuiet": "Executive sponsor inactive for 24 days",
+    "execCall": "Schedule executive alignment call",
+    "renewalPlan": "Prepare renewal plan",
+    "sponsorReview": "Run stakeholder review",
+    "nextAction": "Next action",
+    "today": "Today",
+    "days21": "21 days",
+    "days3": "3 days",
+    "evidenceFresh": "Source checked 09:42",
+    "handoff": "Handoff",
+    "ownerAssigned": "Owner assigned"
   },
   "fragmented": {
     "eyebrow": "One operating context",
@@ -135,6 +156,7 @@
     "arr": "Contract value",
     "renewal": "Renewal",
     "owner": "Owner",
+    "illustrative": "Illustrative account",
     "days": "31 days",
     "riskSignals": "Risk signals",
     "signal1": "Usage score down 18 points",
@@ -208,6 +230,7 @@
   },
   "intelligence": {
     "eyebrow": "Evidence-backed attention",
+    "illustrative": "Illustrative portfolio",
     "title": "Waslix watches the portfolio with you.",
     "description": "Deterministic signals surface the accounts that changed, explain why, and connect the evidence to a useful next action.",
     "highRisk": "High risk",
@@ -239,6 +262,7 @@
     "suggestionHealthy": "Keep monitoring adoption and goals",
     "suggestionAttention": "Review the account with its owner",
     "suggestionRisk": "Start the at-risk customer playbook",
+    "activeSignals": "{count, plural, =0 {No active signals} one {# active signal} other {# active signals}}",
     "reset": "Reset signals"
   },
   "integrations": {

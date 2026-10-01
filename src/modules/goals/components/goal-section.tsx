@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Dialog,
   DialogContent,
@@ -33,11 +34,11 @@ type GoalSectionProps = {
   }>;
 };
 
-function goalStatusClass(status: string) {
-  if (status === "ACHIEVED") return "bg-healthy/10 text-healthy";
-  if (status === "AT_RISK") return "bg-risk/10 text-risk";
-  if (status === "IN_PROGRESS") return "bg-attention/10 text-attention";
-  return "bg-raised text-muted-foreground";
+function goalStatusTone(status: string) {
+  if (status === "ACHIEVED") return "healthy";
+  if (status === "AT_RISK") return "risk";
+  if (status === "IN_PROGRESS") return "attention";
+  return "neutral";
 }
 
 export async function GoalSection(props: GoalSectionProps) {
@@ -83,11 +84,9 @@ export async function GoalSection(props: GoalSectionProps) {
                   <h3 className="font-medium">
                     <bdi dir="auto">{goal.title}</bdi>
                   </h3>
-                  <span
-                    className={`${goalStatusClass(goal.status)} rounded-md px-2 py-1 text-xs font-medium`}
-                  >
+                  <StatusBadge tone={goalStatusTone(goal.status)}>
                     {t(`status.${goal.status}`)}
-                  </span>
+                  </StatusBadge>
                 </div>
                 <p className="text-muted-foreground mt-1 text-start text-sm">
                   {t.rich("meta", {

@@ -32,8 +32,11 @@
   "onboarding": {
     "eyebrow": "Workspace onboarding",
     "title": "Create your workspace",
-    "description": "Set up the customer success workspace your team will use. Billing is not connected yet.",
+    "description": "Name the shared space where your team will manage customer evidence, ownership, and next actions.",
+    "progress": "Step 2 of 2 · Workspace",
     "name": "Workspace or company name",
+    "namePlaceholder": "Example: Northstar CS",
+    "nameHint": "Use the name your team will recognize in navigation and invitations.",
     "plan": "Plan",
     "planNote": "No card or checkout is required. The plan record prepares billing for a later integration.",
     "assurances": {
@@ -41,7 +44,23 @@
       "isolation": "Workspace scoped",
       "locale": "English and Arabic ready"
     },
-    "submit": "Create workspace"
+    "submit": "Create workspace",
+    "freeNote": "Start free. No card or billing setup.",
+    "nextTitle": "Your first useful outcome",
+    "steps": {
+      "workspace": {
+        "title": "Create the workspace",
+        "description": "Set the shared operating context."
+      },
+      "customer": {
+        "title": "Add one customer",
+        "description": "Bring in the account context your team already knows."
+      },
+      "action": {
+        "title": "Own the next action",
+        "description": "Connect evidence to a clear owner and follow-up."
+      }
+    }
   },
   "invite": {
     "title": "Workspace invitation",
@@ -67,6 +86,12 @@
     "eyebrow": "Workspace administration",
     "title": "Settings",
     "description": "Manage the workspace profile and lifecycle configuration. Settings changes are Admin-only.",
+    "navigation": {
+      "label": "Settings sections",
+      "profile": "Profile",
+      "currencies": "Currencies",
+      "lifecycle": "Lifecycle"
+    },
     "profile": {
       "title": "Workspace profile",
       "description": "These values control workspace-wide display defaults and scheduling context.",
@@ -109,6 +134,10 @@
     "eyebrow": "Workspace administration",
     "title": "Team",
     "description": "Review members, roles, status and ownership. Admins manage roles and status; CS Managers can transfer ownership and open work.",
+    "summary": {
+      "activeMembers": "Active members",
+      "pendingInvites": "Pending invites"
+    },
     "transfer": {
       "title": "Ownership transfer preview",
       "description": "Preview active customers and BR-01 open work before applying an ownership transfer.",
@@ -154,7 +183,8 @@
       "send": "Send invitation",
       "resend": "Resend",
       "revoke": "Revoke",
-      "empty": "No invitations yet."
+      "empty": "No invitations yet",
+      "emptyDescription": "Invite a teammate above when you are ready to share the workspace."
     }
   }
 }

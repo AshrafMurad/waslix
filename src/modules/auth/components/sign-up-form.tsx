@@ -1,10 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "@/i18n/navigation";
@@ -14,6 +20,9 @@ type SignUpFormProps = {
   invitationToken?: string;
   defaultEmail?: string;
 };
+
+const MIN_PASSWORD_LENGTH = 8;
+const MAX_PASSWORD_LENGTH = 128;
 
 export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
   const t = useTranslations("auth");
@@ -25,6 +34,7 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
     password?: string;
   }>({});
   const [isPending, setIsPending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   function clearFieldError(field: keyof typeof fieldErrors) {
     setError(undefined);
@@ -48,9 +58,11 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
           : undefined,
       password: !password
         ? t("validation.required")
-        : password.length < 6
-          ? t("passwordHint")
-          : undefined,
+        : password.length < MIN_PASSWORD_LENGTH
+          ? t("validation.passwordMin", { count: MIN_PASSWORD_LENGTH })
+          : password.length > MAX_PASSWORD_LENGTH
+            ? t("validation.passwordMax", { count: MAX_PASSWORD_LENGTH })
+            : undefined,
     };
 
     setError(undefined);
@@ -66,7 +78,39 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
     try {
       const result = await authClient.signUp.email({ name, email, password });
       if (result.error) {
-        setError(t("signUpFailed"));
+        switch (result.error.code) {
+          case "PASSWORD_TOO_SHORT":
+            setFieldErrors((current) => ({
+              ...current,
+              password: t("validation.passwordMin", {
+                count: MIN_PASSWORD_LENGTH,
+              }),
+            }));
+            break;
+          case "PASSWORD_TOO_LONG":
+            setFieldErrors((current) => ({
+              ...current,
+              password: t("validation.passwordMax", {
+                count: MAX_PASSWORD_LENGTH,
+              }),
+            }));
+            break;
+          case "INVALID_EMAIL":
+            setFieldErrors((current) => ({
+              ...current,
+              email: t("validation.email"),
+            }));
+            break;
+          case "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL":
+          case "USER_ALREADY_EXISTS":
+            setFieldErrors((current) => ({
+              ...current,
+              email: t("validation.emailInUse"),
+            }));
+            break;
+          default:
+            setError(t("signUpFailed"));
+        }
         return;
       }
 
@@ -82,17 +126,14 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
   }
 
   return (
-    <form
-      onSubmit={signUp}
-      className="flex w-full max-w-sm flex-col gap-4"
-      noValidate
-    >
+    <form onSubmit={signUp} className="flex w-full flex-col gap-5" noValidate>
       <Field data-invalid={Boolean(fieldErrors.name)}>
         <FieldLabel htmlFor="sign-up-name">{t("name")}</FieldLabel>
         <Input
           id="sign-up-name"
           name="name"
           autoComplete="name"
+          maxLength={200}
           aria-required="true"
           aria-invalid={Boolean(fieldErrors.name)}
           aria-describedby={fieldErrors.name ? "sign-up-name-error" : undefined}
@@ -121,19 +162,44 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
       </Field>
       <Field data-invalid={Boolean(fieldErrors.password)}>
         <FieldLabel htmlFor="sign-up-password">{t("password")}</FieldLabel>
-        <Input
-          id="sign-up-password"
-          name="password"
-          type="password"
-          autoComplete="new-password"
-          aria-required="true"
-          aria-invalid={Boolean(fieldErrors.password)}
-          aria-describedby="sign-up-password-error"
-          onChange={() => clearFieldError("password")}
-          dir="ltr"
-        />
+        <div className="relative">
+          <Input
+            id="sign-up-password"
+            name="password"
+            type={showPassword ? "text" : "password"}
+            autoComplete="new-password"
+            minLength={MIN_PASSWORD_LENGTH}
+            maxLength={MAX_PASSWORD_LENGTH}
+            aria-required="true"
+            aria-invalid={Boolean(fieldErrors.password)}
+            aria-describedby={
+              fieldErrors.password
+                ? "sign-up-password-error sign-up-password-hint"
+                : "sign-up-password-hint"
+            }
+            onChange={() => clearFieldError("password")}
+            className="pe-10"
+            dir="ltr"
+          />
+          <button
+            type="button"
+            className="text-muted-foreground hover:text-foreground focus-visible:border-ring focus-visible:ring-ring/50 absolute inset-y-1 end-1 inline-flex w-8 items-center justify-center rounded-md transition-colors outline-none focus-visible:ring-[3px]"
+            aria-label={showPassword ? t("hidePassword") : t("showPassword")}
+            aria-pressed={showPassword}
+            onClick={() => setShowPassword((current) => !current)}
+          >
+            {showPassword ? (
+              <EyeOff className="size-4" aria-hidden="true" />
+            ) : (
+              <Eye className="size-4" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+        <FieldDescription id="sign-up-password-hint">
+          {t("passwordHint", { count: MIN_PASSWORD_LENGTH })}
+        </FieldDescription>
         <FieldError id="sign-up-password-error">
-          {fieldErrors.password ?? t("passwordHint")}
+          {fieldErrors.password}
         </FieldError>
       </Field>
       {error ? (
@@ -141,7 +207,13 @@ export function SignUpForm({ invitationToken, defaultEmail }: SignUpFormProps) {
           {error}
         </p>
       ) : null}
-      <Button type="submit" disabled={isPending} aria-busy={isPending}>
+      <Button
+        type="submit"
+        size="lg"
+        className="mt-1 w-full"
+        disabled={isPending}
+        aria-busy={isPending}
+      >
         {isPending ? <Spinner aria-label={t("signingUp")} /> : null}
         {isPending ? t("signingUp") : t("signUp")}
       </Button>

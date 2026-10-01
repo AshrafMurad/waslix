@@ -1,3 +1,4 @@
+import { ArrowRight, Building2, Check, UsersRound } from "lucide-react";
 import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -12,13 +13,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { isLocale } from "@/i18n/config";
 import { redirect } from "@/i18n/navigation";
 import { AuthenticationRequiredError } from "@/lib/auth/access-context";
@@ -31,10 +25,7 @@ export default async function WorkspacePage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
-  if (!isLocale(locale)) {
-    notFound();
-  }
-
+  if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
   let state: Awaited<ReturnType<typeof getWorkspaceOnboardingState>>;
@@ -55,59 +46,109 @@ export default async function WorkspacePage({
   const t = await getTranslations({ locale, namespace: "workspace" });
 
   return (
-    <main className="bg-background text-foreground flex min-h-screen items-center justify-center px-6 py-16">
-      <Card className="relative w-full max-w-2xl overflow-hidden">
-        <div
-          aria-hidden="true"
-          className="bg-brand pointer-events-none absolute inset-x-6 top-0 h-px opacity-40"
-        />
-        <CardHeader>
-          <CardTitle className="text-2xl">{t("onboarding.title")}</CardTitle>
-          <CardDescription>{t("onboarding.description")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-5 grid gap-2 text-sm sm:grid-cols-3">
-            {["evidence", "isolation", "locale"].map((key) => (
-              <span
-                key={key}
-                className="bg-raised/45 text-muted-foreground rounded-md border px-3 py-2"
-              >
-                {t(`onboarding.assurances.${key}`)}
-              </span>
-            ))}
+    <main className="bg-background text-foreground min-h-screen px-4 py-6 sm:px-6 sm:py-10">
+      <div className="mx-auto w-full max-w-5xl">
+        <div className="mb-8 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <span className="bg-brand text-brand-foreground flex size-10 items-center justify-center rounded-md text-lg font-black tracking-[-0.08em]">
+              W
+            </span>
+            <span className="text-xl font-black tracking-[-0.04em]">
+              Waslix
+            </span>
           </div>
-          <form action={createWorkspaceAction} className="grid gap-5">
-            <input type="hidden" name="locale" value={locale} />
-            <div className="space-y-2">
-              <Label htmlFor="workspace-name">{t("onboarding.name")}</Label>
-              <Input id="workspace-name" name="name" required />
+          <p className="text-muted-foreground text-sm font-medium">
+            {t("onboarding.progress")}
+          </p>
+        </div>
+
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+          <Card className="overflow-hidden">
+            <div className="bg-brand h-1" aria-hidden="true" />
+            <CardHeader className="pb-2">
+              <div className="bg-brand/10 text-brand-accent mb-3 flex size-11 items-center justify-center rounded-md">
+                <Building2 aria-hidden="true" className="size-5" />
+              </div>
+              <CardTitle className="text-3xl tracking-[-0.035em] text-balance">
+                {t("onboarding.title")}
+              </CardTitle>
+              <CardDescription className="max-w-[60ch] text-base leading-6">
+                {t("onboarding.description")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-5">
+              <form action={createWorkspaceAction} className="grid gap-6">
+                <input type="hidden" name="locale" value={locale} />
+                <input type="hidden" name="plan" value="FREE" />
+                <div className="space-y-2">
+                  <Label htmlFor="workspace-name">{t("onboarding.name")}</Label>
+                  <Input
+                    id="workspace-name"
+                    name="name"
+                    required
+                    minLength={2}
+                    maxLength={200}
+                    autoFocus
+                    autoComplete="organization"
+                    placeholder={t("onboarding.namePlaceholder")}
+                    dir="auto"
+                    className="h-11"
+                  />
+                  <p className="text-muted-foreground text-sm">
+                    {t("onboarding.nameHint")}
+                  </p>
+                </div>
+                <div className="flex flex-col gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-muted-foreground text-sm">
+                    {t("onboarding.freeNote")}
+                  </p>
+                  <Button size="lg" className="group w-full sm:w-auto">
+                    {t("onboarding.submit")}
+                    <ArrowRight
+                      aria-hidden="true"
+                      className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
+                    />
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+
+          <aside className="bg-raised/35 rounded-lg border p-5 lg:sticky lg:top-10">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="bg-brand/10 text-brand-accent flex size-9 items-center justify-center rounded-md">
+                <UsersRound aria-hidden="true" className="size-4" />
+              </span>
+              <h2 className="font-semibold">{t("onboarding.nextTitle")}</h2>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="workspace-plan">{t("onboarding.plan")}</Label>
-              <Select name="plan" defaultValue="FREE">
-                <SelectTrigger id="workspace-plan" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(["FREE", "STARTER", "PRO", "BUSINESS"] as const).map(
-                    (plan) => (
-                      <SelectItem key={plan} value={plan}>
-                        {t(`plans.${plan}`)}
-                      </SelectItem>
-                    ),
-                  )}
-                </SelectContent>
-              </Select>
-              <p className="text-muted-foreground text-sm">
-                {t("onboarding.planNote")}
-              </p>
-            </div>
-            <Button className="w-full sm:w-auto">
-              {t("onboarding.submit")}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+            <ol className="space-y-4">
+              {(["workspace", "customer", "action"] as const).map(
+                (step, index) => (
+                  <li key={step} className="flex gap-3">
+                    <span
+                      className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums ${index === 0 ? "bg-brand text-brand-foreground" : "bg-background text-muted-foreground border"}`}
+                    >
+                      {index === 0 ? (
+                        <Check aria-hidden="true" className="size-3.5" />
+                      ) : (
+                        index + 1
+                      )}
+                    </span>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {t(`onboarding.steps.${step}.title`)}
+                      </p>
+                      <p className="text-muted-foreground mt-0.5 text-sm leading-5">
+                        {t(`onboarding.steps.${step}.description`)}
+                      </p>
+                    </div>
+                  </li>
+                ),
+              )}
+            </ol>
+          </aside>
+        </div>
+      </div>
     </main>
   );
 }

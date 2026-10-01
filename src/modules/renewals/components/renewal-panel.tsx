@@ -4,6 +4,7 @@ import { startTransition, useActionState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { DatePicker } from "@/components/shared/date-picker";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
@@ -40,6 +41,13 @@ const outcomes = ["RENEWED", "EXPANDED", "CONTRACTED"] as const;
 
 function operationKey() {
   return crypto.randomUUID();
+}
+
+function readinessTone(status: string | null) {
+  if (status === "HEALTHY") return "healthy";
+  if (status === "NEEDS_ATTENTION") return "attention";
+  if (status === "AT_RISK") return "risk";
+  return "neutral";
 }
 
 type Owner = { id: string; name: string };
@@ -207,20 +215,12 @@ function RenewalDetails({
       />
       <div className="rounded-md border p-4">
         <p className="text-sm font-semibold">{t("readiness.evidence")}</p>
-        <p
-          className={
-            renewal.readinessStatus === "AT_RISK"
-              ? "text-risk font-medium"
-              : renewal.readinessStatus === "NEEDS_ATTENTION"
-                ? "text-attention font-medium"
-                : renewal.readinessStatus === "HEALTHY"
-                  ? "text-healthy font-medium"
-                  : "font-medium"
-          }
-        >
-          {renewal.readinessStatus
-            ? t(`readiness.${renewal.readinessStatus}`)
-            : t("readiness.notAssessed")}
+        <p className="mt-2">
+          <StatusBadge tone={readinessTone(renewal.readinessStatus)}>
+            {renewal.readinessStatus
+              ? t(`readiness.${renewal.readinessStatus}`)
+              : t("readiness.notAssessed")}
+          </StatusBadge>
         </p>
         {reasons.length ? (
           <ul className="mt-3 grid gap-1 text-sm">

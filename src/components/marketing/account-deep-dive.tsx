@@ -30,7 +30,7 @@ export async function AccountDeepDive({ locale }: AccountDeepDiveProps) {
 
       <div className="marketing-container account-frame-wrap">
         <div className="account-focus-line" aria-hidden="true">
-          <span>Orbit Software</span>
+          <span>{t("illustrative")} · Orbit Software</span>
           <i />
         </div>
         <div className="account-frame">

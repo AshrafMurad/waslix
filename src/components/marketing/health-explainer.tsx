@@ -41,27 +41,22 @@ export function HealthExplainer() {
             className="score-rings"
             aria-label={`${t("label")} 72, ${t("status")}`}
           >
-            <svg viewBox="0 0 260 260" aria-hidden="true">
-              <circle className="score-ring-track" cx="130" cy="130" r="105" />
-              <circle
-                className="score-ring-secondary"
-                cx="130"
-                cy="130"
-                r="87"
-                pathLength="100"
-              />
-              <circle
-                className="score-ring-value"
-                cx="130"
-                cy="130"
-                r="105"
-                pathLength="100"
-              />
-            </svg>
             <div>
               <small>{t("label")}</small>
               <strong>72</strong>
               <span>{t("status")}</span>
+            </div>
+            <div className="score-scale" aria-hidden="true">
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
+              <i />
             </div>
           </div>
           <div className="score-meta">

@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { getFormatter, getTranslations } from "next-intl/server";
 
 import { Empty, EmptyDescription } from "@/components/ui/empty";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Table,
   TableBody,
@@ -29,11 +30,11 @@ type TaskRow = {
   owner: { user: { name: string } };
 };
 
-function taskStatusClass(status: TaskRow["status"]) {
-  if (status === "COMPLETED") return "bg-healthy/10 text-healthy";
-  if (status === "IN_PROGRESS") return "bg-attention/10 text-attention";
-  if (status === "OPEN") return "bg-information/10 text-information";
-  return "bg-raised text-muted-foreground";
+function taskStatusTone(status: TaskRow["status"]) {
+  if (status === "COMPLETED") return "healthy";
+  if (status === "IN_PROGRESS") return "attention";
+  if (status === "OPEN") return "information";
+  return "neutral";
 }
 
 export async function TaskList({
@@ -109,11 +110,12 @@ export async function TaskList({
                     >
                       {t(`priority.${task.priority}`)}
                     </span>
-                    <span
-                      className={`${taskStatusClass(task.status)} rounded-md px-2 py-1 text-xs font-medium sm:hidden`}
+                    <StatusBadge
+                      tone={taskStatusTone(task.status)}
+                      className="sm:hidden"
                     >
                       {t(`status.${task.status}`)}
-                    </span>
+                    </StatusBadge>
                   </div>
                   <p className="text-muted-foreground mt-1 text-sm">
                     <bdi dir="auto">
@@ -145,11 +147,9 @@ export async function TaskList({
                   </p>
                 </TableCell>
                 <TableCell className="hidden px-4 sm:table-cell">
-                  <span
-                    className={`${taskStatusClass(task.status)} rounded-md px-2 py-1 text-xs font-medium`}
-                  >
+                  <StatusBadge tone={taskStatusTone(task.status)}>
                     {t(`status.${task.status}`)}
-                  </span>
+                  </StatusBadge>
                 </TableCell>
                 <TableCell className="text-muted-foreground hidden px-4 md:table-cell">
                   {task.dueDate || task.dueAt

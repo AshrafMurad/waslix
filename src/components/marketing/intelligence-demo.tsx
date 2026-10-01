@@ -45,6 +45,7 @@ export function IntelligenceDemo() {
     >
       <div className="marketing-container section-heading split-heading">
         <div>
+          <span className="demo-label">{intelligence("illustrative")}</span>
           <span className="marketing-eyebrow">
             <i />
             {intelligence("eyebrow")}
@@ -110,6 +111,7 @@ export function IntelligenceDemo() {
         aria-labelledby="demo-title"
       >
         <div className="demo-copy">
+          <span className="demo-label">{demo("label")}</span>
           <span className="marketing-eyebrow">
             <i />
             {demo("eyebrow")}
@@ -150,21 +152,16 @@ export function IntelligenceDemo() {
           </div>
           <div className="demo-result" data-tone={status}>
             <div className="demo-score">
-              <svg viewBox="0 0 180 180" aria-hidden="true">
-                <circle cx="90" cy="90" r="72" />
-                <circle
-                  cx="90"
-                  cy="90"
-                  r="72"
-                  pathLength="100"
-                  style={{ strokeDasharray: `${score} 100` }}
-                />
-              </svg>
               <div>
                 <small>{demo("current")}</small>
                 <strong>{score}</strong>
                 <span>{demo(status)}</span>
               </div>
+              <span
+                className="demo-score-track"
+                style={{ "--demo-score": score / 100 } as React.CSSProperties}
+                aria-hidden="true"
+              />
             </div>
             <div className="demo-suggestion">
               <Sparkles aria-hidden="true" />
@@ -176,7 +173,7 @@ export function IntelligenceDemo() {
               </strong>
               <small>
                 <Activity aria-hidden="true" />
-                {activeSignals.length} active signals
+                {demo("activeSignals", { count: activeSignals.length })}
               </small>
             </div>
           </div>

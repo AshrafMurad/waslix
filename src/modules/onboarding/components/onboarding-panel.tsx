@@ -4,6 +4,7 @@ import { startTransition, useActionState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { DatePicker } from "@/components/shared/date-picker";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
@@ -30,10 +31,10 @@ import {
 
 const initialState: OnboardingActionState = { status: "idle" };
 
-function milestoneStatusClass(status: Milestone["status"]) {
-  if (status === "COMPLETED") return "bg-healthy/10 text-healthy";
-  if (status === "IN_PROGRESS") return "bg-attention/10 text-attention";
-  return "bg-raised text-muted-foreground";
+function milestoneStatusTone(status: Milestone["status"]) {
+  if (status === "COMPLETED") return "healthy";
+  if (status === "IN_PROGRESS") return "attention";
+  return "neutral";
 }
 
 function operationKey() {
@@ -306,11 +307,9 @@ function MilestoneItem({
                 {t("critical")}
               </span>
             ) : null}
-            <span
-              className={`${milestoneStatusClass(milestone.status)} rounded-md px-2 py-1 text-xs font-medium`}
-            >
+            <StatusBadge tone={milestoneStatusTone(milestone.status)}>
               {t(`status.${milestone.status}`)}
-            </span>
+            </StatusBadge>
             {isDelayed ? (
               <span className="text-risk text-xs font-medium">
                 {t("state.delayed")}

@@ -1,33 +1,56 @@
 "use client";
 
 import {
-  Activity,
   ArrowDownRight,
-  CalendarClock,
-  CircleAlert,
-  Search,
-  UserRound,
+  CheckCircle2,
+  CircleDot,
+  ClipboardCheck,
+  Clock3,
+  Database,
+  RadioTower,
+  ShieldAlert,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRef } from "react";
 
-const accounts = [
+const strips = [
   {
-    name: "Northstar",
-    score: 92,
+    code: "NX-184",
+    account: "Orbit Software",
+    source: "usageDrop",
+    health: "45",
     owner: "MK",
-    renewal: "Jun 18",
-    tone: "healthy",
+    action: "execCall",
+    tone: "risk",
+    eta: "today",
   },
-  { name: "Acme", score: 81, owner: "SL", renewal: "Jul 02", tone: "healthy" },
-  { name: "Orbit", score: 45, owner: "MK", renewal: "May 31", tone: "risk" },
   {
-    name: "Vertex",
-    score: 68,
-    owner: "JA",
-    renewal: "Aug 14",
-    tone: "attention",
+    code: "RN-071",
+    account: "Acme Health",
+    source: "renewalWindow",
+    health: "81",
+    owner: "SL",
+    action: "renewalPlan",
+    tone: "healthy",
+    eta: "days21",
   },
+  {
+    code: "ST-229",
+    account: "ClearNest",
+    source: "stakeholderQuiet",
+    health: "68",
+    owner: "JA",
+    action: "sponsorReview",
+    tone: "attention",
+    eta: "days3",
+  },
+] as const;
+
+const signalNodes = [
+  { label: "signals", icon: RadioTower },
+  { label: "health", icon: CircleDot },
+  { label: "owner", icon: ClipboardCheck },
+  { label: "action", icon: CheckCircle2 },
 ] as const;
 
 export function PortfolioVisual() {
@@ -55,157 +78,92 @@ export function PortfolioVisual() {
       onPointerLeave={resetPerspective}
     >
       <div className="signal-field" aria-hidden="true">
-        {Array.from({ length: 16 }, (_, index) => (
+        {Array.from({ length: 22 }, (_, index) => (
           <i
             key={index}
             style={{ "--signal-index": index } as React.CSSProperties}
           />
         ))}
       </div>
-      <div className="evidence-ribbon" aria-hidden="true">
-        <span data-tone="healthy" />
-        <span data-tone="attention" />
-        <span data-tone="risk" />
-      </div>
 
-      <div className="portfolio-frame" ref={frame}>
-        <div className="portfolio-window-bar">
-          <div className="portfolio-window-dots" aria-hidden="true">
-            <i />
-            <i />
-            <i />
-          </div>
-          <span>{t("window")}</span>
-          <div className="portfolio-search">
-            <Search aria-hidden="true" />
-            <span>{t("search")}</span>
-          </div>
-        </div>
-
-        <div className="portfolio-body">
-          <div className="portfolio-metrics">
-            {[
-              ["totalArr", "arrValue"],
-              ["customers", "customerValue"],
-              ["atRisk", "riskValue"],
-              ["renewals", "renewalValue"],
-            ].map(([label, value], index) => (
-              <div className="portfolio-metric" key={label}>
-                <span>{t(label)}</span>
-                <strong>{t(value)}</strong>
-                <i data-tone={index === 2 ? "risk" : "brand"} />
-              </div>
-            ))}
-          </div>
-
-          <div className="portfolio-grid">
-            <div className="portfolio-chart-panel">
-              <div className="product-panel-heading">
-                <span>{t("health")}</span>
-                <span className="mono-label">30D</span>
-              </div>
-              <div className="portfolio-chart">
-                <svg viewBox="0 0 420 128" role="img" aria-label={t("health")}>
-                  <path
-                    className="chart-grid-line"
-                    d="M0 30H420M0 67H420M0 104H420"
-                  />
-                  <path
-                    className="chart-area"
-                    d="M0 111L45 96L87 101L130 72L174 80L216 53L260 64L304 39L348 45L390 20L420 30V128H0Z"
-                  />
-                  <path
-                    className="chart-line"
-                    d="M0 111L45 96L87 101L130 72L174 80L216 53L260 64L304 39L348 45L390 20L420 30"
-                  />
-                </svg>
-              </div>
-              <div className="health-distribution">
-                <span>
-                  <i data-tone="healthy" />
-                  {t("healthy")} <b>24</b>
-                </span>
-                <span>
-                  <i data-tone="attention" />
-                  {t("attention")} <b>14</b>
-                </span>
-                <span>
-                  <i data-tone="risk" />
-                  {t("risk")} <b>4</b>
-                </span>
-              </div>
-            </div>
-
-            <div className="portfolio-list-panel">
-              <div className="product-panel-heading">
-                <span>{t("accounts")}</span>
-                <span className="mono-label">42</span>
-              </div>
-              <div className="portfolio-table-header">
-                <span>{t("account")}</span>
-                <span>{t("score")}</span>
-                <span>{t("owner")}</span>
-                <span>{t("renewal")}</span>
-              </div>
-              {accounts.map((account) => (
-                <div className="portfolio-account-row" key={account.name}>
-                  <span className="portfolio-account-name">
-                    <i>{account.name.charAt(0)}</i>
-                    {account.name}
-                  </span>
-                  <span className="health-score" data-tone={account.tone}>
-                    <i /> {account.score}
-                  </span>
-                  <span className="owner-avatar">{account.owner}</span>
-                  <span>{account.renewal}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="intelligence-card risk-card">
-        <span className="card-icon" data-tone="risk">
-          <CircleAlert aria-hidden="true" />
-        </span>
-        <div>
-          <small>{t("riskDetected")}</small>
-          <strong>Orbit Software</strong>
-          <span>
-            <ArrowDownRight aria-hidden="true" />
-            {t("usageDrop")}
+      <div className="dispatch-frame" ref={frame}>
+        <div className="dispatch-topbar">
+          <span className="dispatch-kicker">
+            {t("window")} · {t("illustrative")}
+          </span>
+          <span className="dispatch-time">09:42 UTC</span>
+          <span className="dispatch-state">
+            <i /> {t("signalValue")}
           </span>
         </div>
-      </div>
-      <div className="intelligence-card renewal-card">
-        <span className="card-icon">
-          <CalendarClock aria-hidden="true" />
-        </span>
-        <div>
-          <small>{t("renewalCard")}</small>
-          <strong>Acme · {t("days")}</strong>
-          <span>USD 48,000 ARR</span>
+
+        <div className="dispatch-columns" aria-label={t("boardLabel")}>
+          {signalNodes.map(({ label, icon: Icon }) => (
+            <div className="dispatch-column-label" key={label}>
+              <Icon aria-hidden="true" />
+              <span>{t(label)}</span>
+            </div>
+          ))}
         </div>
-      </div>
-      <div className="intelligence-card health-card">
-        <span className="card-icon" data-tone="healthy">
-          <Activity aria-hidden="true" />
-        </span>
-        <div>
-          <small>{t("healthCard")}</small>
-          <strong>Northstar · 92</strong>
-          <span>{t("healthyStatus")}</span>
+
+        <div className="dispatch-rail" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+          <span />
         </div>
-      </div>
-      <div className="intelligence-card stakeholder-card">
-        <span className="card-icon">
-          <UserRound aria-hidden="true" />
-        </span>
-        <div>
-          <small>{t("stakeholder")}</small>
-          <strong>ClearNest</strong>
-          <span>{t("stakeholderDetail")}</span>
+
+        <div className="dispatch-strips">
+          {strips.map((strip, index) => (
+            <article
+              className="dispatch-strip"
+              data-tone={strip.tone}
+              data-active={index === 0}
+              key={strip.code}
+            >
+              <div className="strip-code">
+                <span>{strip.code}</span>
+                <b>{t(strip.eta)}</b>
+              </div>
+              <div className="strip-account">
+                <strong>{strip.account}</strong>
+                <span>
+                  <Database aria-hidden="true" />
+                  {t(strip.source)}
+                </span>
+              </div>
+              <div className="strip-health">
+                <small>{t("score")}</small>
+                <b>{strip.health}</b>
+              </div>
+              <div className="strip-owner">
+                <small>{t("owner")}</small>
+                <b>{strip.owner}</b>
+              </div>
+              <div className="strip-action">
+                <small>{t("nextAction")}</small>
+                <span>{t(strip.action)}</span>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <div className="dispatch-ledger">
+          <div>
+            <ShieldAlert aria-hidden="true" />
+            <span>{t("riskDetected")}</span>
+            <strong>Orbit Software</strong>
+          </div>
+          <div>
+            <ArrowDownRight aria-hidden="true" />
+            <span>{t("usageDrop")}</span>
+            <strong>{t("evidenceFresh")}</strong>
+          </div>
+          <div>
+            <Clock3 aria-hidden="true" />
+            <span>{t("handoff")}</span>
+            <strong>{t("ownerAssigned")}</strong>
+          </div>
         </div>
       </div>
     </div>

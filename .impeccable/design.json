@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "world": "dashboard-aligned evidence-to-action operations rail",
+  "mode": "persuade",
+  "palette": {
+    "ground": "application background token",
+    "material": "surface and raised-neutral tokens",
+    "brand": "Waslix teal identity and interaction",
+    "healthy": "semantic green",
+    "attention": "semantic amber",
+    "risk": "semantic red"
+  },
+  "components": [
+    "live workspace rows",
+    "evidence continuity rails",
+    "chain-of-custody ledger",
+    "compact command controls"
+  ],
+  "motion": "a bounded Three.js signal field and section rails carry evidence through accountable states; Motion settles selected rows; nonessential motion respects reduced-motion preferences",
+  "i18n": "English LTR and Arabic RTL keep equivalent content and semantic order"
+}

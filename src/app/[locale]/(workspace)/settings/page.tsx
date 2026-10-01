@@ -1,5 +1,6 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
+import { Banknote, Building2, Workflow } from "lucide-react";
 
 import {
   Card,
@@ -65,14 +66,35 @@ export default async function SettingsPage({
 
   return (
     <div className="waslix-page">
-      <div className="space-y-1">
-        <h1 className="waslix-page-title">{t("settings.title")}</h1>
-        <p className="waslix-page-description">{t("settings.description")}</p>
+      <div className="waslix-page-header">
+        <div>
+          <h1 className="waslix-page-title">{t("settings.title")}</h1>
+          <p className="waslix-page-description">{t("settings.description")}</p>
+        </div>
+        <nav
+          aria-label={t("settings.navigation.label")}
+          className="bg-raised/60 flex w-full gap-1 overflow-x-auto rounded-md border p-1 sm:w-auto"
+        >
+          {(["profile", "currencies", "lifecycle"] as const).map((section) => (
+            <a
+              key={section}
+              href={`#${section}`}
+              className="hover:bg-background focus-visible:ring-ring shrink-0 rounded px-3 py-2 text-sm font-medium outline-none hover:shadow-xs focus-visible:ring-2"
+            >
+              {t(`settings.navigation.${section}`)}
+            </a>
+          ))}
+        </nav>
       </div>
 
-      <Card>
+      <Card id="profile" className="scroll-mt-24">
         <CardHeader>
-          <CardTitle>{t("settings.profile.title")}</CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="bg-brand/10 text-brand-accent flex size-9 items-center justify-center rounded-md">
+              <Building2 aria-hidden="true" className="size-4" />
+            </span>
+            <CardTitle>{t("settings.profile.title")}</CardTitle>
+          </div>
           <CardDescription>{t("settings.profile.description")}</CardDescription>
         </CardHeader>
         <CardContent>
@@ -110,9 +132,14 @@ export default async function SettingsPage({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="currencies" className="scroll-mt-24">
         <CardHeader>
-          <CardTitle>{t("settings.currencies.title")}</CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="bg-brand/10 text-brand-accent flex size-9 items-center justify-center rounded-md">
+              <Banknote aria-hidden="true" className="size-4" />
+            </span>
+            <CardTitle>{t("settings.currencies.title")}</CardTitle>
+          </div>
           <CardDescription>
             {t("settings.currencies.description")}
           </CardDescription>
@@ -246,9 +273,14 @@ export default async function SettingsPage({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card id="lifecycle" className="scroll-mt-24">
         <CardHeader>
-          <CardTitle>{t("settings.lifecycle.title")}</CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="bg-brand/10 text-brand-accent flex size-9 items-center justify-center rounded-md">
+              <Workflow aria-hidden="true" className="size-4" />
+            </span>
+            <CardTitle>{t("settings.lifecycle.title")}</CardTitle>
+          </div>
           <CardDescription>
             {t("settings.lifecycle.description")}
           </CardDescription>
