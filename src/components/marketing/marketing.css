@@ -400,7 +400,7 @@
     display: grid;
     gap: 9rem;
     color: rgb(241 245 244 / 0.34);
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-mono);
     font-size: 0.62rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -417,7 +417,7 @@
     border-inline-start: 1px solid var(--m-line);
     padding-inline-start: 0.65rem;
     color: rgb(241 245 244 / 0.28);
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-mono);
     font-size: 0.58rem;
     writing-mode: vertical-rl;
   }
@@ -484,7 +484,7 @@
     inset-inline-start: 0.75rem;
     inset-block-start: 10%;
     color: var(--m-muted);
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-mono);
     font-size: 0.6rem;
   }
 
@@ -585,7 +585,7 @@
 
   .operation-path span {
     color: var(--m-teal);
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-mono);
     font-size: 0.62rem;
   }
 
@@ -942,7 +942,7 @@
   .coordination-rail small,
   .coordination-rail time {
     color: var(--m-muted);
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-mono);
     font-size: 0.62rem;
   }
 
@@ -991,7 +991,7 @@
     border: 1px solid var(--m-line-strong);
     border-radius: 50%;
     color: var(--m-muted);
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-mono);
     font-size: 0.6rem;
   }
 
@@ -1062,7 +1062,7 @@
 
   .capability-grid article > span {
     color: var(--m-teal);
-    font-family: var(--font-geist-mono), monospace;
+    font-family: var(--font-mono);
     font-size: 0.72rem;
   }
 

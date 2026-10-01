@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
@@ -12,37 +11,84 @@ import "../../components/marketing/marketing.css";
 import { ThemeInitializer } from "@/components/layout/theme-initializer";
 import { getDirection, isLocale, locales } from "@/i18n/config";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const tajawal = localFont({
-  variable: "--font-tajawal",
+const manrope = localFont({
+  variable: "--font-english",
   src: [
     {
-      path: "../../../public/fonts/Tajawal-Regular.woff2",
+      path: "../../../public/fonts/english/Manrope-ExtraLight.woff2",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/english/Manrope-Light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/english/Manrope-Regular.woff2",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../../../public/fonts/Tajawal-Medium.woff2",
+      path: "../../../public/fonts/english/Manrope-Medium.woff2",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../../../public/fonts/Tajawal-Bold.woff2",
+      path: "../../../public/fonts/english/Manrope-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/english/Manrope-Bold.woff2",
       weight: "700",
       style: "normal",
     },
     {
-      path: "../../../public/fonts/Tajawal-ExtraBold.woff2",
+      path: "../../../public/fonts/english/Manrope-ExtraBold.woff2",
       weight: "800",
+      style: "normal",
+    },
+  ],
+  display: "swap",
+});
+
+const ibmPlexSansArabic = localFont({
+  variable: "--font-arabic",
+  src: [
+    {
+      path: "../../../public/fonts/arabic/IBMPlexSansArabic-Thin.woff2",
+      weight: "100",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/arabic/IBMPlexSansArabic-ExtraLight.woff2",
+      weight: "200",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/arabic/IBMPlexSansArabic-Light.woff2",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/arabic/IBMPlexSansArabic-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/arabic/IBMPlexSansArabic-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/arabic/IBMPlexSansArabic-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/arabic/IBMPlexSansArabic-Bold.woff2",
+      weight: "700",
       style: "normal",
     },
   ],
@@ -82,9 +128,8 @@ export default async function LocaleLayout({
   const savedTheme = (await cookies()).get("waslix-theme")?.value;
   const isDarkTheme = savedTheme === "dark";
   const className = [
-    geistSans.variable,
-    geistMono.variable,
-    locale === "ar" ? tajawal.variable : null,
+    manrope.variable,
+    ibmPlexSansArabic.variable,
     isDarkTheme ? "dark" : null,
   ]
     .filter(Boolean)
