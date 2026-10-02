@@ -13,8 +13,9 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 
 import { BrandMark } from "./brand-mark";
-import { LandingExperience } from "./motion/landing-experience";
+import { LandingVisual } from "./motion/landing-experience";
 import { MarketingNavigation } from "./marketing-navigation";
+import { MarketingMotion } from "./motion/marketing-motion";
 
 type MarketingPageProps = { locale: "en" | "ar" };
 
@@ -68,35 +69,9 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
 
   return (
     <main className="marketing-shell">
+      <MarketingMotion />
       <MarketingNavigation locale={locale} />
       <div id="story" className="signal-core-story" data-core-story>
-        <LandingExperience
-          labels={{
-            health: portfolio("score"),
-            renewal: portfolio("renewal"),
-            owner: portfolio("owner"),
-            attention: portfolio("attention"),
-            healthy: portfolio("healthy"),
-            risk: portfolio("risk"),
-            illustrative: deepDive("illustrative"),
-            healthScore: health("label"),
-            signals: sources,
-            factors: [
-              [health("usage"), "64", "attention"],
-              [system("engagement").split(" · ")[0], "78", "healthy"],
-              [fragmented("support"), "52", "risk"],
-              [system("goals").split(" · ")[0], "86", "healthy"],
-            ],
-            evidence: [deepDive("signal1"), deepDive("signal2")],
-            workflow: [
-              [portfolio("riskDetected"), portfolio("usageDrop"), "risk"],
-              [system("health"), health("status"), "attention"],
-              [deepDive("next"), deepDive("nextValue"), "brand"],
-              [deepDive("createTask"), "Maya Chen", "brand"],
-              [renewals("preparing"), portfolio("renewalPlan"), "healthy"],
-            ],
-          }}
-        />
         <section className="landing-hero" aria-labelledby="hero-title">
           <div className="hero-coordinate" aria-hidden="true">
             <span>WSX / 01</span>
@@ -128,6 +103,8 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
                 </a>
               </div>
             </div>
+
+            <LandingVisual visual="portfolio" priority />
 
             <div className="hero-core-labels" aria-hidden="true">
               <span>{system("signals")}</span>
@@ -174,6 +151,7 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
                 ))}
               </div>
             </div>
+            <LandingVisual visual="health" />
           </div>
         </section>
 
@@ -197,6 +175,7 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
                 )}
               </div>
             </div>
+            <LandingVisual visual="action" />
           </div>
         </section>
       </div>
