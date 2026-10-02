@@ -6,8 +6,30 @@ import {
   workflowPositions,
 } from "./scene.positions";
 
-export const moduleGeometry = new THREE.BoxGeometry(0.42, 0.28, 0.42, 2, 1, 2);
-export const platformGeometry = new THREE.CylinderGeometry(0.46, 0.5, 0.08, 28);
+export const customerBaseLowerGeometry = new THREE.CylinderGeometry(
+  0.42,
+  0.46,
+  0.055,
+  24,
+);
+export const customerBaseUpperGeometry = new THREE.CylinderGeometry(
+  0.34,
+  0.38,
+  0.045,
+  24,
+);
+export const customerBodyGeometry = new THREE.CylinderGeometry(
+  0.32,
+  0.36,
+  0.15,
+  12,
+);
+export const customerTopPlateGeometry = new THREE.CylinderGeometry(
+  0.23,
+  0.26,
+  0.024,
+  12,
+);
 export const smallPlatformGeometry = new THREE.CylinderGeometry(
   0.24,
   0.27,

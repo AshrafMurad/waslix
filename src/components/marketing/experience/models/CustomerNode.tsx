@@ -2,7 +2,12 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
 
-import { moduleGeometry, platformGeometry } from "../config/scene.constants";
+import {
+  customerBaseLowerGeometry,
+  customerBaseUpperGeometry,
+  customerBodyGeometry,
+  customerTopPlateGeometry,
+} from "../config/scene.constants";
 import {
   accentMaterials,
   customerNodeMaterial,
@@ -25,14 +30,15 @@ export function CustomerNode({
   onHover?: (index: number) => void;
 }) {
   const node = useRef<THREE.Group>(null);
-  const tone = [
+  const statusMaterials = [
     accentMaterials.warning,
     accentMaterials.healthy,
+    metalTrimMaterial,
     accentMaterials.healthy,
     accentMaterials.risk,
-    accentMaterials.warning,
     accentMaterials.healthy,
-  ][index];
+  ] as const;
+  const tone = statusMaterials[index % statusMaterials.length];
 
   useFrame((state, delta) => {
     if (!node.current) return;
@@ -67,10 +73,17 @@ export function CustomerNode({
         document.body.style.cursor = "";
       }}
     >
-      <mesh geometry={platformGeometry} position={[0, -0.18, 0]}>
+      <mesh geometry={customerBaseLowerGeometry} position={[0, -0.17, 0]}>
         <primitive object={platformMaterial} attach="material" />
       </mesh>
-      <mesh geometry={moduleGeometry}>
+      <mesh geometry={customerBaseUpperGeometry} position={[0, -0.122, 0]}>
+        <primitive object={metalTrimMaterial} attach="material" />
+      </mesh>
+      <mesh
+        geometry={customerBodyGeometry}
+        position={[0, -0.04, 0]}
+        scale={[1.08, 1, 0.82]}
+      >
         <primitive
           object={
             selected ? selectedCustomerNodeMaterial : customerNodeMaterial
@@ -78,16 +91,23 @@ export function CustomerNode({
           attach="material"
         />
       </mesh>
-      <mesh position={[0, 0.148, 0]}>
-        <boxGeometry args={[0.36, 0.018, 0.36]} />
+      <mesh
+        geometry={customerTopPlateGeometry}
+        position={[0, 0.049, 0]}
+        scale={[1.12, 1, 0.78]}
+      >
         <primitive object={metalTrimMaterial} attach="material" />
       </mesh>
-      <mesh position={[0, -0.135, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.42, 0.012, 8, 28]} />
+      <mesh
+        position={[0, 0.066, 0.012]}
+        rotation={[-Math.PI / 2, 0, 0]}
+        scale={[1.1, 0.72, 1]}
+      >
+        <ringGeometry args={[0.15, 0.18, 24]} />
         <primitive object={metalTrimMaterial} attach="material" />
       </mesh>
-      <mesh position={[0, 0.155, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[0.055, 18]} />
+      <mesh position={[0.13, 0.069, 0.035]} rotation={[-Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.032, 14]} />
         <primitive object={tone} attach="material" />
       </mesh>
     </group>
