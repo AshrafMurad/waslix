@@ -3,7 +3,13 @@ import { useRef } from "react";
 import * as THREE from "three";
 
 import { moduleGeometry, platformGeometry } from "../config/scene.constants";
-import { colors } from "../config/scene.materials";
+import {
+  accentMaterials,
+  customerNodeMaterial,
+  metalTrimMaterial,
+  platformMaterial,
+  selectedCustomerNodeMaterial,
+} from "../config/scene.materials";
 
 export function CustomerNode({
   index,
@@ -20,12 +26,12 @@ export function CustomerNode({
 }) {
   const node = useRef<THREE.Group>(null);
   const tone = [
-    colors.attention,
-    colors.healthy,
-    colors.healthy,
-    colors.risk,
-    colors.attention,
-    colors.healthy,
+    accentMaterials.warning,
+    accentMaterials.healthy,
+    accentMaterials.healthy,
+    accentMaterials.risk,
+    accentMaterials.warning,
+    accentMaterials.healthy,
   ][index];
 
   useFrame((state, delta) => {
@@ -62,42 +68,27 @@ export function CustomerNode({
       }}
     >
       <mesh geometry={platformGeometry} position={[0, -0.18, 0]}>
-        <meshStandardMaterial
-          color={selected ? "#202725" : colors.graphite}
-          metalness={0.74}
-          roughness={0.5}
-        />
+        <primitive object={platformMaterial} attach="material" />
       </mesh>
       <mesh geometry={moduleGeometry}>
-        <meshStandardMaterial
-          color={selected ? "#26312e" : colors.graphiteRaised}
-          metalness={0.68}
-          roughness={0.46}
+        <primitive
+          object={
+            selected ? selectedCustomerNodeMaterial : customerNodeMaterial
+          }
+          attach="material"
         />
       </mesh>
       <mesh position={[0, 0.148, 0]}>
         <boxGeometry args={[0.36, 0.018, 0.36]} />
-        <meshStandardMaterial
-          color="#46504c"
-          metalness={0.54}
-          roughness={0.5}
-        />
+        <primitive object={metalTrimMaterial} attach="material" />
       </mesh>
       <mesh position={[0, -0.135, 0]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.42, 0.012, 8, 28]} />
-        <meshStandardMaterial
-          color="#4a5450"
-          metalness={0.72}
-          roughness={0.44}
-        />
+        <primitive object={metalTrimMaterial} attach="material" />
       </mesh>
       <mesh position={[0, 0.155, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <circleGeometry args={[0.055, 18]} />
-        <meshStandardMaterial
-          color={tone}
-          emissive={tone}
-          emissiveIntensity={0.2}
-        />
+        <primitive object={tone} attach="material" />
       </mesh>
     </group>
   );

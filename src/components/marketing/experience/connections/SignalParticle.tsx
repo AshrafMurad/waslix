@@ -1,7 +1,10 @@
 import * as THREE from "three";
 
 import { particleGeometry } from "../config/scene.constants";
-import { colors } from "../config/scene.materials";
+import {
+  activeParticleMaterial,
+  warningParticleMaterial,
+} from "../config/scene.materials";
 import type { CoreMotionRef } from "../types";
 
 export function SignalParticle({
@@ -21,10 +24,9 @@ export function SignalParticle({
       geometry={particleGeometry}
       visible={!motion.current.reduced}
     >
-      <meshBasicMaterial
-        color={index === 0 ? colors.attention : colors.brand}
-        transparent
-        opacity={0.9}
+      <primitive
+        object={index === 0 ? warningParticleMaterial : activeParticleMaterial}
+        attach="material"
       />
     </mesh>
   );

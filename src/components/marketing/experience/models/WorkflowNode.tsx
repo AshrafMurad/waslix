@@ -1,13 +1,17 @@
 import * as THREE from "three";
 
-import { colors } from "../config/scene.materials";
+import {
+  accentMaterials,
+  customerNodeMaterial,
+  platformMaterial,
+} from "../config/scene.materials";
 
 const tones = [
-  colors.risk,
-  colors.attention,
-  colors.brand,
-  colors.brand,
-  colors.healthy,
+  accentMaterials.risk,
+  accentMaterials.warning,
+  accentMaterials.active,
+  accentMaterials.active,
+  accentMaterials.healthy,
 ];
 
 export function WorkflowNode({
@@ -28,26 +32,15 @@ export function WorkflowNode({
     >
       <mesh position={[0, -0.15, 0]}>
         <cylinderGeometry args={[0.38, 0.42, 0.08, 24]} />
-        <meshStandardMaterial
-          color={colors.graphite}
-          metalness={0.74}
-          roughness={0.48}
-        />
+        <primitive object={platformMaterial} attach="material" />
       </mesh>
       <mesh>
         <boxGeometry args={[0.48, 0.22, 0.48]} />
-        <meshStandardMaterial
-          color={colors.graphiteRaised}
-          emissive={tones[index]}
-          emissiveIntensity={0}
-          metalness={0.62}
-          roughness={0.44}
-          transparent
-        />
+        <primitive object={customerNodeMaterial} attach="material" />
       </mesh>
       <mesh position={[0, 0.12, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.08, 0.105, 20]} />
-        <meshBasicMaterial color={tones[index]} />
+        <primitive object={tones[index]} attach="material" />
       </mesh>
     </group>
   );
