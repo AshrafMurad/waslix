@@ -12,13 +12,13 @@ export function SceneLighting({ motion }: { motion: CoreMotionRef }) {
     if (!rim.current) return;
     rim.current.position.x = THREE.MathUtils.damp(
       rim.current.position.x,
-      -4 + motion.current.pointerX * 0.35,
+      4.7 + motion.current.pointerX * 0.28,
       3,
       delta,
     );
     rim.current.position.y = THREE.MathUtils.damp(
       rim.current.position.y,
-      2.5 - motion.current.pointerY * 0.2,
+      3.05 - motion.current.pointerY * 0.2,
       3,
       delta,
     );
@@ -26,23 +26,24 @@ export function SceneLighting({ motion }: { motion: CoreMotionRef }) {
 
   return (
     <>
-      <ambientLight intensity={0.14} />
+      <ambientLight intensity={0.07} />
       <directionalLight
-        position={[3.5, 6.5, 4.5]}
-        intensity={2.65}
-        color="#e4ebe8"
+        position={[-4.15, 5.35, 4.05]}
+        intensity={2.22}
+        color="#eef3ef"
       />
       <directionalLight
         ref={rim}
-        position={[-4, 2.5, -4]}
-        intensity={1.05}
-        color="#9eb8b2"
+        position={[4.7, 3.05, -5.15]}
+        intensity={1.12}
+        color="#c4d0cb"
       />
       <pointLight
-        position={[1.5, 1, 2]}
+        position={[0.18, 0.32, 0.72]}
         intensity={0.18}
         color={colors.brand}
-        distance={8}
+        distance={2.8}
+        decay={2}
       />
     </>
   );
