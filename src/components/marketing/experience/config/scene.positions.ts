@@ -1,12 +1,12 @@
 import * as THREE from "three";
 
 export const customerPositions: Array<[number, number, number]> = [
-  [-1.75, 0.3, 0.35],
-  [-0.6, 1.55, -0.5],
-  [1.05, 1.55, -0.72],
-  [2.45, 0.5, -0.4],
-  [1.65, -1.15, -0.15],
-  [-0.25, -1.45, -0.4],
+  [-1.32, 0.32, 0.82],
+  [-0.48, 1.1, -0.62],
+  [0.86, 1.14, -1.04],
+  [1.72, 0.34, 0.08],
+  [1.08, -0.86, 0.68],
+  [-0.42, -0.98, -0.82],
 ];
 
 export const signalPositions: Array<[number, number, number]> = [

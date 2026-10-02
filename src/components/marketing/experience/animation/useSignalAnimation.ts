@@ -63,7 +63,7 @@ export function useSignalAnimation({
     const hover = hoveredCustomer;
 
     world.current.position.x +=
-      (THREE.MathUtils.lerp(1.15, quality === "full" ? 0.72 : 1.05, focus) -
+      (THREE.MathUtils.lerp(0.68, quality === "full" ? 0.56 : 0.72, focus) -
         world.current.position.x) *
       damping;
     world.current.rotation.y +=
@@ -81,7 +81,7 @@ export function useSignalAnimation({
 
     core.current.position.x = THREE.MathUtils.lerp(0, 1.85, health);
     core.current.position.z = THREE.MathUtils.lerp(0, -1.15, health);
-    core.current.scale.setScalar(THREE.MathUtils.lerp(1.16, 0.88, health));
+    core.current.scale.setScalar(THREE.MathUtils.lerp(1.28, 0.88, health));
     const signalPhase = health > 0.05 ? (time * 1.25) % 1 : (time * 0.32) % 1;
     const eventPulse =
       reduced || signalPhase < 0.84

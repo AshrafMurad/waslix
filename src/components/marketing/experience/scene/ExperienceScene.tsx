@@ -30,7 +30,7 @@ export function ExperienceScene({
   });
 
   return (
-    <group ref={animation.world} position={[1.15, 0, 0]}>
+    <group ref={animation.world} position={[0.68, 0, 0]}>
       <Platform quality={quality} />
       <PortfolioScene
         groupRef={animation.portfolio}

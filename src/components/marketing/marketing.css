@@ -472,18 +472,18 @@
   }
 
   .scene-account-card[data-customer="0"] {
-    inset-inline-end: 31%;
-    inset-block-start: 55%;
+    inset-inline-end: 42%;
+    inset-block-start: 54%;
   }
 
   .scene-account-card[data-customer="1"] {
-    inset-inline-end: 17%;
-    inset-block-start: 21%;
+    inset-inline-end: 29%;
+    inset-block-start: 27%;
   }
 
   .scene-account-card[data-customer="3"] {
-    inset-inline-end: 4.5%;
-    inset-block-start: 56%;
+    inset-inline-end: 10%;
+    inset-block-start: 51%;
   }
 
   .signal-core-canvas-shell[data-hover="0"] [data-customer="0"],
@@ -810,7 +810,7 @@
     position: relative;
     display: grid;
     min-height: 100svh;
-    grid-template-columns: minmax(0, 0.9fr) minmax(24rem, 1.1fr);
+    grid-template-columns: minmax(0, 0.88fr) minmax(24rem, 1.12fr);
     align-items: center;
     padding-block: 8.5rem 6rem;
   }
