@@ -1,10 +1,9 @@
-import { ArrowRight, Building2, Check, UsersRound } from "lucide-react";
+import { Building2, Check, UsersRound } from "lucide-react";
 import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { BrandLogo } from "@/components/brand-logo";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -12,12 +11,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { isLocale } from "@/i18n/config";
 import { redirect } from "@/i18n/navigation";
 import { AuthenticationRequiredError } from "@/lib/auth/access-context";
-import { createWorkspaceAction } from "@/modules/workspace/actions/workspace-onboarding-actions";
+import { WorkspaceOnboardingForm } from "@/modules/workspace/components/workspace-onboarding-form";
 import { getWorkspaceOnboardingState } from "@/modules/workspace/services/workspace-onboarding";
 
 export default async function WorkspacePage({
@@ -73,40 +70,7 @@ export default async function WorkspacePage({
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-5">
-              <form action={createWorkspaceAction} className="grid gap-6">
-                <input type="hidden" name="locale" value={locale} />
-                <input type="hidden" name="plan" value="FREE" />
-                <div className="space-y-2">
-                  <Label htmlFor="workspace-name">{t("onboarding.name")}</Label>
-                  <Input
-                    id="workspace-name"
-                    name="name"
-                    required
-                    minLength={2}
-                    maxLength={200}
-                    autoFocus
-                    autoComplete="organization"
-                    placeholder={t("onboarding.namePlaceholder")}
-                    dir="auto"
-                    className="h-11"
-                  />
-                  <p className="text-muted-foreground text-sm">
-                    {t("onboarding.nameHint")}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-3 border-t pt-5 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-muted-foreground text-sm">
-                    {t("onboarding.freeNote")}
-                  </p>
-                  <Button size="lg" className="group w-full sm:w-auto">
-                    {t("onboarding.submit")}
-                    <ArrowRight
-                      aria-hidden="true"
-                      className="size-4 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5"
-                    />
-                  </Button>
-                </div>
-              </form>
+              <WorkspaceOnboardingForm locale={locale} />
             </CardContent>
           </Card>
 

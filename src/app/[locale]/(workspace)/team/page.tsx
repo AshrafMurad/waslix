@@ -4,6 +4,7 @@ import {
   ArrowRightLeft,
   MailPlus,
   ShieldCheck,
+  Trash2,
   UsersRound,
 } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
@@ -25,8 +26,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -52,15 +51,18 @@ import {
 import {
   changeMemberRoleAction,
   changeMemberStatusAction,
-  transferOwnershipAction,
 } from "@/modules/workspace/actions/team-settings-actions";
 import {
-  inviteWorkspaceMemberAction,
+  deleteWorkspaceInvitationAction,
   resendWorkspaceInvitationAction,
   revokeWorkspaceInvitationAction,
 } from "@/modules/workspace/actions/workspace-invitation-actions";
 import { InvitationLinkField } from "@/modules/workspace/components/invitation-link-field";
 import { OwnershipTransferFromSelect } from "@/modules/workspace/components/ownership-transfer-from-select";
+import {
+  InviteMemberForm,
+  OwnershipTransferForm,
+} from "@/modules/workspace/components/team-validation-forms";
 import { getWorkspaceMembers } from "@/modules/workspace/queries/get-workspace-members";
 import { getWorkspaceInvitations } from "@/modules/workspace/services/workspace-invitations";
 import {
@@ -160,36 +162,7 @@ export default async function TeamPage({
           <CardDescription>{t("team.invite.description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {canManageMembers ? (
-            <form
-              action={inviteWorkspaceMemberAction}
-              className="bg-raised grid gap-4 rounded-md border p-4 md:grid-cols-[minmax(16rem,1fr)_12rem_auto] md:items-end"
-            >
-              <input type="hidden" name="locale" value={locale} />
-              <div className="space-y-2">
-                <Label htmlFor="invite-email">{t("team.invite.email")}</Label>
-                <Input id="invite-email" name="email" type="email" required />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="invite-role">{t("team.invite.role")}</Label>
-                <Select name="role" defaultValue="CSM">
-                  <SelectTrigger id="invite-role" className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(["CS_MANAGER", "CSM", "VIEWER"] as const).map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {t(`roles.${role}`)}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <Button size="lg" className="px-4">
-                {t("team.invite.send")}
-              </Button>
-            </form>
-          ) : null}
+          {canManageMembers ? <InviteMemberForm locale={locale} /> : null}
 
           <div className="overflow-x-auto">
             <Table className="min-w-[54rem]">
@@ -266,6 +239,25 @@ export default async function TeamPage({
                               disabled={invitation.status !== "PENDING"}
                             >
                               {t("team.invite.revoke")}
+                            </Button>
+                          </form>
+                          <form action={deleteWorkspaceInvitationAction}>
+                            <input type="hidden" name="locale" value={locale} />
+                            <input
+                              type="hidden"
+                              name="invitationId"
+                              value={invitation.id}
+                            />
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled={
+                                invitation.status !== "PENDING" &&
+                                invitation.status !== "REVOKED"
+                              }
+                            >
+                              <Trash2 aria-hidden="true" />
+                              {t("team.invite.delete")}
                             </Button>
                           </form>
                         </TableCell>
@@ -345,44 +337,16 @@ export default async function TeamPage({
                     </div>
                   ))}
                 </div>
-                <form action={transferOwnershipAction} className="grid gap-4">
-                  <input type="hidden" name="locale" value={locale} />
-                  <input
-                    type="hidden"
-                    name="fromMemberId"
-                    value={fromMemberId}
-                  />
-                  <input
-                    type="hidden"
-                    name="operationKey"
-                    value={randomUUID()}
-                  />
-                  <div className="min-w-0 space-y-2">
-                    <Label>{t("team.transfer.to")}</Label>
-                    <Select name="toMemberId" required>
-                      <SelectTrigger className="w-full min-w-0">
-                        <SelectValue
-                          placeholder={t("team.transfer.chooseTarget")}
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {eligibleTargets
-                          .filter((member) => member.id !== fromMemberId)
-                          .map((member) => (
-                            <SelectItem key={member.id} value={member.id}>
-                              {member.user.name} ({member.user.email})
-                            </SelectItem>
-                          ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button
-                    className="w-full"
-                    disabled={totalPreviewCount(preview) === 0}
-                  >
-                    {t("team.transfer.apply")}
-                  </Button>
-                </form>
+                <OwnershipTransferForm
+                  locale={locale}
+                  fromMemberId={fromMemberId}
+                  operationKey={randomUUID()}
+                  targets={eligibleTargets.filter(
+                    (member) => member.id !== fromMemberId,
+                  )}
+                  disabled={totalPreviewCount(preview) === 0}
+                  compact
+                />
               </DialogContent>
             </Dialog>
           ) : null}
@@ -404,40 +368,15 @@ export default async function TeamPage({
                   </div>
                 ))}
               </div>
-              <form
-                action={transferOwnershipAction}
-                className="grid gap-4 border-t pt-4 md:grid-cols-[minmax(18rem,auto)_auto_1fr] md:items-end"
-              >
-                <input type="hidden" name="locale" value={locale} />
-                <input type="hidden" name="fromMemberId" value={fromMemberId} />
-                <input type="hidden" name="operationKey" value={randomUUID()} />
-                <div className="min-w-0 space-y-2">
-                  <Label>{t("team.transfer.to")}</Label>
-                  <Select name="toMemberId" required>
-                    <SelectTrigger className="w-full min-w-0 md:w-80">
-                      <SelectValue
-                        placeholder={t("team.transfer.chooseTarget")}
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {eligibleTargets
-                        .filter((member) => member.id !== fromMemberId)
-                        .map((member) => (
-                          <SelectItem key={member.id} value={member.id}>
-                            {member.user.name} ({member.user.email})
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button
-                  size="lg"
-                  className="px-4 md:justify-self-start"
-                  disabled={totalPreviewCount(preview) === 0}
-                >
-                  {t("team.transfer.apply")}
-                </Button>
-              </form>
+              <OwnershipTransferForm
+                locale={locale}
+                fromMemberId={fromMemberId}
+                operationKey={randomUUID()}
+                targets={eligibleTargets.filter(
+                  (member) => member.id !== fromMemberId,
+                )}
+                disabled={totalPreviewCount(preview) === 0}
+              />
             </div>
           ) : null}
         </CardContent>

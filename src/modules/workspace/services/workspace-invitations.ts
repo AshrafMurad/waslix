@@ -162,6 +162,38 @@ export async function resendWorkspaceInvitation(
   });
 }
 
+export async function deleteWorkspaceInvitation(
+  access: WorkspaceAccessContext,
+  invitationId: string,
+) {
+  requireCanInvite(access);
+
+  return prisma.$transaction(async (transaction) => {
+    const invitation = await transaction.invitation.findFirst({
+      where: {
+        id: invitationId,
+        workspaceId: access.workspaceId,
+        status: { in: ["PENDING", "REVOKED"] },
+      },
+      select: { id: true, status: true },
+    });
+    if (!invitation) throw new WorkspaceAccessDeniedError();
+
+    if (invitation.status === "PENDING") {
+      await transaction.invitation.update({
+        where: { id: invitation.id },
+        data: { status: "REVOKED" },
+        select: { id: true },
+      });
+    }
+
+    return transaction.invitation.delete({
+      where: { id: invitation.id },
+      select: { id: true },
+    });
+  });
+}
+
 export async function getInvitationByToken(token: string) {
   return prisma.invitation.findUnique({
     where: { token },
@@ -245,6 +277,49 @@ export async function acceptInvitationForCurrentUser(
   });
 
   return membership;
+}
+
+export async function declineInvitationForCurrentUser(
+  token: string,
+  requestHeaders: Headers,
+) {
+  const session = await auth.api.getSession({ headers: requestHeaders });
+  if (!session) throw new AuthenticationRequiredError();
+
+  return prisma.$transaction(async (transaction) => {
+    const invitation = await transaction.invitation.findUnique({
+      where: { token },
+      select: {
+        id: true,
+        email: true,
+        status: true,
+        expiresAt: true,
+      },
+    });
+
+    if (!invitation) throw new InvitationError("Invalid invitation");
+    if (invitation.status !== "PENDING") {
+      throw new InvitationError("Invitation is no longer pending");
+    }
+    if (invitation.expiresAt <= new Date()) {
+      await transaction.invitation.update({
+        where: { id: invitation.id },
+        data: { status: "EXPIRED" },
+      });
+      throw new InvitationError("Invitation has expired");
+    }
+    if (
+      normalizeEmail(session.user.email) !== normalizeEmail(invitation.email)
+    ) {
+      throw new InvitationError("Invitation email does not match this account");
+    }
+
+    return transaction.invitation.update({
+      where: { id: invitation.id },
+      data: { status: "REVOKED" },
+      select: { id: true, status: true },
+    });
+  });
 }
 
 export type WorkspaceInvitationTransaction = Prisma.TransactionClient;

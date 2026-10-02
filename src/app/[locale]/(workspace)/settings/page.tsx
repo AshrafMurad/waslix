@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -34,10 +33,12 @@ import { hasWorkspaceCapability } from "@/lib/permissions/roles";
 import commonCurrencies from "@/modules/workspace/data/common-currencies.json";
 import {
   addWorkspaceCurrencyAction,
-  updateLifecycleStageSettingsAction,
   updateWorkspaceCurrencyAction,
-  updateWorkspaceSettingsAction,
 } from "@/modules/workspace/actions/team-settings-actions";
+import {
+  LifecycleStageSettingsForm,
+  WorkspaceProfileForm,
+} from "@/modules/workspace/components/settings-validation-forms";
 import { getWorkspaceSettings } from "@/modules/workspace/queries/get-workspace-settings";
 
 export default async function SettingsPage({
@@ -98,37 +99,11 @@ export default async function SettingsPage({
           <CardDescription>{t("settings.profile.description")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            action={updateWorkspaceSettingsAction}
-            className="grid gap-4 md:grid-cols-2"
-          >
-            <input type="hidden" name="locale" value={locale} />
-            <div className="space-y-2">
-              <Label htmlFor="workspace-name">
-                {t("settings.profile.name")}
-              </Label>
-              <Input
-                id="workspace-name"
-                name="name"
-                defaultValue={settings.name}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="workspace-timezone">
-                {t("settings.profile.timezone")}
-              </Label>
-              <Input
-                id="workspace-timezone"
-                name="timezone"
-                defaultValue={settings.timezone}
-                required
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Button>{t("settings.profile.save")}</Button>
-            </div>
-          </form>
+          <WorkspaceProfileForm
+            locale={locale}
+            name={settings.name}
+            timezone={settings.timezone}
+          />
         </CardContent>
       </Card>
 
@@ -171,17 +146,13 @@ export default async function SettingsPage({
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex h-10 items-center gap-3">
+            <div className="flex items-center gap-3 pb-2">
               <Checkbox id="currency-default" name="isDefault" />
               <Label htmlFor="currency-default">
                 {t("settings.currencies.default")}
               </Label>
             </div>
-            <Button
-              size="lg"
-              className="px-4"
-              disabled={!availableCurrencies.length}
-            >
+            <Button disabled={!availableCurrencies.length}>
               {t("settings.currencies.add")}
             </Button>
           </form>
@@ -304,39 +275,10 @@ export default async function SettingsPage({
                 {settings.lifecycleStages.map((stage) => (
                   <TableRow key={stage.id}>
                     <TableCell colSpan={4}>
-                      <form
-                        action={updateLifecycleStageSettingsAction}
-                        className="grid gap-3 md:grid-cols-[1fr_auto_auto_auto] md:items-center"
-                      >
-                        <input type="hidden" name="locale" value={locale} />
-                        <input type="hidden" name="stageId" value={stage.id} />
-                        <Input
-                          name="name"
-                          defaultValue={stage.name}
-                          required
-                          className="font-medium"
-                        />
-                        <code className="py-2">{stage.key}</code>
-                        <Select
-                          name="isActive"
-                          defaultValue={stage.isActive ? "true" : "false"}
-                        >
-                          <SelectTrigger className="w-full md:w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="true">
-                              {t("settings.lifecycle.active")}
-                            </SelectItem>
-                            <SelectItem value="false">
-                              {t("settings.lifecycle.inactive")}
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Button variant="outline">
-                          {t("settings.lifecycle.save")}
-                        </Button>
-                      </form>
+                      <LifecycleStageSettingsForm
+                        locale={locale}
+                        stage={stage}
+                      />
                     </TableCell>
                   </TableRow>
                 ))}

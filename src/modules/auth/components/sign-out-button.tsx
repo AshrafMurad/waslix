@@ -9,7 +9,15 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "@/i18n/navigation";
 import { authClient } from "@/lib/auth/auth-client";
 
-export function SignOutButton({ className }: { className?: string }) {
+export function SignOutButton({
+  className,
+  redirectTo = "/sign-in",
+  unstyled = false,
+}: {
+  className?: string;
+  redirectTo?: string;
+  unstyled?: boolean;
+}) {
   const t = useTranslations("auth");
   const router = useRouter();
   const [pending, setPending] = useState(false);
@@ -18,11 +26,26 @@ export function SignOutButton({ className }: { className?: string }) {
     setPending(true);
     try {
       await authClient.signOut();
-      router.replace("/sign-in");
+      router.replace(redirectTo);
       router.refresh();
     } finally {
       setPending(false);
     }
+  }
+
+  if (unstyled) {
+    return (
+      <button
+        type="button"
+        onClick={signOut}
+        disabled={pending}
+        aria-busy={pending}
+        className={className}
+      >
+        {pending ? <Spinner aria-label={t("signingOut")} /> : null}
+        {pending ? t("signingOut") : t("signOut")}
+      </button>
+    );
   }
 
   return (

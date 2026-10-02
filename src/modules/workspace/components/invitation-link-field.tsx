@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Check, Copy, ExternalLink } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +22,7 @@ export function InvitationLinkField({
   async function copyInviteUrl() {
     await navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
+    window.setTimeout(() => setCopied(false), 2400);
   }
 
   return (
@@ -36,14 +38,22 @@ export function InvitationLinkField({
         <Button
           type="button"
           variant="outline"
-          size="sm"
+          size="icon-sm"
           onClick={copyInviteUrl}
+          aria-label={copied ? copiedLabel : copyLabel}
+          title={copied ? copiedLabel : copyLabel}
         >
-          {copied ? copiedLabel : copyLabel}
+          {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
         </Button>
-        <Button asChild variant="outline" size="sm">
-          <a href={inviteUrl} target="_blank" rel="noreferrer">
-            {openLabel}
+        <Button asChild variant="outline" size="icon-sm">
+          <a
+            href={inviteUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={openLabel}
+            title={openLabel}
+          >
+            <ExternalLink aria-hidden="true" />
           </a>
         </Button>
       </div>

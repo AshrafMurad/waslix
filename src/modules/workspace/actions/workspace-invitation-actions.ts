@@ -10,6 +10,8 @@ import { requireWorkspaceAccess } from "@/lib/auth/access-context";
 
 import {
   acceptInvitationForCurrentUser,
+  deleteWorkspaceInvitation,
+  declineInvitationForCurrentUser,
   inviteWorkspaceMember,
   resendWorkspaceInvitation,
   revokeWorkspaceInvitation,
@@ -47,6 +49,13 @@ export async function resendWorkspaceInvitationAction(formData: FormData) {
   revalidatePath(`/${parsed.locale}/team`);
 }
 
+export async function deleteWorkspaceInvitationAction(formData: FormData) {
+  const parsed = invitationIdSchema.parse(Object.fromEntries(formData));
+  const access = await requireWorkspaceAccess();
+  await deleteWorkspaceInvitation(access, parsed.invitationId);
+  revalidatePath(`/${parsed.locale}/team`);
+}
+
 export async function acceptInvitationAction(formData: FormData) {
   const parsed = z
     .object({ locale: z.string().refine(isLocale), token: z.string().min(32) })
@@ -54,4 +63,14 @@ export async function acceptInvitationAction(formData: FormData) {
 
   await acceptInvitationForCurrentUser(parsed.token, await headers());
   redirect(`/${parsed.locale}/overview`);
+}
+
+export async function declineInvitationAction(formData: FormData) {
+  const parsed = z
+    .object({ locale: z.string().refine(isLocale), token: z.string().min(32) })
+    .parse(Object.fromEntries(formData));
+
+  await declineInvitationForCurrentUser(parsed.token, await headers());
+  revalidatePath(`/${parsed.locale}/invite/${parsed.token}`);
+  redirect(`/${parsed.locale}/invite/${parsed.token}`);
 }
