@@ -6,8 +6,8 @@ export function ConnectionLine({
   geometry,
   index,
   onMaterialRef,
-  color = colors.brand,
-  opacity = 0,
+  color = colors.line,
+  opacity = 0.16,
 }: {
   geometry: THREE.BufferGeometry;
   index: number;
@@ -24,6 +24,7 @@ export function ConnectionLine({
         color={color}
         transparent
         opacity={opacity}
+        linewidth={1}
       />
     </lineSegments>
   );

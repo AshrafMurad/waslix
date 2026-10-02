@@ -3,7 +3,6 @@ import * as THREE from "three";
 
 import { ConnectionLine } from "../connections/ConnectionLine";
 import { workflowLines } from "../config/scene.constants";
-import { colors } from "../config/scene.materials";
 import { workflowPositions } from "../config/scene.positions";
 import { WorkflowNode } from "../models/WorkflowNode";
 
@@ -27,7 +26,6 @@ export function ActionScene({
           geometry={geometry}
           index={index}
           onMaterialRef={onLineMaterialRef}
-          color={colors.brand}
           opacity={0}
         />
       ))}

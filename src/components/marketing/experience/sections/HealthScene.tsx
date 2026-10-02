@@ -3,7 +3,6 @@ import * as THREE from "three";
 
 import { ConnectionLine } from "../connections/ConnectionLine";
 import { signalLines } from "../config/scene.constants";
-import { colors } from "../config/scene.materials";
 import { signalPositions } from "../config/scene.positions";
 import { CustomerNode } from "../models/CustomerNode";
 import { SignalNode } from "../models/SignalNode";
@@ -28,7 +27,6 @@ export function HealthScene({
           geometry={geometry}
           index={index}
           onMaterialRef={onLineMaterialRef}
-          color={colors.brand}
           opacity={0}
         />
       ))}

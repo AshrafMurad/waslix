@@ -3,7 +3,6 @@ import * as THREE from "three";
 
 import { ConnectionLine } from "../connections/ConnectionLine";
 import { portfolioLines } from "../config/scene.constants";
-import { colors } from "../config/scene.materials";
 import { customerPositions } from "../config/scene.positions";
 import { CustomerNode } from "../models/CustomerNode";
 
@@ -29,8 +28,7 @@ export function PortfolioScene({
           geometry={geometry}
           index={index}
           onMaterialRef={onLineMaterialRef}
-          color={colors.brand}
-          opacity={0.24}
+          opacity={0.16}
         />
       ))}
       {customerPositions.map((position, index) => (

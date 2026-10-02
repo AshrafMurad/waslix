@@ -2,14 +2,13 @@ import { useFrame } from "@react-three/fiber";
 import { useRef } from "react";
 import * as THREE from "three";
 
-import { smooth } from "../config/scene.constants";
+import { sampleConnectionPoint, smooth } from "../config/scene.constants";
+import { colors } from "../config/scene.materials";
 import {
-  customerVectors,
+  customerPositions,
   signalPositions,
-  signalVectors,
   systemCenter,
   workflowPositions,
-  workflowVectors,
 } from "../config/scene.positions";
 import type { CoreMotionRef, CoreQuality } from "../types";
 import { updateCameraMotion } from "./useCameraMotion";
@@ -32,11 +31,21 @@ export function useSignalAnimation({
   const workflow = useRef<THREE.Group>(null);
   const rings = useRef<Array<THREE.Group | null>>([]);
   const portfolioMaterials = useRef<Array<THREE.LineBasicMaterial | null>>([]);
-  const signalMaterials = useRef<Array<THREE.Material | null>>([]);
+  const signalMaterials = useRef<Array<THREE.LineBasicMaterial | null>>([]);
   const signalNodes = useRef<Array<THREE.Group | null>>([]);
   const workflowNodes = useRef<Array<THREE.Group | null>>([]);
   const workflowMaterials = useRef<Array<THREE.LineBasicMaterial | null>>([]);
   const particles = useRef<Array<THREE.Mesh | null>>([]);
+  const particlePosition = useRef(new THREE.Vector3());
+  const sourceVector = useRef(new THREE.Vector3());
+  const signalEvent = useRef({
+    active: false,
+    sourceIndex: 0,
+    startAt: 0,
+    nextAt: 1.2,
+    responseUntil: 0,
+    mode: "portfolio" as "portfolio" | "health",
+  });
   const ready = useRef(false);
 
   useFrame((state, delta) => {
@@ -61,6 +70,48 @@ export function useSignalAnimation({
     const time = reduced ? 0 : state.clock.elapsedTime;
     const damping = 1 - Math.exp(-delta * 4.2);
     const hover = hoveredCustomer;
+    const event = signalEvent.current;
+    const eventMode = health > 0.05 ? "health" : "portfolio";
+
+    if (!reduced && !event.active && action < 0.48 && time >= event.nextAt) {
+      const sourceCount =
+        eventMode === "health"
+          ? signalPositions.length
+          : customerPositions.length;
+      event.active = true;
+      event.mode = eventMode;
+      event.sourceIndex =
+        eventMode === "portfolio" && hover >= 0
+          ? hover
+          : (event.sourceIndex + 2) % sourceCount;
+      event.startAt = time;
+    }
+
+    const activeSourcePositions =
+      event.mode === "health" ? signalPositions : customerPositions;
+    const sourcePosition =
+      activeSourcePositions[event.sourceIndex] ?? activeSourcePositions[0];
+    const travelDuration = sourcePosition
+      ? THREE.MathUtils.clamp(
+          sourceVector.current.set(...sourcePosition).distanceTo(systemCenter) *
+            0.34,
+          0.72,
+          1.16,
+        )
+      : 0.9;
+    const eventProgress = event.active
+      ? THREE.MathUtils.clamp((time - event.startAt) / travelDuration, 0, 1)
+      : 0;
+
+    if (event.active && eventProgress >= 1) {
+      event.active = false;
+      event.responseUntil = time + 0.34;
+      event.nextAt = time + 2.6 + (event.sourceIndex % 3) * 0.42;
+    }
+
+    const response = reduced
+      ? 0
+      : Math.max(0, 1 - Math.max(0, time - event.responseUntil + 0.34) / 0.34);
 
     world.current.position.x +=
       (THREE.MathUtils.lerp(0.68, quality === "full" ? 0.56 : 0.72, focus) -
@@ -75,23 +126,39 @@ export function useSignalAnimation({
     portfolio.current.position.z = -focus * 1.6;
     portfolioMaterials.current.forEach((material, index) => {
       if (!material) return;
-      const emphasis = hover < 0 ? 1 : hover === index ? 2.6 : 0.3;
-      material.opacity = portfolioOpacity * 0.24 * emphasis;
+      const isEventPath =
+        event.mode === "portfolio" && event.sourceIndex === index;
+      const isHovered = hover === index;
+      const hasFocusPath = event.active || response > 0 || hover >= 0;
+      const emphasis =
+        isEventPath && (event.active || response > 0)
+          ? 1
+          : isHovered
+            ? 0.8
+            : hasFocusPath
+              ? 0.38
+              : 0.58;
+      material.color.set(
+        isEventPath && (event.active || response > 0)
+          ? colors.brand
+          : colors.line,
+      );
+      material.opacity =
+        portfolioOpacity * THREE.MathUtils.lerp(0.16, 0.42, emphasis);
+      material.linewidth =
+        isEventPath && (event.active || response > 0) ? 1.35 : 1;
     });
 
     core.current.position.x = THREE.MathUtils.lerp(0, 1.85, health);
     core.current.position.z = THREE.MathUtils.lerp(0, -1.15, health);
     core.current.scale.setScalar(THREE.MathUtils.lerp(1.28, 0.88, health));
     const signalPhase = health > 0.05 ? (time * 1.25) % 1 : (time * 0.32) % 1;
-    const eventPulse =
-      reduced || signalPhase < 0.84
-        ? 0
-        : Math.sin(((signalPhase - 0.84) / 0.16) * Math.PI) * 0.02;
+    const eventPulse = Math.sin(response * Math.PI) * 0.018;
     core.current.scale.multiplyScalar(1 + eventPulse);
     rings.current.forEach((ring, index) => {
       if (!ring || reduced) return;
       ring.rotation.y += delta * (0.018 + index * 0.007);
-      ring.rotation.z = eventPulse * 12 * (index === 1 ? 1 : -0.5);
+      ring.rotation.z = eventPulse * 9 * (index === 1 ? 1 : -0.45);
     });
 
     signals.current.visible = health > 0.01;
@@ -100,7 +167,23 @@ export function useSignalAnimation({
     signalMaterials.current.forEach((material, index) => {
       if (!material) return;
       const arrival = smooth(health, index * 0.08, index * 0.08 + 0.34);
-      material.opacity = arrival * (index === activeSignal ? 0.5 : 0.14);
+      const isEventPath =
+        event.mode === "health" && event.sourceIndex === index;
+      const hasActivePath =
+        event.mode === "health" && (event.active || response > 0);
+      material.color.set(
+        isEventPath && hasActivePath ? colors.brand : colors.line,
+      );
+      material.opacity =
+        arrival *
+        (isEventPath && hasActivePath
+          ? 0.5
+          : hasActivePath
+            ? 0.12
+            : index === activeSignal
+              ? 0.26
+              : 0.14);
+      material.linewidth = isEventPath && hasActivePath ? 1.35 : 1;
     });
     signalNodes.current.forEach((node, index) => {
       if (!node) return;
@@ -108,8 +191,20 @@ export function useSignalAnimation({
       node.scale.setScalar(isActive ? 1.08 : 1);
       const material = (node.children[1] as THREE.Mesh)
         .material as THREE.MeshStandardMaterial;
-      material.emissiveIntensity = isActive ? 0.24 : 0.035;
-      material.opacity = isActive ? 1 : 0.66;
+      const isEventNode =
+        event.mode === "health" && event.sourceIndex === index;
+      material.emissiveIntensity =
+        isEventNode && (event.active || response > 0)
+          ? 0.18
+          : isActive
+            ? 0.1
+            : 0.025;
+      material.opacity =
+        isEventNode && (event.active || response > 0)
+          ? 0.8
+          : isActive
+            ? 0.76
+            : 0.48;
     });
 
     workflow.current.visible = action > 0.01;
@@ -140,53 +235,36 @@ export function useSignalAnimation({
     });
     workflowMaterials.current.forEach((material, index) => {
       if (!material) return;
-      material.opacity =
-        action * THREE.MathUtils.clamp(workflowProgress - index, 0, 1) * 0.55;
+      const segmentActivation = THREE.MathUtils.clamp(
+        workflowProgress - index,
+        0,
+        1,
+      );
+      const activeSegment = Math.min(3, Math.floor(workflowProgress));
+      const isCurrent = index === activeSegment;
+      material.color.set(isCurrent ? colors.brand : colors.line);
+      material.opacity = action * segmentActivation * (isCurrent ? 0.48 : 0.26);
+      material.linewidth = isCurrent ? 1.25 : 1;
     });
 
     particles.current.forEach((particle, index) => {
       if (!particle) return;
-      if (reduced) {
+      if (reduced || index > 0 || !event.active || !sourcePosition) {
         particle.visible = false;
         return;
       }
       particle.visible = true;
-      if (action > 0.5) {
-        if (index === 1) {
-          particle.visible = false;
-          return;
-        }
-        const segment = Math.min(
-          3,
-          Math.floor((time * 0.42 + index * 0.44) % 4),
-        );
-        const local = (time * 0.42 + index * 0.44) % 1;
-        particle.position.lerpVectors(
-          workflowVectors[segment],
-          workflowVectors[segment + 1],
-          local,
-        );
-      } else if (health > 0.05) {
-        if (index === 1) {
-          particle.visible = false;
-          return;
-        }
-        const sourceIndex = Math.floor(time * 1.25) % signalPositions.length;
-        const local = (time * 1.25) % 1;
-        particle.position.lerpVectors(
-          signalVectors[sourceIndex],
-          systemCenter,
-          local,
-        );
-      } else {
-        const sourceIndex = index === 0 ? 0 : 3;
-        const local = (time * 0.32 + index * 0.5) % 1;
-        particle.position.lerpVectors(
-          customerVectors[sourceIndex],
-          systemCenter,
-          local,
-        );
-      }
+      sampleConnectionPoint(
+        sourcePosition,
+        [0, 0, 0],
+        event.sourceIndex,
+        THREE.MathUtils.smoothstep(eventProgress, 0, 1),
+        particlePosition.current,
+      );
+      particle.position.copy(particlePosition.current);
+      particle.scale.setScalar(
+        THREE.MathUtils.lerp(0.82, 1.08, Math.sin(eventProgress * Math.PI)),
+      );
     });
 
     updateCameraMotion({ state, damping, focus, action, motion });

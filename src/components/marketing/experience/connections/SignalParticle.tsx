@@ -22,10 +22,10 @@ export function SignalParticle({
         onParticleRef(index, value);
       }}
       geometry={particleGeometry}
-      visible={!motion.current.reduced}
+      visible={false}
     >
       <primitive
-        object={index === 0 ? warningParticleMaterial : activeParticleMaterial}
+        object={index === 0 ? activeParticleMaterial : warningParticleMaterial}
         attach="material"
       />
     </mesh>

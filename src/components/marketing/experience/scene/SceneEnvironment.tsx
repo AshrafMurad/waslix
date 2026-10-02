@@ -12,14 +12,7 @@ export function SceneEnvironment({
 }) {
   return (
     <group>
-      {[0, 1].map((index) => (
-        <SignalParticle
-          key={index}
-          index={index}
-          motion={motion}
-          onParticleRef={onParticleRef}
-        />
-      ))}
+      <SignalParticle index={0} motion={motion} onParticleRef={onParticleRef} />
     </group>
   );
 }
