@@ -33,7 +33,7 @@ export function OwnershipTransferFromSelect({
     setValue(memberId);
     const params = new URLSearchParams({ fromMemberId: memberId });
     startTransition(() => {
-      router.replace(`/settings/team?${params.toString()}`, { scroll: false });
+      router.replace(`/team?${params.toString()}`, { scroll: false });
     });
   }
 

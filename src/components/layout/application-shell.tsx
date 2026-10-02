@@ -85,12 +85,12 @@ const primaryNavigation: Array<{
 const secondaryNavigation: Array<{
   key: "team" | "settings";
   icon: NavigationIconKey;
-  href: "/settings/team" | "/settings";
+  href: "/team" | "/settings";
   roles: WorkspaceRole[];
 }> = [
   {
     key: "team",
-    href: "/settings/team",
+    href: "/team",
     icon: "team",
     roles: ["ADMIN", "CS_MANAGER"],
   },
@@ -210,8 +210,8 @@ export function ApplicationShell({
               </div>
               <div className="mt-auto flex items-center justify-between gap-2 border-t p-4">
                 <div className="flex items-center gap-1">
-                  <LocaleSwitcher />
-                  <ThemeToggle />
+                  <LocaleSwitcher variant="marketing" />
+                  <ThemeToggle variant="marketing" />
                 </div>
                 <AccountMenu
                   accountLabel={labels.account}
@@ -236,8 +236,8 @@ export function ApplicationShell({
             />
           </div>
           <div className="ms-auto hidden items-center gap-1 md:flex">
-            <LocaleSwitcher />
-            <ThemeToggle />
+            <LocaleSwitcher variant="marketing" />
+            <ThemeToggle variant="marketing" />
             <AccountMenu
               accountLabel={labels.account}
               roleLabel={labels.role}

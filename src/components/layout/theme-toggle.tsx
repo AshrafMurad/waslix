@@ -4,8 +4,17 @@ import { Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export function ThemeToggle() {
+type ThemeToggleProps = {
+  variant?: "shell" | "marketing";
+  className?: string;
+};
+
+export function ThemeToggle({
+  variant = "shell",
+  className,
+}: ThemeToggleProps) {
   const t = useTranslations("shell.controls");
 
   function toggleTheme() {
@@ -18,11 +27,27 @@ export function ThemeToggle() {
     document.cookie = `waslix-theme=${nextTheme}; path=/; max-age=31536000; samesite=lax`;
   }
 
+  if (variant === "marketing") {
+    return (
+      <button
+        type="button"
+        className={cn("marketing-theme-toggle", className)}
+        aria-label={t("theme")}
+        title={t("theme")}
+        onClick={toggleTheme}
+      >
+        <Sun aria-hidden="true" className="marketing-theme-sun" />
+        <Moon aria-hidden="true" className="marketing-theme-moon" />
+      </button>
+    );
+  }
+
   return (
     <Button
       type="button"
       variant="ghost"
       size="icon"
+      className={className}
       onClick={toggleTheme}
       aria-label={t("theme")}
       title={t("theme")}

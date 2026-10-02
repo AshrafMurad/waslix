@@ -1,28 +1,14 @@
 "use client";
 
-import { ArrowLeft, Languages } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { ArrowLeft } from "lucide-react";
+import { useTranslations } from "next-intl";
 
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 
 export function AuthNavigation() {
-  const locale = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
   const t = useTranslations("auth.navigation");
-  const [isPending, startTransition] = useTransition();
-  const nextLocale = locale === "en" ? "ar" : "en";
-
-  function switchLocale() {
-    document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; samesite=lax`;
-    startTransition(() => {
-      router.replace(`${pathname}${window.location.search}`, {
-        locale: nextLocale,
-      });
-    });
-  }
 
   return (
     <nav
@@ -37,17 +23,8 @@ export function AuthNavigation() {
         {t("home")}
       </Link>
       <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={switchLocale}
-          disabled={isPending}
-          aria-busy={isPending}
-          className="text-muted-foreground hover:bg-raised hover:text-foreground focus-visible:ring-ring inline-flex min-h-10 items-center gap-2 rounded-md px-3 text-sm font-medium transition-colors outline-none focus-visible:ring-2 disabled:opacity-50"
-        >
-          <Languages aria-hidden="true" className="size-4" />
-          <span>{locale === "en" ? "العربية" : "English"}</span>
-        </button>
-        <ThemeToggle />
+        <LocaleSwitcher variant="marketing" persistPreference={false} />
+        <ThemeToggle variant="marketing" />
       </div>
     </nav>
   );

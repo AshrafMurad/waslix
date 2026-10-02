@@ -70,7 +70,7 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
   return (
     <main className="marketing-shell">
       <MarketingMotion />
-      <MarketingNavigation locale={locale} />
+      <MarketingNavigation />
       <div id="story" className="signal-core-story" data-core-story>
         <section className="landing-hero" aria-labelledby="hero-title">
           <div className="hero-coordinate" aria-hidden="true">

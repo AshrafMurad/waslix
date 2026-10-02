@@ -30,21 +30,21 @@ export async function inviteWorkspaceMemberAction(formData: FormData) {
   const parsed = inviteSchema.parse(Object.fromEntries(formData));
   const access = await requireWorkspaceAccess();
   await inviteWorkspaceMember(access, parsed);
-  revalidatePath(`/${parsed.locale}/settings/team`);
+  revalidatePath(`/${parsed.locale}/team`);
 }
 
 export async function revokeWorkspaceInvitationAction(formData: FormData) {
   const parsed = invitationIdSchema.parse(Object.fromEntries(formData));
   const access = await requireWorkspaceAccess();
   await revokeWorkspaceInvitation(access, parsed.invitationId);
-  revalidatePath(`/${parsed.locale}/settings/team`);
+  revalidatePath(`/${parsed.locale}/team`);
 }
 
 export async function resendWorkspaceInvitationAction(formData: FormData) {
   const parsed = invitationIdSchema.parse(Object.fromEntries(formData));
   const access = await requireWorkspaceAccess();
   await resendWorkspaceInvitation(access, parsed.invitationId);
-  revalidatePath(`/${parsed.locale}/settings/team`);
+  revalidatePath(`/${parsed.locale}/team`);
 }
 
 export async function acceptInvitationAction(formData: FormData) {

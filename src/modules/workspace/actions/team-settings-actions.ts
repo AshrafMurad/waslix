@@ -108,7 +108,7 @@ export async function changeMemberRoleAction(formData: FormData) {
   }
   const access = await requireWorkspaceAccess();
   await changeMembershipRole(access, memberId, role as WorkspaceRole);
-  revalidatePath(`/${localeFrom(formData)}/settings/team`);
+  revalidatePath(`/${localeFrom(formData)}/team`);
 }
 
 export async function changeMemberStatusAction(formData: FormData) {
@@ -122,7 +122,7 @@ export async function changeMemberStatusAction(formData: FormData) {
   }
   const access = await requireWorkspaceAccess();
   await changeMembershipStatus(access, memberId, status as MembershipStatus);
-  revalidatePath(`/${localeFrom(formData)}/settings/team`);
+  revalidatePath(`/${localeFrom(formData)}/team`);
 }
 
 export async function transferOwnershipAction(formData: FormData) {
@@ -142,5 +142,5 @@ export async function transferOwnershipAction(formData: FormData) {
     toMemberId,
     operationKey: operationKey || randomUUID(),
   });
-  revalidatePath(`/${localeFrom(formData)}/settings/team`);
+  revalidatePath(`/${localeFrom(formData)}/team`);
 }

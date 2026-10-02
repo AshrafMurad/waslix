@@ -123,10 +123,10 @@
     min-height: 2.45rem;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--m-line-strong);
+    border: 1px solid var(--m-line-strong, var(--border));
     border-radius: 0.35rem;
-    background: var(--m-control-bg);
-    color: var(--m-muted);
+    background: var(--m-control-bg, var(--surface));
+    color: var(--m-muted, var(--muted-foreground));
     transition:
       border-color 160ms var(--motion-ease-standard),
       color 160ms var(--motion-ease-standard),
@@ -151,11 +151,11 @@
   .marketing-language-switch i {
     width: 1.15rem;
     height: 1px;
-    background: var(--m-line-strong);
+    background: var(--m-line-strong, var(--border));
   }
 
   .marketing-language-switch span:last-child {
-    color: var(--m-text);
+    color: var(--m-text, var(--foreground));
   }
 
   .marketing-theme-toggle {
@@ -166,8 +166,8 @@
 
   .marketing-language-switch:hover,
   .marketing-theme-toggle:hover {
-    border-color: var(--m-teal);
-    color: var(--m-text);
+    border-color: var(--m-teal, var(--brand-accent));
+    color: var(--m-text, var(--foreground));
     transform: translateY(-1px);
   }
 
@@ -1388,7 +1388,7 @@
       display: grid;
       width: min(calc(100% - 1.5rem), 88rem);
       margin: 0 auto 0.75rem;
-      border: 1px solid var(--m-line-strong);
+      border: 1px solid var(--m-line-strong, var(--border));
       border-radius: 0.35rem;
       background: var(--m-surface);
       padding: 0.5rem;

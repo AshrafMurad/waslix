@@ -1,39 +1,24 @@
 "use client";
 
-import { ArrowUpRight, Languages, Menu, Moon, Sun, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import { LocaleSwitcher } from "@/components/layout/locale-switcher";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { Link } from "@/i18n/navigation";
 
 import { BrandMark } from "./brand-mark";
-
-type MarketingNavigationProps = {
-  locale: "en" | "ar";
-};
 
 const navigationItems = [
   ["product", "#story"],
   ["resources", "#capabilities"],
 ] as const;
 
-export function MarketingNavigation({ locale }: MarketingNavigationProps) {
+export function MarketingNavigation() {
   const t = useTranslations("marketing.nav");
   const [isScrolled, setIsScrolled] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-
-  const nextLocale = locale === "en" ? "ar" : "en";
-
-  function toggleTheme() {
-    const nextTheme = document.documentElement.classList.contains("dark")
-      ? "light"
-      : "dark";
-
-    document.documentElement.classList.toggle("dark", nextTheme === "dark");
-    document.documentElement.style.colorScheme = nextTheme;
-    localStorage.setItem("waslix-theme", nextTheme);
-    document.cookie = `waslix-theme=${nextTheme}; path=/; max-age=31536000; samesite=lax`;
-  }
 
   useEffect(() => {
     const update = () => setIsScrolled(window.scrollY > 28);
@@ -58,28 +43,8 @@ export function MarketingNavigation({ locale }: MarketingNavigationProps) {
         </div>
 
         <div className="marketing-nav-actions">
-          <Link
-            href="/"
-            locale={nextLocale}
-            className="marketing-language-switch"
-            aria-label={t("languageLabel")}
-            title={t("languageLabel")}
-          >
-            <Languages aria-hidden="true" />
-            <span>{locale.toUpperCase()}</span>
-            <i aria-hidden="true" />
-            <span>{nextLocale.toUpperCase()}</span>
-          </Link>
-          <button
-            type="button"
-            className="marketing-theme-toggle"
-            aria-label={t("theme")}
-            title={t("theme")}
-            onClick={toggleTheme}
-          >
-            <Sun aria-hidden="true" className="marketing-theme-sun" />
-            <Moon aria-hidden="true" className="marketing-theme-moon" />
-          </button>
+          <LocaleSwitcher variant="marketing" persistPreference={false} />
+          <ThemeToggle variant="marketing" />
           <Link href="/sign-in" className="marketing-signin-link">
             {t("signIn")}
           </Link>
@@ -113,27 +78,12 @@ export function MarketingNavigation({ locale }: MarketingNavigationProps) {
             {t("signIn")}
           </Link>
           <div className="marketing-mobile-controls">
-            <Link
-              href="/"
-              locale={nextLocale}
-              className="marketing-language-switch"
-              aria-label={t("languageLabel")}
-              onClick={() => setIsOpen(false)}
-            >
-              <Languages aria-hidden="true" />
-              <span>{locale.toUpperCase()}</span>
-              <i aria-hidden="true" />
-              <span>{nextLocale.toUpperCase()}</span>
-            </Link>
-            <button
-              type="button"
-              className="marketing-theme-toggle"
-              aria-label={t("theme")}
-              onClick={toggleTheme}
-            >
-              <Sun aria-hidden="true" className="marketing-theme-sun" />
-              <Moon aria-hidden="true" className="marketing-theme-moon" />
-            </button>
+            <LocaleSwitcher
+              variant="marketing"
+              persistPreference={false}
+              onSwitched={() => setIsOpen(false)}
+            />
+            <ThemeToggle variant="marketing" />
           </div>
         </div>
       )}
