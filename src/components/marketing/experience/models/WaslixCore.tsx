@@ -13,48 +13,56 @@ export function WaslixCore({
 }) {
   return (
     <group ref={coreRef}>
-      <mesh position={[0, -0.16, 0]}>
-        <cylinderGeometry args={[0.72, 0.8, 0.12, 48]} />
+      <mesh position={[0, -0.17, 0]}>
+        <cylinderGeometry args={[0.9, 0.98, 0.1, 64]} />
         <meshStandardMaterial
           color={colors.graphite}
           metalness={0.84}
           roughness={0.42}
         />
       </mesh>
-      <mesh position={[0, -0.09, 0]}>
-        <cylinderGeometry args={[0.79, 0.81, 0.025, 48]} />
+      <mesh position={[0, -0.108, 0]}>
+        <cylinderGeometry args={[0.98, 0.98, 0.022, 64]} />
         <meshStandardMaterial
           color="#4a5450"
           metalness={0.82}
           roughness={0.4}
         />
       </mesh>
-      <mesh position={[0, -0.08, 0]}>
-        <cylinderGeometry args={[0.58, 0.66, 0.12, 48]} />
-        <meshStandardMaterial
-          color={colors.graphiteRaised}
-          metalness={0.9}
-          roughness={0.34}
-        />
-      </mesh>
-      <mesh position={[0, 0.02, 0]}>
-        <cylinderGeometry args={[0.43, 0.5, 0.13, 40]} />
+      <mesh position={[0, -0.092, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.68, 0.78, 64]} />
         <meshStandardMaterial
           color="#090c0b"
           metalness={0.72}
           roughness={0.46}
         />
       </mesh>
-      <mesh position={[0, 0.085, 0]}>
-        <cylinderGeometry args={[0.43, 0.43, 0.018, 40]} />
+      <mesh position={[0, -0.074, 0]}>
+        <cylinderGeometry args={[0.68, 0.74, 0.072, 56]} />
+        <meshStandardMaterial
+          color={colors.graphiteRaised}
+          metalness={0.9}
+          roughness={0.34}
+        />
+      </mesh>
+      <mesh position={[0, -0.026, 0]}>
+        <cylinderGeometry args={[0.53, 0.6, 0.078, 48]} />
+        <meshStandardMaterial
+          color="#090c0b"
+          metalness={0.72}
+          roughness={0.46}
+        />
+      </mesh>
+      <mesh position={[0, 0.021, 0]}>
+        <cylinderGeometry args={[0.54, 0.54, 0.018, 48]} />
         <meshStandardMaterial
           color="#313936"
           metalness={0.58}
           roughness={0.5}
         />
       </mesh>
-      <mesh position={[0, 0.095, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[0.31, 0.345, 40]} />
+      <mesh position={[0, 0.032, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[0.34, 0.385, 48]} />
         <meshStandardMaterial
           color={colors.brand}
           emissive={colors.brandDark}
@@ -63,14 +71,14 @@ export function WaslixCore({
           roughness={0.32}
         />
       </mesh>
-      <group position={[0, 0.11, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <group position={[0, 0.042, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         {[-0.14, 0, 0.14].map((x, index) => (
           <mesh
             key={x}
             position={[x, 0, index === 1 ? 0 : 0.015]}
             rotation={[0, 0, index === 0 ? -0.38 : index === 2 ? 0.38 : 0]}
           >
-            <boxGeometry args={[0.105, 0.34, 0.025]} />
+            <boxGeometry args={[0.112, 0.3, 0.014]} />
             <meshStandardMaterial
               color={index === 1 ? colors.brand : "#347f77"}
               emissive={colors.brandDark}
@@ -90,7 +98,8 @@ export function WaslixCore({
         >
           <lineSegments
             geometry={geometry}
-            position={[0, 0.08 + index * 0.06, 0]}
+            position={[0, 0.018 + index * 0.026, 0]}
+            scale={[0.82 - index * 0.06, 1, 0.82 - index * 0.06]}
           >
             <lineBasicMaterial
               color={index === 1 ? colors.brand : colors.line}
