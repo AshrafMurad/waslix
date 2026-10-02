@@ -59,6 +59,24 @@ export default async function CustomerLayout({
         year: "numeric",
       }).format(customer.renewalDate)
     : t("missing");
+  const healthComparison = customer.healthComparison30
+    ? healthT(`comparison.${customer.healthComparison30.direction}`, {
+        delta: new Intl.NumberFormat(locale).format(
+          Math.abs(customer.healthComparison30.delta),
+        ),
+        days: 30,
+      })
+    : healthT("comparison.unavailable", { days: 30 });
+  const healthCalculatedAt = customer.health?.calculatedAt
+    ? healthT("calculatedAt", {
+        value: new Intl.DateTimeFormat(locale, {
+          calendar: "gregory",
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+        }).format(customer.health.calculatedAt),
+      })
+    : null;
 
   return (
     <div className="waslix-page">
@@ -82,7 +100,7 @@ export default async function CustomerLayout({
               <bdi dir="auto">{customer.industry ?? t("missing")}</bdi>
             </p>
           </div>
-          <div className="bg-surface w-full rounded-md border px-4 py-3 sm:w-auto sm:min-w-48">
+          <div className="bg-surface w-full rounded-md border px-4 py-3 sm:w-auto sm:min-w-56">
             <p className="text-muted-foreground text-xs">
               {t("summary.health")}
             </p>
@@ -103,6 +121,14 @@ export default async function CustomerLayout({
                 ? `${new Intl.NumberFormat(locale).format(customer.health.overallScore)} · ${healthT(`status.${customer.health.status}`)}`
                 : t("healthUnknown")}
             </p>
+            <p className="text-muted-foreground mt-1 text-xs tabular-nums">
+              {healthComparison}
+            </p>
+            {healthCalculatedAt ? (
+              <p className="text-muted-foreground mt-0.5 text-xs">
+                {healthCalculatedAt}
+              </p>
+            ) : null}
           </div>
         </div>
         <CustomerHeaderActions

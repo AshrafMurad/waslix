@@ -69,74 +69,96 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
   return (
     <main className="marketing-shell">
       <MarketingNavigation locale={locale} />
-      <LandingExperience />
+      <div id="story" className="signal-core-story" data-core-story>
+        <LandingExperience
+          labels={{
+            health: portfolio("score"),
+            renewal: portfolio("renewal"),
+            owner: portfolio("owner"),
+            attention: portfolio("attention"),
+            healthy: portfolio("healthy"),
+            risk: portfolio("risk"),
+            illustrative: deepDive("illustrative"),
+            healthScore: health("label"),
+            signals: sources,
+            factors: [
+              [health("usage"), "64", "attention"],
+              [system("engagement").split(" · ")[0], "78", "healthy"],
+              [fragmented("support"), "52", "risk"],
+              [system("goals").split(" · ")[0], "86", "healthy"],
+            ],
+            evidence: [deepDive("signal1"), deepDive("signal2")],
+            workflow: [
+              [portfolio("riskDetected"), portfolio("usageDrop"), "risk"],
+              [system("health"), health("status"), "attention"],
+              [deepDive("next"), deepDive("nextValue"), "brand"],
+              [deepDive("createTask"), "Maya Chen", "brand"],
+              [renewals("preparing"), portfolio("renewalPlan"), "healthy"],
+            ],
+          }}
+        />
+        <section className="landing-hero" aria-labelledby="hero-title">
+          <div className="hero-coordinate" aria-hidden="true">
+            <span>WSX / 01</span>
+            <span>34.0522 N</span>
+          </div>
+          <div className="marketing-container hero-composition">
+            <div className="hero-copy" data-reveal>
+              <h1 id="hero-title">
+                {hero("titleBefore")} <strong>{hero("titleAccent")}</strong>
+              </h1>
+              <p className="hero-description">{hero("description")}</p>
+              <p className="hero-status">
+                <span aria-hidden="true" />
+                {hero("signalValue")}
+              </p>
+              <div className="hero-actions">
+                <Link
+                  href="/sign-up"
+                  className="marketing-button marketing-button-primary"
+                >
+                  {hero("primary")}
+                  <ArrowUpRight aria-hidden="true" />
+                </Link>
+                <a
+                  href="#product-evidence"
+                  className="marketing-button marketing-button-secondary"
+                >
+                  {hero("secondary")}
+                </a>
+              </div>
+            </div>
 
-      <section className="landing-hero" aria-labelledby="hero-title">
-        <div className="hero-coordinate" aria-hidden="true">
-          <span>WSX / 01</span>
-          <span>34.0522 N</span>
-        </div>
-        <div className="marketing-container hero-composition">
-          <div className="hero-copy" data-reveal>
-            <p className="hero-status">
-              <span aria-hidden="true" />
-              {hero("signalValue")}
-            </p>
-            <h1 id="hero-title">
-              {hero("titleBefore")} <strong>{hero("titleAccent")}</strong>
-            </h1>
-            <p className="hero-description">{hero("description")}</p>
-            <div className="hero-actions">
-              <Link
-                href="/sign-up"
-                className="marketing-button marketing-button-primary"
-              >
-                {hero("primary")}
-                <ArrowUpRight aria-hidden="true" />
-              </Link>
-              <a
-                href="#story"
-                className="marketing-button marketing-button-secondary"
-              >
-                {hero("secondary")}
-              </a>
+            <div className="hero-core-labels" aria-hidden="true">
+              <span>{system("signals")}</span>
+              <span>{system("health")}</span>
+              <span>{system("action")}</span>
+            </div>
+
+            <div className="hero-proof" aria-label={hero("proofLabel")}>
+              {[hero("proofOne"), hero("proofTwo"), hero("proofThree")].map(
+                (item) => (
+                  <span key={item}>
+                    <Check aria-hidden="true" />
+                    {item}
+                  </span>
+                ),
+              )}
             </div>
           </div>
+          <a className="hero-scroll-cue" href="#core-open">
+            <span>{system("eyebrow")}</span>
+            <i aria-hidden="true" />
+          </a>
+        </section>
 
-          <div className="hero-network-labels" aria-hidden="true">
-            <span>{system("signals")}</span>
-            <span>{system("health")}</span>
-            <span>{system("action")}</span>
-          </div>
-
-          <div
-            className="hero-proof"
-            aria-label={hero("proofLabel")}
-            data-reveal
-          >
-            {[hero("proofOne"), hero("proofTwo"), hero("proofThree")].map(
-              (item) => (
-                <span key={item}>
-                  <Check aria-hidden="true" />
-                  {item}
-                </span>
-              ),
-            )}
-          </div>
-        </div>
-        <a className="hero-scroll-cue" href="#story">
-          <span>{system("eyebrow")}</span>
-          <i aria-hidden="true" />
-        </a>
-      </section>
-
-      <div id="story" className="network-story" data-network-story>
         <section
-          className="story-panel story-panel-chaos"
+          id="core-open"
+          className="story-panel story-panel-open"
           data-story-stage="0"
           aria-labelledby="chaos-title"
         >
-          <div className="marketing-container story-panel-layout">
+          <div className="marketing-container story-panel-layout story-panel-layout-end">
             <div className="story-copy" data-story-copy>
               <h2 id="chaos-title">{fragmented("titleLine1")}</h2>
               <p>{fragmented("description")}</p>
@@ -156,11 +178,11 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
         </section>
 
         <section
-          className="story-panel story-panel-connect"
+          className="story-panel story-panel-resolve"
           data-story-stage="1"
           aria-labelledby="connect-title"
         >
-          <div className="marketing-container story-panel-layout story-panel-layout-end">
+          <div className="marketing-container story-panel-layout">
             <div className="story-copy" data-story-copy>
               <h2 id="connect-title">{fragmented("titleLine2")}</h2>
               <p>{system("description")}</p>
@@ -177,8 +199,11 @@ export async function MarketingPage({ locale }: MarketingPageProps) {
             </div>
           </div>
         </section>
+      </div>
 
+      <div className="product-story">
         <section
+          id="product-evidence"
           className="story-panel story-panel-health"
           data-story-stage="2"
           aria-labelledby="health-title"

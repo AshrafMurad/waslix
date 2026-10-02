@@ -33,124 +33,137 @@ export default async function CustomerOverviewPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
   const access = await requireProtectedPage(locale);
-  const [customer, options, nextActions, t] = await Promise.all([
-    getCustomerOverview(access, customerId),
-    getCustomerOptions(access),
-    getCustomerNextActions(access, customerId),
-    getTranslations({ locale, namespace: "customers" }),
-  ]);
+  const [customer, options, nextActions, t, healthT, recommendationT] =
+    await Promise.all([
+      getCustomerOverview(access, customerId),
+      getCustomerOptions(access),
+      getCustomerNextActions(access, customerId),
+      getTranslations({ locale, namespace: "customers" }),
+      getTranslations({ locale, namespace: "health" }),
+      getTranslations({ locale, namespace: "recommendations" }),
+    ]);
   if (!customer) notFound();
   const canEdit =
     customer.status === "ACTIVE" && canEditCustomer(access, customer.owner.id);
+  const number = new Intl.NumberFormat(locale);
+  const date = new Intl.DateTimeFormat(locale, {
+    calendar: "gregory",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+  const healthTone =
+    customer.health?.status === "HEALTHY"
+      ? "text-healthy"
+      : customer.health?.status === "AT_RISK"
+        ? "text-risk"
+        : customer.health?.status === "NEEDS_ATTENTION"
+          ? "text-attention"
+          : "text-foreground";
+  const healthValue =
+    customer.health?.overallScore !== null &&
+    customer.health?.overallScore !== undefined &&
+    customer.health.status
+      ? `${number.format(customer.health.overallScore)} · ${healthT(`status.${customer.health.status}`)}`
+      : healthT("unknown");
+  const healthMovement = customer.healthComparison30
+    ? healthT(`comparison.${customer.healthComparison30.direction}`, {
+        delta: number.format(Math.abs(customer.healthComparison30.delta)),
+        days: 30,
+      })
+    : healthT("comparison.unavailable", { days: 30 });
+  const topRecommendation = nextActions?.recommendations[0] ?? null;
+  const canAdminister =
+    canEdit || (customer.status === "ACTIVE" && canArchiveCustomer(access));
 
   return (
     <div className="waslix-page">
-      <div className="waslix-two-column">
-        <Card className="waslix-panel-body">
-          <h2 className="waslix-panel-title">{t("overview.title")}</h2>
-          <p className="waslix-panel-description">
-            {t("overview.description")}
-          </p>
-          <div className="bg-raised/70 border-border/70 mt-5 rounded-md border p-4">
-            <h3 className="font-medium">{t("overview.healthTitle")}</h3>
-            <p className="text-muted-foreground mt-1">
-              {customer.health?.overallScore !== null &&
-              customer.health?.overallScore !== undefined
-                ? new Intl.NumberFormat(locale).format(
-                    customer.health.overallScore,
-                  )
-                : t("overview.healthUnknown")}
+      <Card className="waslix-panel-body">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h2 className="waslix-panel-title">{t("overview.title")}</h2>
+            <p className="waslix-panel-description">
+              {t("overview.description")}
             </p>
           </div>
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            <OperationalCallout
-              title={t("overview.evidenceTitle")}
-              description={
-                customer.health?.calculatedAt
-                  ? t("overview.evidenceDescription")
-                  : t("overview.evidenceMissing")
-              }
-              tone={
-                customer.health?.overallScore == null ? "attention" : "neutral"
-              }
-              action={
-                <Button asChild size="sm" variant="outline">
-                  <Link href={`/customers/${customerId}/health`}>
-                    {t("tabs.health")}
-                  </Link>
-                </Button>
-              }
-            />
-            <OperationalCallout
-              title={t("overview.actionTitle")}
-              description={t("overview.actionDescription")}
-              action={
-                <Button asChild size="sm" variant="outline">
-                  <Link href={`/customers/${customerId}/tasks`}>
-                    {t("tabs.tasks")}
-                  </Link>
-                </Button>
-              }
-            />
-          </div>
-        </Card>
-        <div className="space-y-4">
-          {nextActions ? (
-            <NextBestActionCard
-              recommendations={nextActions.recommendations}
-              customerId={customerId}
-              locale={locale}
-              canAct={nextActions.canAct}
-            />
-          ) : null}
-          {canEdit ? (
-            <CustomerFormDialog
-              mode="edit"
-              title={t("actions.edit")}
-              description={t("overview.description")}
-              triggerLabel={t("actions.edit")}
-              locale={locale}
-              customerId={customerId}
-              lifecycleStages={options.lifecycleStages}
-              owners={options.owners}
-              currencies={options.currencies}
-              canAssignOwner={canAssignCustomerOwner(access)}
-              defaultValues={{
-                name: customer.name,
-                website: customer.website ?? "",
-                industry: customer.industry ?? "",
-                companySize: customer.companySize?.toString() ?? "",
-                contractValue: customer.contractValue ?? "",
-                currency: customer.currency,
-                customerSince: dateInput(customer.customerSince),
-                renewalDate: dateInput(customer.renewalDate),
-                lifecycleStageId: customer.lifecycleStage.id,
-                ownerId: customer.owner.id,
-                tags: customer.tags.map((tag) => tag.name).join(", "),
-              }}
-            />
-          ) : null}
-          {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
-            <Card className="waslix-panel-body">
-              <h2 className="waslix-panel-title">{t("archive.title")}</h2>
-              <p className="waslix-panel-description my-2">
-                {t("archive.description")}
-              </p>
-              <OperationalCallout
-                title={t("archive.consequenceTitle")}
-                description={t("archive.consequenceDescription")}
-                tone="attention"
-              />
-              <div className="mt-4">
-                <ArchiveCustomerButton
-                  customerId={customerId}
-                  locale={locale}
-                />
-              </div>
-            </Card>
-          ) : null}
+          <p className="text-muted-foreground text-sm">
+            {t("overview.ownerContext", { owner: customer.owner.user.name })}
+          </p>
         </div>
-      </div>
+        <dl className="mt-5 grid gap-4 border-t pt-5 md:grid-cols-3 md:gap-0">
+          <div className="min-w-0 md:pe-5">
+            <dt className="waslix-label">{t("overview.healthBrief")}</dt>
+            <dd className={`mt-2 font-semibold tabular-nums ${healthTone}`}>
+              {healthValue}
+            </dd>
+            <dd className="text-muted-foreground mt-1 text-sm tabular-nums">
+              {healthMovement}
+            </dd>
+            <Button
+              asChild
+              size="sm"
+              variant="link"
+              className="mt-2 h-auto p-0"
+            >
+              <Link href={`/customers/${customerId}/health`}>
+                {t("overview.reviewHealth")}
+              </Link>
+            </Button>
+          </div>
+          <div className="min-w-0 border-t pt-4 md:border-s md:border-t-0 md:px-5 md:pt-0">
+            <dt className="waslix-label">{t("overview.renewalBrief")}</dt>
+            <dd className="mt-2 font-semibold tabular-nums">
+              {customer.renewalDate
+                ? date.format(customer.renewalDate)
+                : t("overview.renewalMissing")}
+            </dd>
+            <dd className="text-muted-foreground mt-1 text-sm">
+              {t("overview.renewalContext")}
+            </dd>
+            <Button
+              asChild
+              size="sm"
+              variant="link"
+              className="mt-2 h-auto p-0"
+            >
+              <Link href={`/customers/${customerId}/renewal`}>
+                {t("overview.reviewRenewal")}
+              </Link>
+            </Button>
+          </div>
+          <div className="min-w-0 border-t pt-4 md:border-s md:border-t-0 md:ps-5 md:pt-0">
+            <dt className="waslix-label">{t("overview.nextWorkBrief")}</dt>
+            <dd className="mt-2 font-semibold">
+              {topRecommendation
+                ? recommendationT(`types.${topRecommendation.type}`)
+                : t("overview.nextWorkEmpty")}
+            </dd>
+            <dd className="text-muted-foreground mt-1 text-sm">
+              {topRecommendation
+                ? recommendationT(`rules.${topRecommendation.ruleKey}`)
+                : t("overview.nextWorkEmptyDescription")}
+            </dd>
+            <Button
+              asChild
+              size="sm"
+              variant="link"
+              className="mt-2 h-auto p-0"
+            >
+              <Link href={`/customers/${customerId}/tasks`}>
+                {t("overview.reviewTasks")}
+              </Link>
+            </Button>
+          </div>
+        </dl>
+      </Card>
+      {nextActions ? (
+        <NextBestActionCard
+          recommendations={nextActions.recommendations}
+          customerId={customerId}
+          locale={locale}
+          canAct={nextActions.canAct}
+        />
+      ) : null}
       <GoalSection
         locale={locale}
         customerId={customerId}
@@ -162,6 +175,57 @@ export default async function CustomerOverviewPage({
         defaultOwnerId={customer.owner.id}
         goals={customer.successGoals}
       />
+      {canAdminister ? (
+        <Card className="waslix-panel-body">
+          <h2 className="waslix-panel-title">
+            {t("overview.administrationTitle")}
+          </h2>
+          <p className="waslix-panel-description">
+            {t("overview.administrationDescription")}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {canEdit ? (
+              <CustomerFormDialog
+                mode="edit"
+                title={t("actions.edit")}
+                description={t("overview.administrationDescription")}
+                triggerLabel={t("actions.edit")}
+                locale={locale}
+                customerId={customerId}
+                lifecycleStages={options.lifecycleStages}
+                owners={options.owners}
+                currencies={options.currencies}
+                canAssignOwner={canAssignCustomerOwner(access)}
+                defaultValues={{
+                  name: customer.name,
+                  website: customer.website ?? "",
+                  industry: customer.industry ?? "",
+                  companySize: customer.companySize?.toString() ?? "",
+                  contractValue: customer.contractValue ?? "",
+                  currency: customer.currency,
+                  customerSince: dateInput(customer.customerSince),
+                  renewalDate: dateInput(customer.renewalDate),
+                  lifecycleStageId: customer.lifecycleStage.id,
+                  ownerId: customer.owner.id,
+                  tags: customer.tags.map((tag) => tag.name).join(", "),
+                }}
+              />
+            ) : null}
+            {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
+              <ArchiveCustomerButton customerId={customerId} locale={locale} />
+            ) : null}
+          </div>
+          {customer.status === "ACTIVE" && canArchiveCustomer(access) ? (
+            <div className="mt-4">
+              <OperationalCallout
+                title={t("archive.consequenceTitle")}
+                description={t("archive.consequenceDescription")}
+                tone="attention"
+              />
+            </div>
+          ) : null}
+        </Card>
+      ) : null}
     </div>
   );
 }

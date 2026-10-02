@@ -2,10 +2,15 @@ import "server-only";
 
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
+import {
+  compareHealth,
+  selectHealthBaseline,
+} from "@/modules/health/engine/compare-health";
 
 export async function getCustomerOverview(
   access: WorkspaceAccessContext,
   customerId: string,
+  now = new Date(),
 ) {
   const customer = await prisma.customer.findFirst({
     where: { id: customerId, workspaceId: access.workspaceId },
@@ -31,6 +36,16 @@ export async function getCustomerOverview(
           calculatedAt: true,
           pendingSince: true,
         },
+      },
+      healthSnapshots: {
+        where: {
+          snapshotAt: {
+            gte: new Date(now.getTime() - 37 * 24 * 60 * 60 * 1000),
+            lte: now,
+          },
+        },
+        orderBy: [{ snapshotAt: "asc" }, { id: "asc" }],
+        select: { snapshotAt: true, overallScore: true },
       },
       successGoals: {
         orderBy: [{ status: "asc" }, { targetDate: "asc" }, { id: "asc" }],
@@ -63,10 +78,16 @@ export async function getCustomerOverview(
     },
   });
   if (!customer) return null;
+  const { healthSnapshots, ...customerData } = customer;
+  const healthBaseline30 = selectHealthBaseline(healthSnapshots, now, 30);
   return {
-    ...customer,
+    ...customerData,
     contractValue: customer.contractValue?.toString() ?? null,
     tags: customer.tags.map(({ tag }) => tag),
     health: customer.currentHealth,
+    healthComparison30: compareHealth(
+      customer.currentHealth?.overallScore ?? null,
+      healthBaseline30,
+    ),
   };
 }

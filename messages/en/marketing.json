@@ -13,6 +13,8 @@
     "start": "Start free",
     "menu": "Open navigation",
     "close": "Close navigation",
+    "languageLabel": "Switch language",
+    "theme": "Toggle light or dark mode",
     "language": "العربية"
   },
   "hero": {
