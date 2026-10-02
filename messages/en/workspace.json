@@ -179,10 +179,15 @@
       "role": "Role",
       "status": "Status",
       "expires": "Expires",
+      "link": "Invitation link",
       "actions": "Actions",
       "send": "Send invitation",
       "resend": "Resend",
       "revoke": "Revoke",
+      "copyLink": "Copy link",
+      "copied": "Copied",
+      "openLink": "Open",
+      "linkUnavailable": "Not available",
       "empty": "No invitations yet",
       "emptyDescription": "Invite a teammate above when you are ready to share the workspace."
     }

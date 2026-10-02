@@ -27,6 +27,7 @@ type ShellLabels = {
   menu: string;
   account: string;
   role: string;
+  workspace: string;
   search: {
     trigger: string;
     title: string;
@@ -57,6 +58,7 @@ type ApplicationShellProps = {
   roleLabel: string;
   role: WorkspaceRole;
   user: { name: string; email: string };
+  workspaceName: string;
 };
 
 const primaryNavigation: Array<{
@@ -157,6 +159,7 @@ export function ApplicationShell({
   role,
   roleLabel,
   user,
+  workspaceName,
 }: ApplicationShellProps) {
   const userInitial =
     user.name.trim().charAt(0).toLocaleUpperCase(locale) || "W";
@@ -178,6 +181,17 @@ export function ApplicationShell({
         </Link>
         <div className="mt-4 flex-1 overflow-y-auto pe-1">
           <Navigation labels={labels} role={role} />
+        </div>
+        <div className="mt-4 border-t pt-4">
+          <p className="text-muted-foreground px-2 text-xs font-medium">
+            {labels.workspace}
+          </p>
+          <p
+            className="text-foreground mt-1 truncate px-2 text-sm font-medium"
+            dir="auto"
+          >
+            {workspaceName}
+          </p>
         </div>
       </aside>
 
@@ -207,6 +221,17 @@ export function ApplicationShell({
               </div>
               <div className="p-3">
                 <Navigation labels={labels} role={role} closeOnNavigate />
+              </div>
+              <div className="mt-auto border-t p-4 pb-0">
+                <p className="text-muted-foreground text-xs font-medium">
+                  {labels.workspace}
+                </p>
+                <p
+                  className="text-foreground mt-1 truncate text-sm font-medium"
+                  dir="auto"
+                >
+                  {workspaceName}
+                </p>
               </div>
               <div className="mt-auto flex items-center justify-between gap-2 border-t p-4">
                 <div className="flex items-center gap-1">

@@ -24,6 +24,7 @@ export default async function WorkspaceLayout({
     <ApplicationShell
       locale={locale}
       user={shell.user}
+      workspaceName={shell.workspace.name}
       role={access.role}
       roleLabel={t(`roles.${access.role}`)}
       labels={{
@@ -33,6 +34,7 @@ export default async function WorkspaceLayout({
         menu: t("controls.menu"),
         account: t("account.label"),
         role: t("account.role"),
+        workspace: t("workspace.label"),
         search: {
           trigger: t("search.trigger"),
           title: t("search.title"),

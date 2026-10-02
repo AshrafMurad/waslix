@@ -171,13 +171,17 @@ export default async function SettingsPage({
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex items-center gap-3 pb-2">
+            <div className="flex h-10 items-center gap-3">
               <Checkbox id="currency-default" name="isDefault" />
               <Label htmlFor="currency-default">
                 {t("settings.currencies.default")}
               </Label>
             </div>
-            <Button disabled={!availableCurrencies.length}>
+            <Button
+              size="lg"
+              className="px-4"
+              disabled={!availableCurrencies.length}
+            >
               {t("settings.currencies.add")}
             </Button>
           </form>

@@ -4,7 +4,12 @@ import { notFound } from "next/navigation";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { isLocale } from "@/i18n/config";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
+import {
+  AuthenticationRequiredError,
+  requireWorkspaceAccess,
+  WorkspaceAccessDeniedError,
+} from "@/lib/auth/access-context";
 import { AuthNavigation } from "@/modules/auth/components/auth-navigation";
 import { SignUpForm } from "@/modules/auth/components/sign-up-form";
 import { getInvitationByToken } from "@/modules/workspace/services/workspace-invitations";
@@ -25,6 +30,18 @@ export default async function SignUpPage({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
+
+  try {
+    await requireWorkspaceAccess();
+    redirect({ href: "/overview", locale });
+  } catch (error) {
+    if (
+      !(error instanceof AuthenticationRequiredError) &&
+      !(error instanceof WorkspaceAccessDeniedError)
+    ) {
+      throw error;
+    }
+  }
 
   const token = first((await searchParams).invite);
   const invitation = token ? await getInvitationByToken(token) : null;

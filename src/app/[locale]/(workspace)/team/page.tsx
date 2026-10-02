@@ -42,6 +42,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { serverEnvironment } from "@/config/server-env";
 import { isLocale } from "@/i18n/config";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import {
@@ -58,6 +59,7 @@ import {
   resendWorkspaceInvitationAction,
   revokeWorkspaceInvitationAction,
 } from "@/modules/workspace/actions/workspace-invitation-actions";
+import { InvitationLinkField } from "@/modules/workspace/components/invitation-link-field";
 import { OwnershipTransferFromSelect } from "@/modules/workspace/components/ownership-transfer-from-select";
 import { getWorkspaceMembers } from "@/modules/workspace/queries/get-workspace-members";
 import { getWorkspaceInvitations } from "@/modules/workspace/services/workspace-invitations";
@@ -70,6 +72,13 @@ type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 function first(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+function createInvitationUrl(locale: string, token: string) {
+  return new URL(
+    `/${locale}/invite/${encodeURIComponent(token)}`,
+    serverEnvironment.BETTER_AUTH_URL,
+  ).toString();
 }
 
 export default async function TeamPage({
@@ -176,7 +185,9 @@ export default async function TeamPage({
                   </SelectContent>
                 </Select>
               </div>
-              <Button>{t("team.invite.send")}</Button>
+              <Button size="lg" className="px-4">
+                {t("team.invite.send")}
+              </Button>
             </form>
           ) : null}
 
@@ -188,6 +199,7 @@ export default async function TeamPage({
                   <TableHead>{t("team.invite.role")}</TableHead>
                   <TableHead>{t("team.invite.status")}</TableHead>
                   <TableHead>{t("team.invite.expires")}</TableHead>
+                  <TableHead>{t("team.invite.link")}</TableHead>
                   {canManageMembers ? (
                     <TableHead>{t("team.invite.actions")}</TableHead>
                   ) : null}
@@ -204,6 +216,25 @@ export default async function TeamPage({
                       </TableCell>
                       <TableCell>
                         {invitation.expiresAt.toLocaleDateString(locale)}
+                      </TableCell>
+                      <TableCell>
+                        {invitation.status === "PENDING" &&
+                        invitation.expiresAt > new Date() &&
+                        invitation.token ? (
+                          <InvitationLinkField
+                            copiedLabel={t("team.invite.copied")}
+                            copyLabel={t("team.invite.copyLink")}
+                            inviteUrl={createInvitationUrl(
+                              locale,
+                              invitation.token,
+                            )}
+                            openLabel={t("team.invite.openLink")}
+                          />
+                        ) : (
+                          <span className="text-muted-foreground text-sm">
+                            {t("team.invite.linkUnavailable")}
+                          </span>
+                        )}
                       </TableCell>
                       {canManageMembers ? (
                         <TableCell className="flex flex-wrap gap-2">
@@ -244,7 +275,7 @@ export default async function TeamPage({
                 ) : (
                   <TableRow>
                     <TableCell
-                      colSpan={canManageMembers ? 5 : 4}
+                      colSpan={canManageMembers ? 6 : 5}
                       className="py-10 text-center"
                     >
                       <MailPlus
@@ -400,7 +431,8 @@ export default async function TeamPage({
                   </Select>
                 </div>
                 <Button
-                  className="md:-translate-y-2 md:justify-self-start"
+                  size="lg"
+                  className="px-4 md:justify-self-start"
                   disabled={totalPreviewCount(preview) === 0}
                 >
                   {t("team.transfer.apply")}

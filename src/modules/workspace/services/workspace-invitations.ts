@@ -57,6 +57,7 @@ export async function getWorkspaceInvitations(access: WorkspaceAccessContext) {
       id: true,
       email: true,
       role: true,
+      token: true,
       status: true,
       expiresAt: true,
       acceptedAt: true,
