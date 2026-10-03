@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { DashboardPagination } from "@/components/dashboard/dashboard-pagination";
 import { Empty, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
 import { isLocale } from "@/i18n/config";
 import { Link } from "@/i18n/navigation";
@@ -39,7 +39,7 @@ export default async function CustomersPage({
     owner: first(raw.owner),
     status: first(raw.status),
     sort: first(raw.sort),
-    cursor: first(raw.cursor),
+    page: first(raw.page),
   };
   const [portfolio, options, t] = await Promise.all([
     getCustomerPortfolio(access, filters),
@@ -51,16 +51,18 @@ export default async function CustomersPage({
     options.owners.find((owner) => owner.id === access.memberId) ??
     options.owners[0];
 
-  const nextHref = portfolio.nextCursor
-    ? `/customers?${new URLSearchParams({
-        ...Object.fromEntries(
-          Object.entries(filters).filter((entry): entry is [string, string] =>
-            Boolean(entry[1]),
-          ),
-        ),
-        cursor: portfolio.nextCursor,
-      }).toString()}`
-    : null;
+  function getPageHref(page: number) {
+    const params = new URLSearchParams(
+      Object.fromEntries(
+        Object.entries({
+          ...filters,
+          page: page > 1 ? String(page) : undefined,
+        }).filter((entry): entry is [string, string] => Boolean(entry[1])),
+      ),
+    );
+    const query = params.toString();
+    return query ? `/customers?${query}` : "/customers";
+  }
 
   return (
     <div className="waslix-page">
@@ -185,6 +187,21 @@ export default async function CustomersPage({
           </Empty>
         )}
       </Card>
+      <DashboardPagination
+        currentPage={portfolio.pagination.currentPage}
+        totalPages={portfolio.pagination.totalPages}
+        getPageHref={getPageHref}
+        labels={{
+          summary: t("pagination.summary", {
+            page: portfolio.pagination.currentPage,
+            total: portfolio.pagination.totalPages,
+            count: portfolio.pagination.totalCount,
+          }),
+          previous: t("pagination.previous"),
+          next: t("pagination.next"),
+          page: (page) => t("pagination.page", { page }),
+        }}
+      />
       {access.role === "ADMIN" ? (
         <Card className="waslix-panel-body">
           <div className="mb-4 space-y-1">
@@ -259,13 +276,6 @@ export default async function CustomersPage({
             }}
           />
         </Card>
-      ) : null}
-      {nextHref ? (
-        <div className="flex justify-end pt-1">
-          <Button asChild variant="outline">
-            <Link href={nextHref}>{t("pagination.next")}</Link>
-          </Button>
-        </div>
       ) : null}
     </div>
   );

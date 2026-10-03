@@ -59,6 +59,9 @@
     "invalid": "Enter a valid value."
   },
   "pagination": {
-    "next": "Next page"
+    "summary": "Page {page} of {total} · {count} tasks",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Go to page {page}"
   }
 }

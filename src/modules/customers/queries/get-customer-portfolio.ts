@@ -1,6 +1,6 @@
 import "server-only";
 
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import { z } from "zod";
 
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
@@ -15,26 +15,10 @@ const portfolioFilterSchema = z.object({
     .catch(undefined),
   status: z.enum(["ACTIVE", "ARCHIVED", "ALL"]).catch("ACTIVE"),
   sort: z.enum(["asc", "desc"]).catch("asc"),
-  cursor: z.string().max(1000).optional().catch(undefined),
+  page: z.coerce.number().int().positive().max(10000).catch(1),
 });
 
-type Cursor = { name: string; id: string };
-
-function decodeCursor(value: string | undefined): Cursor | undefined {
-  if (!value) return undefined;
-  try {
-    const parsed = z
-      .object({ name: z.string(), id: z.uuid() })
-      .safeParse(JSON.parse(Buffer.from(value, "base64url").toString("utf8")));
-    return parsed.success ? parsed.data : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-function encodeCursor(cursor: Cursor) {
-  return Buffer.from(JSON.stringify(cursor), "utf8").toString("base64url");
-}
+const PAGE_SIZE = 10;
 
 export type CustomerPortfolioFilters = Partial<{
   query: string;
@@ -42,7 +26,7 @@ export type CustomerPortfolioFilters = Partial<{
   owner: string;
   status: string;
   sort: string;
-  cursor: string;
+  page: string;
 }>;
 
 export async function getCustomerPortfolio(
@@ -50,62 +34,50 @@ export async function getCustomerPortfolio(
   input: CustomerPortfolioFilters,
 ) {
   const filters = portfolioFilterSchema.parse(input);
-  const cursor = decodeCursor(filters.cursor);
   const ownerId =
     filters.owner === "all"
       ? undefined
       : (filters.owner ??
         (access.role === "CSM" ? access.memberId : undefined));
   const direction = filters.sort;
-  const cursorCondition: Prisma.CustomerWhereInput | undefined = cursor
-    ? direction === "asc"
+  const where: Prisma.CustomerWhereInput = {
+    workspaceId: access.workspaceId,
+    ...(filters.status === "ALL" ? {} : { status: filters.status }),
+    ...(ownerId ? { ownerId } : {}),
+    ...(filters.lifecycle ? { lifecycleStageId: filters.lifecycle } : {}),
+    ...(filters.query
       ? {
           OR: [
-            { name: { gt: cursor.name } },
-            { name: cursor.name, id: { gt: cursor.id } },
-          ],
-        }
-      : {
-          OR: [
-            { name: { lt: cursor.name } },
-            { name: cursor.name, id: { lt: cursor.id } },
-          ],
-        }
-    : undefined;
-
-  const customers = await prisma.customer.findMany({
-    where: {
-      workspaceId: access.workspaceId,
-      ...(filters.status === "ALL" ? {} : { status: filters.status }),
-      ...(ownerId ? { ownerId } : {}),
-      ...(filters.lifecycle ? { lifecycleStageId: filters.lifecycle } : {}),
-      ...(filters.query
-        ? {
-            OR: [
-              { name: { contains: filters.query, mode: "insensitive" } },
-              { website: { contains: filters.query, mode: "insensitive" } },
-              {
-                contacts: {
-                  some: {
-                    status: "ACTIVE",
-                    OR: [
-                      {
-                        name: { contains: filters.query, mode: "insensitive" },
-                      },
-                      {
-                        email: { contains: filters.query, mode: "insensitive" },
-                      },
-                    ],
-                  },
+            { name: { contains: filters.query, mode: "insensitive" } },
+            { website: { contains: filters.query, mode: "insensitive" } },
+            {
+              contacts: {
+                some: {
+                  status: "ACTIVE",
+                  OR: [
+                    {
+                      name: { contains: filters.query, mode: "insensitive" },
+                    },
+                    {
+                      email: { contains: filters.query, mode: "insensitive" },
+                    },
+                  ],
                 },
               },
-            ],
-          }
-        : {}),
-      ...(cursorCondition ?? {}),
-    },
+            },
+          ],
+        }
+      : {}),
+  };
+  const totalCount = await prisma.customer.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const currentPage = Math.min(filters.page, totalPages);
+
+  const customers = await prisma.customer.findMany({
+    where,
     orderBy: [{ name: direction }, { id: direction }],
-    take: 26,
+    skip: (currentPage - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
     select: {
       id: true,
       name: true,
@@ -121,20 +93,18 @@ export async function getCustomerPortfolio(
       },
     },
   });
-  const hasNextPage = customers.length > 25;
-  const page = customers.slice(0, 25);
-  const lastCustomer = page.at(-1);
-
   return {
-    filters: { ...filters, owner: filters.owner ?? ownerId },
-    customers: page.map((customer) => ({
+    filters: { ...filters, owner: filters.owner ?? ownerId, page: currentPage },
+    customers: customers.map((customer) => ({
       ...customer,
       contractValue: customer.contractValue?.toString() ?? null,
       customerHealth: customer.currentHealth,
     })),
-    nextCursor:
-      hasNextPage && lastCustomer
-        ? encodeCursor({ name: lastCustomer.name, id: lastCustomer.id })
-        : null,
+    pagination: {
+      currentPage,
+      pageSize: PAGE_SIZE,
+      totalCount,
+      totalPages,
+    },
   };
 }

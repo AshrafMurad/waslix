@@ -4,9 +4,8 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { DashboardPagination } from "@/components/dashboard/dashboard-pagination";
 import { isLocale } from "@/i18n/config";
-import { Link } from "@/i18n/navigation";
 import { requireProtectedPage } from "@/lib/auth/require-protected-page";
 import { TaskFormDialog } from "@/modules/tasks/components/task-form-dialog";
 import { TaskList } from "@/modules/tasks/components/task-list";
@@ -31,7 +30,7 @@ export default async function TasksPage({
   const access = await requireProtectedPage(locale);
   const raw = await searchParams;
   const [result, options, t] = await Promise.all([
-    getTasks(access, { filter: first(raw.filter), cursor: first(raw.cursor) }),
+    getTasks(access, { filter: first(raw.filter), page: first(raw.page) }),
     getTaskOptions(access),
     getTranslations({ locale, namespace: "tasks" }),
   ]);
@@ -39,6 +38,13 @@ export default async function TasksPage({
     access.role === "CSM"
       ? options.owners.filter((owner) => owner.id === access.memberId)
       : options.owners;
+  function getPageHref(page: number) {
+    const params = new URLSearchParams({
+      filter: result.filter,
+      ...(page > 1 ? { page: String(page) } : {}),
+    });
+    return `/tasks?${params.toString()}`;
+  }
   return (
     <div className="waslix-page">
       <div className="waslix-page-header">
@@ -83,17 +89,21 @@ export default async function TasksPage({
           timezone={result.timezone}
         />
       </Card>
-      {result.nextCursor ? (
-        <div className="flex justify-end">
-          <Button asChild variant="outline">
-            <Link
-              href={`/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
-            >
-              {t("pagination.next")}
-            </Link>
-          </Button>
-        </div>
-      ) : null}
+      <DashboardPagination
+        currentPage={result.pagination.currentPage}
+        totalPages={result.pagination.totalPages}
+        getPageHref={getPageHref}
+        labels={{
+          summary: t("pagination.summary", {
+            page: result.pagination.currentPage,
+            total: result.pagination.totalPages,
+            count: result.pagination.totalCount,
+          }),
+          previous: t("pagination.previous"),
+          next: t("pagination.next"),
+          page: (page) => t("pagination.page", { page }),
+        }}
+      />
     </div>
   );
 }

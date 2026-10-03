@@ -87,7 +87,10 @@
     "scrollHint": "This customer table may scroll horizontally on small screens."
   },
   "pagination": {
-    "next": "Next page"
+    "summary": "Page {page} of {total} · {count} customers",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Go to page {page}"
   },
   "import": {
     "title": "Import customers",

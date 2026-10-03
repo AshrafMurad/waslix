@@ -4,8 +4,6 @@ import {
   CheckCircle2,
   Clock3,
   LogIn,
-  MailCheck,
-  ShieldCheck,
   UserRound,
 } from "lucide-react";
 import { headers } from "next/headers";
@@ -69,27 +67,8 @@ export default async function InvitationPage({
         className="marketing-container invite-stage"
         aria-labelledby="invite-title"
       >
-        <div className="invite-visual" aria-hidden="true">
-          <div className="invite-orbit invite-orbit-one" />
-          <div className="invite-orbit invite-orbit-two" />
-          <div className="invite-signal invite-signal-source">
-            <MailCheck />
-            <span>{t("invite.signalInvited")}</span>
-          </div>
-          <div className="invite-signal invite-signal-target">
-            <ShieldCheck />
-            <span>{t("invite.signalScoped")}</span>
-          </div>
-        </div>
-
         <div className="invite-panel">
           <div className="invite-panel-header">
-            <span
-              className="invite-status-mark"
-              data-state={unavailable ? "off" : "on"}
-            >
-              {unavailable ? <Ban /> : <MailCheck />}
-            </span>
             <div>
               <h1 id="invite-title">{t("invite.title")}</h1>
               <p>
@@ -110,7 +89,9 @@ export default async function InvitationPage({
               </div>
               <div>
                 <dt>{t("invite.invitedEmail")}</dt>
-                <dd dir="ltr">{invitation.email}</dd>
+                <dd className="invite-email-value">
+                  <bdi>{invitation.email}</bdi>
+                </dd>
               </div>
               <div>
                 <dt>{t("invite.expires")}</dt>

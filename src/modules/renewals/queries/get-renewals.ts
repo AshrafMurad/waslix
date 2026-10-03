@@ -5,6 +5,8 @@ import type { Prisma } from "@prisma/client";
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
 
+const PAGE_SIZE = 10;
+
 export async function getCustomerRenewals(
   access: WorkspaceAccessContext,
   customerId: string,
@@ -43,8 +45,9 @@ export async function getCustomerRenewals(
 
 export async function getRenewalPortfolio(
   access: WorkspaceAccessContext,
-  now = new Date(),
+  options: { page?: string; now?: Date } = {},
 ) {
+  const now = options.now ?? new Date();
   const where: Prisma.RenewalWhereInput = {
     workspaceId: access.workspaceId,
     stage: { notIn: ["RENEWED", "CHURNED"] },
@@ -53,10 +56,18 @@ export async function getRenewalPortfolio(
       ...(access.role === "CSM" ? { ownerId: access.memberId } : {}),
     },
   };
+  const totalCount = await prisma.renewal.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const requestedPage = Math.min(
+    Math.max(Number.parseInt(options.page ?? "1", 10) || 1, 1),
+    10000,
+  );
+  const currentPage = Math.min(requestedPage, totalPages);
   const renewals = await prisma.renewal.findMany({
     where,
     orderBy: [{ renewalAt: "asc" }, { id: "asc" }],
-    take: 50,
+    skip: (currentPage - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
     select: {
       id: true,
       contractValue: true,
@@ -69,5 +80,14 @@ export async function getRenewalPortfolio(
       customer: { select: { id: true, name: true } },
     },
   });
-  return { renewals, generatedAt: now };
+  return {
+    renewals,
+    generatedAt: now,
+    pagination: {
+      currentPage,
+      pageSize: PAGE_SIZE,
+      totalCount,
+      totalPages,
+    },
+  };
 }

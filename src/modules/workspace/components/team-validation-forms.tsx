@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useActionState, useRef } from "react";
 import { useTranslations } from "next-intl";
 
 import { useCustomFormValidation } from "@/components/shared/use-custom-form-validation";
@@ -16,7 +16,10 @@ import {
 } from "@/components/ui/select";
 
 import { transferOwnershipAction } from "../actions/team-settings-actions";
-import { inviteWorkspaceMemberAction } from "../actions/workspace-invitation-actions";
+import {
+  inviteWorkspaceMemberAction,
+  type InviteWorkspaceMemberState,
+} from "../actions/workspace-invitation-actions";
 
 type TransferMember = {
   id: string;
@@ -30,6 +33,10 @@ function focusFirstInvalid(form: HTMLFormElement | null) {
 export function InviteMemberForm({ locale }: { locale: string }) {
   const t = useTranslations("workspace");
   const formRef = useRef<HTMLFormElement>(null);
+  const [state, formAction, pending] = useActionState<
+    InviteWorkspaceMemberState,
+    FormData
+  >(inviteWorkspaceMemberAction, { status: "idle" });
   const { errors, validate, clearError } = useCustomFormValidation([
     { name: "email", type: "email", message: t("validation.email") },
   ]);
@@ -37,7 +44,7 @@ export function InviteMemberForm({ locale }: { locale: string }) {
   return (
     <form
       ref={formRef}
-      action={inviteWorkspaceMemberAction}
+      action={formAction}
       className="bg-raised grid gap-4 rounded-md border p-4 md:grid-cols-[minmax(16rem,1fr)_12rem_auto] md:items-end"
       noValidate
       onSubmit={(event) => {
@@ -78,7 +85,18 @@ export function InviteMemberForm({ locale }: { locale: string }) {
           </SelectContent>
         </Select>
       </Field>
-      <Button>{t("team.invite.send")}</Button>
+      <Button disabled={pending}>{t("team.invite.send")}</Button>
+      {state.messageKey ? (
+        <p
+          className={
+            state.status === "error"
+              ? "text-destructive text-sm md:col-span-full"
+              : "text-brand-accent text-sm md:col-span-full"
+          }
+        >
+          {t(state.messageKey)}
+        </p>
+      ) : null}
     </form>
   );
 }

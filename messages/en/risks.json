@@ -79,5 +79,10 @@
     "required": "This field is required.",
     "invalid": "Enter a valid value."
   },
-  "pagination": { "next": "Next page" }
+  "pagination": {
+    "summary": "Page {page} of {total} · {count} risks",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Go to page {page}"
+  }
 }

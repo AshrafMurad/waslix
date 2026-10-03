@@ -35,7 +35,10 @@
   "actions": {
     "addActivity": "إضافة نشاط",
     "saving": "جارٍ الحفظ...",
-    "next": "عناصر أقدم"
+    "paginationSummary": "الصفحة {page} من {total} · {count} عنصر",
+    "previous": "الأحدث",
+    "next": "الأقدم",
+    "page": "انتقل إلى الصفحة {page}"
   },
   "feedback": {
     "saved": "تمت إضافة النشاط.",

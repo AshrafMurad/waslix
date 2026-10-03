@@ -5,6 +5,7 @@ import {
 } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { DashboardPagination } from "@/components/dashboard/dashboard-pagination";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Empty, EmptyDescription } from "@/components/ui/empty";
@@ -23,18 +24,26 @@ import { getRenewalPortfolio } from "@/modules/renewals/queries/get-renewals";
 
 export default async function RenewalsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
   const access = await requireProtectedPage(locale);
+  const raw = await searchParams;
+  const pageValue = raw.page;
+  const page = Array.isArray(pageValue) ? pageValue[0] : pageValue;
   const [portfolio, t, format] = await Promise.all([
-    getRenewalPortfolio(access),
+    getRenewalPortfolio(access, { page }),
     getTranslations({ locale, namespace: "renewals" }),
     getFormatter({ locale }),
   ]);
+  function getPageHref(targetPage: number) {
+    return targetPage > 1 ? `/renewals?page=${targetPage}` : "/renewals";
+  }
   return (
     <div className="waslix-page">
       <div className="space-y-1">
@@ -121,6 +130,21 @@ export default async function RenewalsPage({
           </Empty>
         )}
       </Card>
+      <DashboardPagination
+        currentPage={portfolio.pagination.currentPage}
+        totalPages={portfolio.pagination.totalPages}
+        getPageHref={getPageHref}
+        labels={{
+          summary: t("pagination.summary", {
+            page: portfolio.pagination.currentPage,
+            total: portfolio.pagination.totalPages,
+            count: portfolio.pagination.totalCount,
+          }),
+          previous: t("pagination.previous"),
+          next: t("pagination.next"),
+          page: (page) => t("pagination.page", { page }),
+        }}
+      />
     </div>
   );
 }

@@ -204,6 +204,7 @@
       "link": "Invitation link",
       "actions": "Actions",
       "send": "Send invitation",
+      "sent": "Invitation link created.",
       "resend": "Resend",
       "revoke": "Revoke",
       "delete": "Delete",
@@ -211,6 +212,12 @@
       "copied": "Copied",
       "openLink": "Open",
       "linkUnavailable": "Not available",
+      "errors": {
+        "alreadyMember": "This email already belongs to an active workspace member.",
+        "alreadyPending": "A pending invitation already exists for this email.",
+        "alreadyAccepted": "This email already accepted a workspace invitation.",
+        "generic": "Invitation could not be created. Try again."
+      },
       "empty": "No invitations yet",
       "emptyDescription": "Invite a teammate above when you are ready to share the workspace."
     }

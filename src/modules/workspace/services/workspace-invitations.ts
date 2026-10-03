@@ -90,13 +90,19 @@ export async function inviteWorkspaceMember(
       where: {
         workspaceId: access.workspaceId,
         email: { equals: email, mode: "insensitive" },
-        status: "PENDING",
-        expiresAt: { gt: new Date() },
+        OR: [
+          { status: "PENDING", expiresAt: { gt: new Date() } },
+          { status: "ACCEPTED" },
+        ],
       },
-      select: { id: true },
+      select: { id: true, status: true },
     });
-    if (existingInvitation)
+    if (existingInvitation?.status === "PENDING") {
       throw new InvitationError("Invitation already exists");
+    }
+    if (existingInvitation?.status === "ACCEPTED") {
+      throw new InvitationError("Invitation was already accepted");
+    }
 
     return transaction.invitation.create({
       data: {

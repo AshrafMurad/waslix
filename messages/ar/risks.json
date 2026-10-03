@@ -79,5 +79,10 @@
     "required": "هذا الحقل مطلوب.",
     "invalid": "أدخل قيمة صالحة."
   },
-  "pagination": { "next": "الصفحة التالية" }
+  "pagination": {
+    "summary": "الصفحة {page} من {total} · {count} مخاطر",
+    "previous": "السابق",
+    "next": "التالي",
+    "page": "انتقل إلى الصفحة {page}"
+  }
 }

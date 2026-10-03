@@ -5,9 +5,11 @@ import type { Prisma } from "@prisma/client";
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
 
+const PAGE_SIZE = 10;
+
 export async function getRisks(
   access: WorkspaceAccessContext,
-  options: { customerId?: string; cursor?: string; status?: string } = {},
+  options: { customerId?: string; page?: string; status?: string } = {},
 ) {
   const status = ["OPEN", "MONITORING", "RESOLVED"].includes(
     options.status ?? "",
@@ -25,6 +27,13 @@ export async function getRisks(
       { customer: { ownerId: access.memberId } },
     ];
   }
+  const totalCount = await prisma.risk.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const requestedPage = Math.min(
+    Math.max(Number.parseInt(options.page ?? "1", 10) || 1, 1),
+    10000,
+  );
+  const currentPage = Math.min(requestedPage, totalPages);
   const rows = await prisma.risk.findMany({
     where,
     orderBy: [
@@ -33,8 +42,8 @@ export async function getRisks(
       { targetResolutionDate: "asc" },
       { id: "asc" },
     ],
-    take: 26,
-    ...(options.cursor ? { cursor: { id: options.cursor }, skip: 1 } : {}),
+    skip: (currentPage - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
     select: {
       id: true,
       customerId: true,
@@ -57,8 +66,13 @@ export async function getRisks(
     },
   });
   return {
-    risks: rows.slice(0, 25),
-    nextCursor: rows.length > 25 ? rows[24].id : null,
+    risks: rows,
+    pagination: {
+      currentPage,
+      pageSize: PAGE_SIZE,
+      totalCount,
+      totalPages,
+    },
   };
 }
 

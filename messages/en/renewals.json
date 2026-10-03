@@ -17,6 +17,12 @@
     "value": "Contract value",
     "action": "Next step"
   },
+  "pagination": {
+    "summary": "Page {page} of {total} · {count} renewals",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Go to page {page}"
+  },
   "form": {
     "create": "Create renewal",
     "edit": "Edit active renewal"

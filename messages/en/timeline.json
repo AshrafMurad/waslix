@@ -35,7 +35,10 @@
   "actions": {
     "addActivity": "Add activity",
     "saving": "Saving...",
-    "next": "Older entries"
+    "paginationSummary": "Page {page} of {total} · {count} entries",
+    "previous": "Newer",
+    "next": "Older",
+    "page": "Go to page {page}"
   },
   "feedback": {
     "saved": "Activity added.",

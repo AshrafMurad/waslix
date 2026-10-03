@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
+import { DashboardPagination } from "@/components/dashboard/dashboard-pagination";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -76,9 +77,9 @@ export default async function CustomerSectionPage({
 
   const rawSearch = await searchParams;
   const filterValue = rawSearch.filter;
-  const cursorValue = rawSearch.cursor;
+  const pageValue = rawSearch.page;
   const filter = Array.isArray(filterValue) ? filterValue[0] : filterValue;
-  const cursor = Array.isArray(cursorValue) ? cursorValue[0] : cursorValue;
+  const page = Array.isArray(pageValue) ? pageValue[0] : pageValue;
 
   if (section === "health") {
     const windowValue = Array.isArray(rawSearch.window)
@@ -106,7 +107,7 @@ export default async function CustomerSectionPage({
 
   if (section === "tasks") {
     const [result, options, taskT] = await Promise.all([
-      getTasks(access, { filter, cursor, customerId }),
+      getTasks(access, { filter, page, customerId }),
       getTaskOptions(access),
       getTranslations({ locale, namespace: "tasks" }),
     ]);
@@ -130,17 +131,27 @@ export default async function CustomerSectionPage({
             lockedCustomerId={customerId}
             timezone={result.timezone}
           />
-          {result.nextCursor ? (
-            <div className="flex justify-end border-t p-4">
-              <Button asChild variant="outline">
-                <Link
-                  href={`/customers/${customerId}/tasks?filter=${result.filter}&cursor=${result.nextCursor}`}
-                >
-                  {taskT("pagination.next")}
-                </Link>
-              </Button>
-            </div>
-          ) : null}
+          <DashboardPagination
+            className="border-t p-4"
+            currentPage={result.pagination.currentPage}
+            totalPages={result.pagination.totalPages}
+            getPageHref={(targetPage) =>
+              `/customers/${customerId}/tasks?${new URLSearchParams({
+                filter: result.filter,
+                ...(targetPage > 1 ? { page: String(targetPage) } : {}),
+              }).toString()}`
+            }
+            labels={{
+              summary: taskT("pagination.summary", {
+                page: result.pagination.currentPage,
+                total: result.pagination.totalPages,
+                count: result.pagination.totalCount,
+              }),
+              previous: taskT("pagination.previous"),
+              next: taskT("pagination.next"),
+              page: (page) => taskT("pagination.page", { page }),
+            }}
+          />
         </Card>
         {access.role !== "VIEWER" && visibleOwners.length ? (
           <Card className="waslix-panel-body">
@@ -226,7 +237,7 @@ export default async function CustomerSectionPage({
 
   if (section === "risks") {
     const [result, options, riskT] = await Promise.all([
-      getRisks(access, { customerId, cursor }),
+      getRisks(access, { customerId, page }),
       getRiskOptions(access),
       getTranslations({ locale, namespace: "risks" }),
     ]);
@@ -276,13 +287,33 @@ export default async function CustomerSectionPage({
           customers={options.customers}
           owners={options.owners}
         />
+        <DashboardPagination
+          className="border-t p-4"
+          currentPage={result.pagination.currentPage}
+          totalPages={result.pagination.totalPages}
+          getPageHref={(targetPage) =>
+            targetPage > 1
+              ? `/customers/${customerId}/risks?page=${targetPage}`
+              : `/customers/${customerId}/risks`
+          }
+          labels={{
+            summary: riskT("pagination.summary", {
+              page: result.pagination.currentPage,
+              total: result.pagination.totalPages,
+              count: result.pagination.totalCount,
+            }),
+            previous: riskT("pagination.previous"),
+            next: riskT("pagination.next"),
+            page: (page) => riskT("pagination.page", { page }),
+          }}
+        />
       </Card>
     );
   }
 
   if (section === "timeline") {
     const [timeline, contacts, timelineT] = await Promise.all([
-      getCustomerTimeline(access, customerId, { filter, cursor }),
+      getCustomerTimeline(access, customerId, { filter, page }),
       getActivityOptions(access, customerId),
       getTranslations({ locale, namespace: "timeline" }),
     ]);
@@ -319,17 +350,27 @@ export default async function CustomerSectionPage({
             ))}
           </nav>
           <TimelineList locale={locale} entries={timeline.entries} />
-          {timeline.nextCursor ? (
-            <div className="flex justify-end border-t p-4">
-              <Button asChild variant="outline">
-                <Link
-                  href={`/customers/${customerId}/timeline?filter=${timeline.filter}&cursor=${timeline.nextCursor}`}
-                >
-                  {timelineT("actions.next")}
-                </Link>
-              </Button>
-            </div>
-          ) : null}
+          <DashboardPagination
+            className="border-t p-4"
+            currentPage={timeline.pagination.currentPage}
+            totalPages={timeline.pagination.totalPages}
+            getPageHref={(targetPage) =>
+              `/customers/${customerId}/timeline?${new URLSearchParams({
+                filter: timeline.filter ?? "all",
+                ...(targetPage > 1 ? { page: String(targetPage) } : {}),
+              }).toString()}`
+            }
+            labels={{
+              summary: timelineT("actions.paginationSummary", {
+                page: timeline.pagination.currentPage,
+                total: timeline.pagination.totalPages,
+                count: timeline.pagination.totalCount,
+              }),
+              previous: timelineT("actions.previous"),
+              next: timelineT("actions.next"),
+              page: (page) => timelineT("actions.page", { page }),
+            }}
+          />
         </Card>
         {canAddActivity ? (
           <Card className="waslix-panel-body">

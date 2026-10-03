@@ -59,6 +59,9 @@
     "invalid": "أدخل قيمة صالحة."
   },
   "pagination": {
-    "next": "الصفحة التالية"
+    "summary": "الصفحة {page} من {total} · {count} مهمة",
+    "previous": "السابق",
+    "next": "التالي",
+    "page": "انتقل إلى الصفحة {page}"
   }
 }

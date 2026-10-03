@@ -6,10 +6,11 @@ import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
 
 type TaskFilter = "my" | "team" | "overdue" | "completed";
+const PAGE_SIZE = 10;
 
 export async function getTasks(
   access: WorkspaceAccessContext,
-  filters: { filter?: string; cursor?: string; customerId?: string } = {},
+  filters: { filter?: string; page?: string; customerId?: string } = {},
 ) {
   const defaultFilter = filters.customerId ? "team" : "my";
   const filter: TaskFilter = ["team", "overdue", "completed", "my"].includes(
@@ -52,11 +53,18 @@ export async function getTasks(
   } else {
     where.status = { in: ["OPEN", "IN_PROGRESS"] };
   }
+  const totalCount = await prisma.task.count({ where });
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const requestedPage = Math.min(
+    Math.max(Number.parseInt(filters.page ?? "1", 10) || 1, 1),
+    10000,
+  );
+  const currentPage = Math.min(requestedPage, totalPages);
   const rows = await prisma.task.findMany({
     where,
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    take: 26,
-    ...(filters.cursor ? { cursor: { id: filters.cursor }, skip: 1 } : {}),
+    skip: (currentPage - 1) * PAGE_SIZE,
+    take: PAGE_SIZE,
     select: {
       id: true,
       title: true,
@@ -72,9 +80,14 @@ export async function getTasks(
     },
   });
   return {
-    tasks: rows.slice(0, 25),
-    nextCursor: rows.length > 25 ? rows[24].id : null,
+    tasks: rows,
     filter,
+    pagination: {
+      currentPage,
+      pageSize: PAGE_SIZE,
+      totalCount,
+      totalPages,
+    },
     timezone: workspace.timezone,
   };
 }

@@ -1,16 +1,10 @@
 import "server-only";
 
 import type { Prisma } from "@prisma/client";
-import { z } from "zod";
-
 import type { WorkspaceAccessContext } from "@/lib/auth/access-context";
 import { prisma } from "@/lib/db/prisma";
 
-const cursorSchema = z.object({
-  occurredAt: z.iso.datetime(),
-  kind: z.enum(["activity", "system"]),
-  id: z.uuid(),
-});
+const PAGE_SIZE = 10;
 
 type TimelineKind = "activity" | "system";
 type TimelineEntry = {
@@ -24,17 +18,6 @@ type TimelineEntry = {
   metadata: Prisma.JsonValue | null;
 };
 
-function decodeCursor(cursor?: string) {
-  if (!cursor) return null;
-  try {
-    return cursorSchema.parse(
-      JSON.parse(Buffer.from(cursor, "base64url").toString("utf8")),
-    );
-  } catch {
-    return null;
-  }
-}
-
 function compareEntries(left: TimelineEntry, right: TimelineEntry) {
   const time = right.occurredAt.getTime() - left.occurredAt.getTime();
   if (time) return time;
@@ -42,24 +25,10 @@ function compareEntries(left: TimelineEntry, right: TimelineEntry) {
   return right.id.localeCompare(left.id);
 }
 
-function isAfterCursor(
-  entry: TimelineEntry,
-  cursor: NonNullable<ReturnType<typeof decodeCursor>>,
-) {
-  return (
-    compareEntries(entry, {
-      ...entry,
-      id: cursor.id,
-      kind: cursor.kind,
-      occurredAt: new Date(cursor.occurredAt),
-    }) > 0
-  );
-}
-
 export async function getCustomerTimeline(
   access: WorkspaceAccessContext,
   customerId: string,
-  filters: { filter?: string; cursor?: string } = {},
+  filters: { filter?: string; page?: string } = {},
 ) {
   const customer = await prisma.customer.findFirst({
     where: { id: customerId, workspaceId: access.workspaceId },
@@ -69,19 +38,37 @@ export async function getCustomerTimeline(
   const filter = ["human", "system", "tasks"].includes(filters.filter ?? "")
     ? filters.filter
     : "all";
-  const cursor = decodeCursor(filters.cursor);
-  const before = cursor ? new Date(cursor.occurredAt) : undefined;
+  const activityWhere = {
+    workspaceId: access.workspaceId,
+    customerId,
+  };
+  const eventWhere = {
+    workspaceId: access.workspaceId,
+    customerId,
+    ...(filter === "tasks" ? { entityType: "TASK" } : {}),
+  };
+  const [activityCount, eventCount] = await Promise.all([
+    filter === "system" || filter === "tasks"
+      ? 0
+      : prisma.activity.count({ where: activityWhere }),
+    filter === "human" ? 0 : prisma.systemEvent.count({ where: eventWhere }),
+  ]);
+  const totalCount = activityCount + eventCount;
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const requestedPage = Math.min(
+    Math.max(Number.parseInt(filters.page ?? "1", 10) || 1, 1),
+    10000,
+  );
+  const currentPage = Math.min(requestedPage, totalPages);
+  const offset = (currentPage - 1) * PAGE_SIZE;
+  const take = offset + PAGE_SIZE;
   const [activities, events] = await Promise.all([
     filter === "system" || filter === "tasks"
       ? []
       : prisma.activity.findMany({
-          where: {
-            workspaceId: access.workspaceId,
-            customerId,
-            occurredAt: before ? { lte: before } : undefined,
-          },
+          where: activityWhere,
           orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
-          take: 26,
+          take,
           select: {
             id: true,
             type: true,
@@ -94,14 +81,9 @@ export async function getCustomerTimeline(
     filter === "human"
       ? []
       : prisma.systemEvent.findMany({
-          where: {
-            workspaceId: access.workspaceId,
-            customerId,
-            occurredAt: before ? { lte: before } : undefined,
-            ...(filter === "tasks" ? { entityType: "TASK" } : {}),
-          },
+          where: eventWhere,
           orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
-          take: 26,
+          take,
           select: {
             id: true,
             type: true,
@@ -133,23 +115,16 @@ export async function getCustomerTimeline(
       actor: event.actor?.user.name ?? null,
       metadata: event.metadata,
     })),
-  ]
-    .sort(compareEntries)
-    .filter((entry) => !cursor || isAfterCursor(entry, cursor));
-  const page = entries.slice(0, 25);
-  const last = page.at(-1);
+  ].sort(compareEntries);
+  const page = entries.slice(offset, offset + PAGE_SIZE);
   return {
     entries: page,
     filter,
-    nextCursor:
-      entries.length > 25 && last
-        ? Buffer.from(
-            JSON.stringify({
-              occurredAt: last.occurredAt.toISOString(),
-              kind: last.kind,
-              id: last.id,
-            }),
-          ).toString("base64url")
-        : null,
+    pagination: {
+      currentPage,
+      pageSize: PAGE_SIZE,
+      totalCount,
+      totalPages,
+    },
   };
 }
