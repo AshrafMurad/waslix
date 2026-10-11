@@ -17,18 +17,22 @@ npm run dev
 
 Open [http://localhost:3000/en](http://localhost:3000/en) or [http://localhost:3000/ar](http://localhost:3000/ar). Auth endpoints are mounted at `/api/auth/[...all]`; `/en/workspace` and `/ar/workspace` require a session with an ACTIVE membership.
 
-The local seed provisions the fixture users below as Better Auth credential accounts. They use `SEED_FIXTURE_PASSWORD`; when it is omitted outside production, the local-only fallback is `123456`. The development sign-in form defaults to the admin credentials.
+## Seeded Test Accounts
+
+After running `npm run db:seed`, sign in with any of the accounts below. All accounts use `SEED_FIXTURE_PASSWORD`; when it is omitted outside production, the default password is `123456`. The development sign-in form defaults to `admin@example.com` with that password.
 
 It also rebuilds a deterministic 120-customer portfolio in Fixture Alpha while preserving those users. `SEED_NOW` controls relative dates and `SEED_RANDOM_SEED` controls stable distributions; see `prisma/seeds/README.md` and `docs/14-SEED-DATA-PLAN.md`.
 
-| Role                                           | Email                        |
-| ---------------------------------------------- | ---------------------------- |
-| Admin in Fixture Alpha, Viewer in Fixture Beta | `admin@example.com`          |
-| CS Manager                                     | `manager@example.com`        |
-| CSM                                            | `csm@example.com`            |
-| Viewer                                         | `viewer@example.com`         |
-| Inactive-member denial fixture                 | `inactive@example.com`       |
-| Fixture Beta Admin                             | `tenant-b-admin@example.com` |
+| Role       | Email                        | Default password | Workspace                               |
+| ---------- | ---------------------------- | ---------------- | --------------------------------------- |
+| Admin      | `admin@example.com`          | `123456`         | Waslix Demo Workspace (`fixture-alpha`) |
+| CS Manager | `manager@example.com`        | `123456`         | Waslix Demo Workspace (`fixture-alpha`) |
+| CSM        | `csm@example.com`            | `123456`         | Waslix Demo Workspace (`fixture-alpha`) |
+| Viewer     | `viewer@example.com`         | `123456`         | Waslix Demo Workspace (`fixture-alpha`) |
+| CSM        | `inactive@example.com`       | `123456`         | Inactive membership in `fixture-alpha`  |
+| Admin      | `tenant-b-admin@example.com` | `123456`         | Fixture Beta (`fixture-beta`)           |
+
+`inactive@example.com` is a denial-test account: authentication succeeds, but its inactive membership prevents workspace access. The demo seed gives `admin@example.com` active access only to `fixture-alpha`; use `tenant-b-admin@example.com` to test the separate workspace.
 
 ## Checks
 
