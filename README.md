@@ -20,7 +20,7 @@
   <br />
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="public/images/hero-section-image-dark.png" />
-    <img src="public/images/hero-section-image-light.png" alt="Waslix illustration: customer accounts connected to one central workspace" width="820" />
+    <img src="public/images/hero-section-image-light.png" alt="Waslix illustration: customer accounts connected to one central workspace" width="420" />
   </picture>
   <br />
   <sub>Customer evidence, connected.</sub>
@@ -68,7 +68,7 @@ Customer Success teams shouldn't have to piece together an account story from sc
 <div align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="public/images/connect-section-image-dark.png" />
-    <img src="public/images/connect-section-image-light.png" alt="Waslix illustration: risk, analytics, tasks, and protection connected in one workflow" width="820" loading="lazy" />
+    <img src="public/images/connect-section-image-light.png" alt="Waslix illustration: risk, analytics, tasks, and protection connected in one workflow" width="420" loading="lazy" />
   </picture>
   <p><strong>One connected workflow. Shared context at every step.</strong></p>
 </div>
