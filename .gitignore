@@ -25,7 +25,14 @@
 # misc
 .DS_Store
 *.pem
+
+# internal project and agent documentation
 /docs/
+/AGENTS.md
+/DESIGN.md
+/PRODUCT.md
+/.opencode/
+/.impeccable/
 
 # debug
 npm-debug.log*

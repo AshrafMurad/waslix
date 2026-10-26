@@ -1,67 +1,117 @@
+<div align="center">
+  <img src="public/logo.png" alt="Waslix logo" width="96" />
+
 # Waslix
 
-Waslix is a localized Next.js App Router application with PostgreSQL, Prisma, Better Auth, fixed workspace roles, and tenant isolation.
+**Know which customers need you before they tell you.**
+
+An evidence-to-action workspace for modern Customer Success teams.
+
+English and Arabic · LTR and RTL · Light and dark mode
+</div>
+
+![Waslix customer success workspace](public/images/hero-section-image-light.png)
+
+## About
+
+Waslix brings customer health, onboarding, renewals, risks, tasks, and team context into one workspace. It turns account evidence into explainable priorities and owned next actions, without relying on opaque scores or disconnected dashboards.
+
+Built for both English and Arabic teams, Waslix provides first-class LTR and RTL experiences with strict workspace isolation and role-based access.
+
+## Highlights
+
+- **Unified customer view** with contacts, lifecycle, goals, timeline, tasks, risks, and renewal context
+- **Explainable health scoring** based on weighted evidence, freshness, confidence, and historical snapshots
+- **Attention queue** that groups meaningful signals and shows why an account needs action
+- **Onboarding and renewals** with milestones, readiness, windows, and explicit outcomes
+- **Recommendations and playbooks** that convert evidence into accountable work
+- **Portfolio analytics, search, and CSV import** for day-to-day operations at scale
+- **Team workspaces** with Admin, CS Manager, CSM, and Viewer roles
+- **English and Arabic localization** with locale-prefixed routes and complete RTL support
+
+## Tech Stack
+
+| Area            | Technology                         |
+| --------------- | ---------------------------------- |
+| Application     | Next.js 16, React 19, TypeScript   |
+| UI              | Tailwind CSS 4, Radix UI, Recharts |
+| Data            | PostgreSQL, Prisma                 |
+| Authentication  | Better Auth                        |
+| Localization    | next-intl                          |
+| Background jobs | pg-boss                            |
+| Testing         | Vitest, Playwright                 |
+| Deployment      | Docker                             |
 
 ## Getting Started
 
-Use Node.js 22.13 or newer on the Node 22 LTS line. Install dependencies, copy the environment template, start PostgreSQL, apply migrations, seed the two-workspace fixture, and run the development server:
+### Prerequisites
+
+- Node.js 22.13 or newer on the Node 22 LTS line
+- Docker with Docker Compose
+- npm
+
+### Local setup
 
 ```bash
+git clone https://github.com/AshrafMurad/waslix.git
+cd waslix
 npm install
-copy .env.example .env
+cp .env.example .env
 docker compose up -d
 npm run db:migrate
 npm run db:seed
 npm run dev
 ```
 
-Open [http://localhost:3000/en](http://localhost:3000/en) or [http://localhost:3000/ar](http://localhost:3000/ar). Auth endpoints are mounted at `/api/auth/[...all]`; `/en/workspace` and `/ar/workspace` require a session with an ACTIVE membership.
+On Windows PowerShell, use `Copy-Item .env.example .env` instead of `cp`.
 
-## Seeded Test Accounts
-
-After running `npm run db:seed`, sign in with any of the accounts below. All accounts use `SEED_FIXTURE_PASSWORD`; when it is omitted outside production, the default password is `123456`. The development sign-in form defaults to `admin@example.com` with that password.
-
-It also rebuilds a deterministic 120-customer portfolio in Fixture Alpha while preserving those users. `SEED_NOW` controls relative dates and `SEED_RANDOM_SEED` controls stable distributions; see `prisma/seeds/README.md` and `docs/14-SEED-DATA-PLAN.md`.
-
-| Role       | Email                        | Default password | Workspace                               |
-| ---------- | ---------------------------- | ---------------- | --------------------------------------- |
-| Admin      | `admin@example.com`          | `123456`         | Waslix Demo Workspace (`fixture-alpha`) |
-| CS Manager | `manager@example.com`        | `123456`         | Waslix Demo Workspace (`fixture-alpha`) |
-| CSM        | `csm@example.com`            | `123456`         | Waslix Demo Workspace (`fixture-alpha`) |
-| Viewer     | `viewer@example.com`         | `123456`         | Waslix Demo Workspace (`fixture-alpha`) |
-| CSM        | `inactive@example.com`       | `123456`         | Inactive membership in `fixture-alpha`  |
-| Admin      | `tenant-b-admin@example.com` | `123456`         | Fixture Beta (`fixture-beta`)           |
-
-`inactive@example.com` is a denial-test account: authentication succeeds, but its inactive membership prevents workspace access. The demo seed gives `admin@example.com` active access only to `fixture-alpha`; use `tenant-b-admin@example.com` to test the separate workspace.
-
-## Checks
-
-```bash
-npm run format:check
-npm run lint
-npm run typecheck
-npm run i18n:check
-npm run test
-npm run test:integration
-npm run build
-```
-
-`npm run check` runs the non-environment-specific checks in order. `npm run test:integration` and `npm run test:e2e` require `TEST_DATABASE_URL` and use a real isolated PostgreSQL database. Both apply committed migrations before testing. The E2E command starts the application on port 3100 and requires the Chromium browser installed by `npx playwright install chromium`.
+Open [http://localhost:3000/en](http://localhost:3000/en) for English or [http://localhost:3000/ar](http://localhost:3000/ar) for Arabic. The seed command creates a deterministic demo workspace; its local credentials are configured through `SEED_FIXTURE_PASSWORD` in `.env`.
 
 ## Environment
 
-Copy `.env.example` and replace its safe placeholders. Required server variables are `DATABASE_URL`, `BETTER_AUTH_URL`, and a random `BETTER_AUTH_SECRET` of at least 32 characters. `TEST_DATABASE_URL` is required only for database integration and browser tests. `NEXT_PUBLIC_APP_URL` documents the browser origin. `SEED_FIXTURE_PASSWORD` controls local fixture credentials and must be explicitly set when seeding with `NODE_ENV=production`. `SEED_NOW` and `SEED_RANDOM_SEED` make the portfolio reproducible.
+Start from `.env.example` and replace its development placeholders before deploying.
 
-The optional `docker-compose.yml` provides PostgreSQL 18 and creates the `waslix` and `waslix_test` databases when its volume is initialized. If the volume predates M1.4, create the test database once with `docker compose exec postgres createdb -U waslix waslix_test`. The pinned foundation includes Better Auth `1.7.5`, Prisma/Prisma Client `6.19.3`, Next.js `16.3.5`, next-intl `4.14.6`, Zod `4.1.11`, Vitest `4.0.4`, and Playwright `1.55.0`.
+| Variable                | Purpose                                                |
+| ----------------------- | ------------------------------------------------------ |
+| `DATABASE_URL`          | PostgreSQL connection used by the application          |
+| `BETTER_AUTH_URL`       | Canonical authentication origin                        |
+| `BETTER_AUTH_SECRET`    | Random authentication secret of at least 32 characters |
+| `NEXT_PUBLIC_APP_URL`   | Public browser origin                                  |
+| `TEST_DATABASE_URL`     | Isolated database for integration and E2E tests        |
+| `SEED_FIXTURE_PASSWORD` | Password assigned to local seeded accounts             |
 
-## Structure
+## Commands
 
-- `src/app/[locale]` owns localized route layouts and pages.
-- `src/i18n` owns locale configuration, request loading, navigation helpers, and formats.
-- `messages/en` and `messages/ar` contain versioned translation catalogs.
-- `src/components/ui` is reserved for shadcn primitives.
-- `src/components/shared`, `src/components/layout`, and `src/modules` are added only when real consumers exist.
-- `src/lib` owns infrastructure-level helpers such as `cn`.
-- `src/lib/auth`, `src/lib/db`, and `src/lib/permissions` own session validation, Prisma, and fixed-role policy.
-- `src/modules/workspace` owns tenant-scoped membership queries and mutations.
-- `prisma` owns the reviewed schema, migrations, two-workspace fixture and deterministic demo portfolio seed.
+| Command                    | Description                                          |
+| -------------------------- | ---------------------------------------------------- |
+| `npm run dev`              | Start the development server                         |
+| `npm run build`            | Create a production build                            |
+| `npm run db:migrate`       | Apply committed database migrations                  |
+| `npm run db:seed`          | Rebuild deterministic demo data                      |
+| `npm run worker:start`     | Start the background health worker                   |
+| `npm run check`            | Run formatting, linting, types, i18n, and unit tests |
+| `npm run test:integration` | Run PostgreSQL integration tests                     |
+| `npm run test:e2e`         | Run Playwright browser tests                         |
+
+Integration and browser tests require `TEST_DATABASE_URL`. Install the Playwright browser once with `npx playwright install chromium` before running E2E tests.
+
+## Project Structure
+
+```text
+src/app/[locale]   Localized public and workspace routes
+src/components     Shared UI, layout, and marketing components
+src/modules        Domain features, services, queries, and actions
+src/lib            Authentication, database, jobs, and permissions
+src/worker         Background job entry points
+messages           English and Arabic translation catalogs
+prisma             Schema, migrations, and deterministic seed data
+tests              Unit, integration, and browser tests
+```
+
+## Security Model
+
+Every protected operation requires an authenticated user, an active workspace membership, the appropriate role capability, and access to the requested object. Database queries, jobs, search, imports, analytics, and history are scoped to the active workspace.
+
+## Production
+
+The repository includes `Dockerfile` and `docker-compose.production.yml` for running the web application, worker, and PostgreSQL services. Set production secrets outside source control, apply migrations before serving traffic, and run the deployment smoke check with `npm run smoke:deployment`.
